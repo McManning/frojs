@@ -11,7 +11,7 @@
 
 fro.timers = {
 
-    initialize : function() {
+    initialise : function() {
         this.intervals = {};
 		this.nextID = 0;
 		

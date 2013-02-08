@@ -5,7 +5,7 @@ var gl = null;
 
 fro.renderer = {
 	
-	initialize : function(canvas) {
+	initialise : function(canvas) {
 		
 		try {
 			
@@ -19,7 +19,7 @@ fro.renderer = {
 			gl.mvMatrix = mat4.create();
 			gl.pMatrix = mat4.create();
 			
-			gl.clearColor(0.56, 0.25, 0.98, 1.0);	
+			gl.clearColor(0.15, 0.15, 0.15, 1.0);
 
 			gl.mvMatrixStack = new Array();
 			
@@ -49,6 +49,34 @@ fro.renderer = {
 		if (!gl) {
 			throw 'No WebGL Support. Sux2bu';
 		}
+	},
+	
+	createTexture : function(image) {
+		
+		var texture = gl.createTexture();
+		texture.image = image;
+	
+		gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
+		gl.bindTexture(gl.TEXTURE_2D, texture);
+		gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, texture.image);
+		//gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
+		//gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
+
+		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+		//gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_NEAREST);  
+
+		// Supporting non power of two textures
+		// See: http://www.khronos.org/webgl/wiki/WebGL_and_OpenGL_Differences#Non-Power_of_Two_Texture_Support
+		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+
+		// Can't mipmap if want non-power-of-two via wrapping
+		//gl.generateMipmap(gl.TEXTURE_2D); 
+
+		gl.bindTexture(gl.TEXTURE_2D, null);
+		
+		return texture;
 	},
 	
 	loadShaders : function(vs_resource, fs_resource) {

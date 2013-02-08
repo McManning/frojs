@@ -127,7 +127,7 @@ if (typeof KeyEvent == "undefined") {
  */
 fro.input = $.extend({
 	
-	initialize : function(canvas) {
+	initialise : function(canvas) {
 		
 		// State management for inputs
 		this.pressedKeys = new Array();

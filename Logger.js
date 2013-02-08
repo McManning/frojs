@@ -14,7 +14,7 @@ fro.log = {
 	 * @param target Indicates where our logs will be printed to.
 	 *     Should be a jQuery selector
 	 */
-	initialize : function(target) {
+	initialise : function(target) {
 		this.target = target;
 	},
 

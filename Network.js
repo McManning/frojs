@@ -8,9 +8,7 @@ var PING_INTERVAL = 30*1000;
  */
 fro.network = $.extend({
 
-	authenticated : false,
-	
-	initialize : function() {
+	initialise : function() {
 
 	},
 	
@@ -50,9 +48,6 @@ fro.network = $.extend({
 			// do nothing (for now, later it should flag a "we got it")
 			fro.log.debug('PONG ' + evt.now);
 			
-		}).bind('auth', function(evt) {
-		
-			this.authenticated = true;
 		});
 		
 	},
@@ -105,22 +100,6 @@ fro.network = $.extend({
 		
 		fro.log.error('Socket Error');
 		fro.log.debug(evt);
-	},
-	
-	/** 
-	 * Sends an authentication request to our server, providing basic
-	 * access credentials
-	 */
-	authenticate : function(token, user, pass) {
-	
-		var packet = {
-			id: 'auth',
-			token: token,
-			user: user,
-			nick: fro.player.nick,
-		};
-		
-		this.send(packet);
 	},
 	
 	ping : function() {

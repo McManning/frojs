@@ -177,14 +177,14 @@ RenderableImage.prototype.buildTextureBuffer = function() {
 	} else {
 		gl.bufferData(gl.ARRAY_BUFFER, 
 			new glMatrixArrayType([
-				/*1.0, 0.0,
+				1.0, 0.0,
 				1.0, 1.0,
-				0.0, 0.0,
-				0.0, 1.0*/
-				x+w, y,
+				0.0, 0.0, // These implement texture stretching, whereas the below values
+				0.0, 1.0  // implement clipping. @todo make this an optional setting 
+				/*x+w, y, // as we WANT stretching for the default texture.. but maybe not others.
 				x+w, y+h,
 				x, y,
-				x, y+h 
+				x, y+h */
 				
 			]), gl.STATIC_DRAW);
 	}

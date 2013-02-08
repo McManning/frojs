@@ -20,6 +20,11 @@ function Map_Player(eid, properties) {
 	this.destination = vec3.create();
 	this.position = vec3.create();
 	this.directionNormal = vec3.create();
+	
+	var pos = this.getPosition();
+	pos[0] = properties.x;
+	pos[1] = properties.y;
+	pos[2] = 0;
 
 	this.thinkInterval = 
 		fro.timers.addInterval(this, this.think, PLAYER_THINK_INTERVAL);

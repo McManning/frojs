@@ -11,7 +11,7 @@ fro.camera = {
 	_translation : vec3.create(),
 	_bounds : rect.create(),
 	
-	initialize : function() {
+	initialise : function() {
 		fro.log.notice('Starting fro.camera');
 
 	},

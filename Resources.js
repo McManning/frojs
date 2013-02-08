@@ -20,187 +20,253 @@ Requesting textures
 
 "use strict";
 
-fro.resources = {
+fro.resources = $.extend({
+
+	initialise : function() {
 	
-	initialize : function() {
-		this.loadedImages = new Array();
-		this.loadedTextures = new Array();
-		this.defaultTexture = null;
-		this.bubbleImage = null;
+		this.resourceLoaders = {
+			jpg : this._loadImage,
+			jpeg : this._loadImage,
+			png : this._loadImage,
+			json : this._loadJSON,
+			js : this._loadJS,
+			vs : this._loadData,
+			fs : this._loadData
+		}
 		
-		this.loadedEntityJSON = new Array();
+		this.loadedResources = new Array();
 		
-		this.fontRendererCanvas = document.createElement('canvas');
+		// Canvas used for generating temporary texture sources
+		this.scratchCanvas = document.createElement('canvas');
 	},
 	
-	getEntityJSON : function(uid, caller, onload, onerror) {
-
-		var json = this.loadedEntityJSON[uid];
-
-		// If the json is already loaded, call the onload immediately
-		if (json) {
+	preload : function(json) {
 		
-			fro.log.debug('Referencing JSON for ' + uid);
-			onload.apply(caller, [uid, json]);
-
-		} else {
-			// No image, no texture, queue image to load and late-call onload/onerror
+		var objects = JSON.parse(json);
+		
+		this.totalPreload = 0;
+		this.completedPreload = 0;
+		
+		for (var id in objects) {
 			
-			fro.log.debug('Late loading JSON for ' + uid);
+			++this.totalPreload;
 			
-			$.ajax({
-				url: this.entityJSONServer,
-				data: { uid: uid },
-				success: function(data) {
+			this.load(id, objects[id])
+				.bind('onload', function() {
+				
+					++fro.resources.completedPreload;
+					fro.resources.fire('preload.status', this);
 					
-					fro.log.debug('Retrieved JSON for ' + uid);
-					
-					var json;
-					try {
-						json = JSON.parse(data);
-					} catch (e) {
-						fro.log.debug('Could not parse json for entity ' + uid);
-						if (onerror)
-							onerror.apply(caller, [uid]);
-						
-						return;
+					// If this was the last resource to download, fire a complete event
+					if (fro.resources.completedPreload == fro.resources.totalPreload) {
+						fro.resources.fire('preload.complete');
 					}
+				})
+				.bind('onerror', function() {
+					fro.resources.fire('preload.error', this);
+				});
+		}
+		
+		return this;
+	},
+	
+	load : function(id, url, type) {
+		
+		if (id in this.loadedResources) {
+			console.log('Loading from cache ' + id);
+			return this.loadedResources[id];
+		}
+		
+		if (url == undefined) { // .load(id)
+			throw 'Cannot load ' + id + '. No supplied url, and not in cache';
+		}
+		
+		console.log('Loading new resource ' + id);
+		
+		// Determine which loader to use based on the filetype, if we didn't specify one
+		if (type == undefined) { // .load(id, url)
+		
+			var index = url.lastIndexOf('.');
+			if (index < 0) {
+				throw 'Cannot determine resource type for ' + id;
+			}
+			
+			type = url.substr( url.lastIndexOf('.') + 1 );
+		}
+
+		if (!(type in this.resourceLoaders)) {
+			throw 'Cannot load ' + id + '. No loader for type ' + type;
+		}
+
+		var resource = this.resourceLoaders[type]();
+		this.loadedResources[id] = resource;
+		
+		resource.load(id, url);
+
+		return resource;
+	},
+	
+	/**
+	 * Loads an image into a new image element, referenced by resource.img
+	 *
+	 * @return new resource object
+	 */
+	_loadImage : function() {
+		
+		// @todo possibly new class initiating, rather than this?
+		var resource = $.extend({
+			
+			load : function(id, url) {
+				
+				this.id = id;
+				this.url = url;
+				
+				this.img = new Image(); 
+				this.img.src = url;
+				
+				var res = this;
+				this.img.onload = function() {
 					
-					fro.resources.loadedEntityJSON[uid] = json;
+					/* @todo We assume all images loaded will be used as
+						textures, so here we would perform the conversion
+						and test for any errors that may occur
+					*/
 					
-					if (onload)
-						onload.apply(caller, [uid, data]);
-				},
-				error: function(request, status, error) {
-					
-					// @todo notification
-					fro.log.warning('Failed to get JSON for ' + uid);
-					
-					if (onerror)
-						onerror.apply(caller, [uid]);
+					res.fire('onload');
 				}
-			});
+				
+				// hook an error handler
+				this.img.onerror = function() { 
+					res.fire('onerror');
+				}
+				
+			},
 			
-		}
-	},
+			isLoaded : function() {
+				
+				if (!(img in this) || !this.img.complete) {
+					return false;
+				}
+				
+				if (typeof this.img.naturalWidth != 'undefined' 
+					&& this.img.naturalWidth == 0) {
+					return false;
+				}
+				
+				return true;
+			},
+			
+			getTexture : function() {
+				
+				if (!(texture in this)) {
+				
+					// Make sure our image is actually loaded
+					if (!this.isLoaded()) {
+						throw 'Cannot get texture, image not yet loaded for ' + this.id;
+					}
 
-	/**
-	 * Generates a texture from an image already preloaded in our document,
-	 * and returns that new texture
-	 *
-	 * @param ele An image element preloaded into the dom
-	 *
-	 * @return GL texture | null
-	 */
-	getTextureFromElement : function(ele) {
-		
-		if (!ele || !ele.src) {
-			fro.log.error('Invalid element [' + ele + ']');
-			return null;
-		}
-		
-		var url = ele.src;
-		
-		// If it's already been loaded once, don't load again
-		if (this.loadedTextures[url]) {
-			fro.log.debug('Texture already loaded ' + url);
-			return this.loadedTextures[url];
-		}
-		
-		// If we're not managing yet, add it to the list
-		if (!this.loadedImages[url]) {
-			this.loadedImages[url] = ele;
-		}
-
-		// Generate texture from the image
-		var texture = gl.createTexture();
-		texture.image = ele;
-	
-		this.configureImageTexture(texture);
-		this.loadedTextures[url] = texture;
-		
-		fro.log.debug('Texture from Element: ' + url);
-		
-		return texture;
-	},
-
-	/**
-	 * If the texture has already been loaded, will return the GL texture. Otherwise,
-	 * will return null and attempt to late-load the texture and call either 
-	 * onload or onerror when completed.
-	 *
-	 * @return GL Texture | null
-	 */
-	getTexture : function(url, caller, onload, onerror) {
-		
-		var img = this.loadedImages[url];
-		var texture = this.loadedTextures[url];
-
-		// If the texture is already loaded, call the onload immediately
-		if (texture) {
-		
-			fro.log.debug('Texture already loaded ' + url);
-			
-			if (onload)
-				onload.apply(caller, [texture]);
-			
-			return texture;
-		
-		} else if (img && img.complete) {
-			// No texture, but the image is loaded, convert and trigger
-			
-			fro.log.debug('Image, !texture ' + url);
-			
-			texture = gl.createTexture();
-			texture.image = img;
-			
-			this.configureImageTexture(texture);
-			this.loadedTextures[url] = texture;
-			
-			if (onload)
-				onload.apply(caller, [texture]);
-			
-			return texture;
-		
-		} else {
-			// No image, no texture, queue image to load and late-call onload/onerror
-			
-			fro.log.debug('Late loading ' + url);
-			
-			img = new Image();
-			img.src = url;
-			
-			// Hook a late load event
-			img.onload = function() {
+					this.texture = fro.renderer.createTexture(this.img);
+				}
 				
-				fro.log.debug('img.onload ' + url);
-				
-				texture = gl.createTexture();
-				texture.image = this;
-				
-				fro.resources.configureImageTexture(texture);
-				
-				// Cache resources
-				fro.resources.loadedImages[url] = this;
-				fro.resources.loadedTextures[url] = texture;
-				
-				if (onload)
-					onload.apply(caller, [texture]);
+				return this.texture;
 			}
 			
-			// hook an error handler
-			img.onerror = function() {
-			
-				fro.log.warning('img.onerror ' + url);
-				
-				if (onerror)
-					onerror.apply(caller, [url]);
-			}
-		}
-		
-		return null;
+		}, EventHooks);
+
+		return resource;
 	},
 	
+	/**
+	 * Loads an AJAX response body into a JS object, in resource.json
+	 *
+	 * @return new resource object
+	 */
+	_loadJSON : function() {
+		
+		var resource = $.extend({
+			
+			load : function(id, url) {
+				
+				this.id = id;
+				this.url = url;
+				
+				var res = this;
+				$.ajax({
+					url: url,
+					success: function(data) {
+
+						if (typeof data == 'string') {
+							
+							// decode as JSON
+							try {
+								res.json = JSON.parse(data);
+							} catch (e) {
+								console.log(e);
+								console.log(data);
+								res.fire('onerror');
+								return;
+							}
+							
+						} else {
+							res.json = data;
+						}
+						
+						res.fire('onload');
+					},
+					error: function(request, status, error) {
+						console.log(error);
+						res.fire('onerror');
+					}
+				});
+			}
+			
+		}, EventHooks);
+
+		return resource;
+	},
+	
+	/**
+	 * Loads and runs a Javascript script through AJAX
+	 * @return new resource object
+	 */
+	_loadJS : function() {
+		throw 'Not implemented';
+	},
+	
+	/**
+	 * Loads the raw AJAX response body into resource.data
+	 *
+	 * @return new resource object
+	 */
+	_loadData : function() {
+		
+		var resource = $.extend({
+			
+			load : function(id, url) {
+				
+				this.id = id;
+				this.url = url;
+				
+				var res = this;
+				$.ajax({
+					url: url,
+					success: function(data) {
+
+						res.data = data;
+						res.fire('onload');
+					},
+					error: function(request, status, error) {
+						console.log(error);
+						res.fire('onerror');
+					}
+				});
+			}
+			
+		}, EventHooks);
+
+		return resource;
+	},
+
 	/** 
 	 * Generates a GL texture based off the input font and parameters. Does this by 
 	 * rendering the string to a hidden canvas element on the page.
@@ -214,16 +280,17 @@ fro.resources = {
 	 *
 	 * @param string text Text to render onto a texture
 	 * @param array options A mapping of necessary options to render the text
+	 * 
 	 * @return GL texture object or null
 	 */
 	getFontTexture : function(text, options) {
 		
-		if (!this.fontRendererCanvas) {
-			fro.log.error('No fontRendererCanvas defined');
+		if (!this.scratchCanvas) {
+			fro.log.error('No fro.resources.scratchCanvas defined');
 			return null;
 		}
 		
-		var canvas = this.fontRendererCanvas;
+		var canvas = this.scratchCanvas;
 		var ctx = canvas.getContext('2d');
 		
 		// Set some defaults, if not defined in the options
@@ -279,12 +346,9 @@ fro.resources = {
 			textY = i * options.height;
 			ctx.fillText(textLines[i], textX, textY);
 		}
-				
+	
 		// Convert canvas context to a texture
-		var texture = gl.createTexture();
-		texture.image = canvas; // Use the canvas itself as a texture source
-		
-		this.configureImageTexture(texture);
+		var texture = fro.renderer.createTexture(canvas);
 		
 		return texture;
 	},
@@ -303,17 +367,18 @@ fro.resources = {
 	 *
 	 * @param string text The string to render into the bubble
 	 * @param array options A mapping of necessary options to render the bubble
+	 * 
 	 * @return GL Texture object or null
 	 */
 	getBubbleTexture : function(text, options) {
 
-		if (!this.fontRendererCanvas) {
-			fro.log.error('No fontRendererCanvas defined');
+		if (!this.scratchCanvas) {
+			fro.log.error('No fro.resources.scratchCanvas defined');
 			return null;
 		}
 
 		// Pull the secondary canvas used for font rendering
-		var canvas = this.fontRendererCanvas;
+		var canvas = this.scratchCanvas;
 		var ctx = canvas.getContext("2d");
 
 		ctx.font = options.height + 'px ' + options.family;
@@ -436,49 +501,58 @@ fro.resources = {
 		}
 		
 		// Convert canvas context to a texture
-		var texture = gl.createTexture();
-		texture.image = canvas; // Use the canvas itself as a texture source
-		
-		this.configureImageTexture(texture);
+		var texture = fro.renderer.createTexture(canvas);
 		
 		return texture;
 	},
-
-	configureImageTexture : function(texture) {
-
-		gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
-		gl.bindTexture(gl.TEXTURE_2D, texture);
-		gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, texture.image);
-		//gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
-		//gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
-
-		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
-		//gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_NEAREST);  
-
-		// Supporting non power of two textures
-		// See: http://www.khronos.org/webgl/wiki/WebGL_and_OpenGL_Differences#Non-Power_of_Two_Texture_Support
-		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
-
-		// Can't mipmap if want non-power-of-two via wrapping
-		//gl.generateMipmap(gl.TEXTURE_2D); 
-
-		gl.bindTexture(gl.TEXTURE_2D, null);
-	},
 	
-	printStats : function() {
+	getDefaultTexture : function() {
 		
-		console.log('-- Images --');
-		for (var url in this.loadedImages) {
-			console.log('[' + url + '] Complete: ' + this.loadedImages[url].complete);
-		}
+		// If we already generated it, return it
+		if (this._defaultTexture)
+			return this._defaultTexture;
 		
-		console.log('-- Textures --');
-		for (var url in this.loadedTextures) {
-			console.log('[' + url + ']');
-		}
-	}
+		// Draw a new texture with canvas primitives
+		
+		// Pull the secondary canvas used for sub rendering
+		var canvas = this.scratchCanvas;
+		var ctx = canvas.getContext("2d");
 
-};
+		var size = 256;
+		
+		canvas.width = size;
+		canvas.height = size;
+
+		var stGrd = ctx.createLinearGradient(0, 0, 0, size);
+		stGrd.addColorStop(0, '#ff0000');
+		stGrd.addColorStop(1, '#660000');
+		
+		ctx.strokeStyle = stGrd;
+		//ctx.strokeStyle = '#ff0000';
+
+		// Render a polygon via paths
+		ctx.beginPath();
+
+		ctx.lineWidth = 12;
+		
+		ctx.clearRect(0, 0, size, size);
+
+		ctx.moveTo(3, 12); // top left
+		ctx.lineTo(size-8, 25); // top right
+		ctx.lineTo(size-20, size-20); // bottom right
+		ctx.lineTo(8, size-8); // bottom left
+		ctx.lineTo(8, 20); // back to top left
+		ctx.lineTo(size-20, size-20); // back to bottom right
+		ctx.moveTo(8, size-8); // bottom left
+		ctx.lineTo(size-8, 25); // top right
+
+		ctx.stroke(); // draw
+		
+		var texture = fro.renderer.createTexture(canvas);
+		
+		this._defaultTexture = texture;
+		return texture;
+	},
+
+}, EventHooks);
 

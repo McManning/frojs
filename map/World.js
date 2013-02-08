@@ -12,6 +12,7 @@ function World() {
 		actor : this.loadActor,
 		light : this.loadLight,
 		event : this.loadEvent,
+		player : this.loadPlayer,
 	};
 	
 	// @todo overridable by json
@@ -38,29 +39,11 @@ World.prototype.load = function(json) {
 	this.parseEntities(mapData.entities);
 }
 
-/**
- * Send a join event to the network, to begin populating 
- * our world with remote entities
- */
-World.prototype.join = function(x, y) {
-	
-	var packet = {
-		id: 'join',
-		world: this.id,
-		x: x,
-		y: y
-	};
-
-	// Push a join request to the world, followed by our avatar data
-	fro.network.send(packet);
-	fro.player.sendAvatar(); // @todo add to the initial auth?
-	
-	fro.player.setPosition(x, y);
-}
-
 World.prototype.parseProperties = function(properties) {
 
 	// Properties parsing and nonsense (bounds, camera style, etc)
+	
+	this.properties = properties;
 	
 	this.id = properties.id;
 	this.templates = properties.templates;
@@ -91,6 +74,11 @@ World.prototype.parseProperties = function(properties) {
 		fro.camera.setBounds(bounds);
 	}
 
+	// If we have a network section, this world is using the Universe server
+	if ('network' in properties) {
+		this.bindNetwork();
+		fro.network.connect(properties.network);
+	}
 }
 
 
@@ -177,6 +165,94 @@ World.prototype.loadLight = function(id, properties) {
 /** Loader callback for entities with type = 'event' */
 World.prototype.loadEvent = function(id, properties) {
 	// @todo
+}
+
+/** Loader callback for entities with type = 'player' */
+World.prototype.loadPlayer = function(id, properties) {
+
+	if ('player' in this) {
+		throw 'fro.world.player has already been loaded';
+	}
+	
+	this.player = new Map_Player(id, properties);
+	this.addRenderableEntity(this.player);
+	
+	fro.camera.followEntity(this.player);
+	
+	this.player.setPosition(this.spawn.x, this.spawn.y);
+}
+
+World.prototype.bindNetwork = function() {
+
+	var props = this.properties;
+
+	fro.network.bind('open', function(evt) {
+		
+		var pos = fro.world.player.getPosition();
+		
+		// On opening the socket, send authentication
+		this.send({
+			id: 'auth',
+			// @todo stop using auth token, and generate a unique key based on engine version
+			token: 'manticore', 
+			user: 'Lab Rat', // @todo resolve
+			nick: fro.world.player.nick,
+			world: props.network.channel,
+			x: pos[0],
+			y: pos[1]
+		});
+		
+		// Send a follow up message with our avatar data
+		fro.world.player.sendAvatar();
+		
+	}).bind('auth', function(evt) {
+		
+		// After we've been authenticated, join the world channel
+		
+		fro.world.player.eid = evt.eid;
+		fro.world.join(fro.world.config.spawn_x, fro.world.config.spawn_y);
+	
+	}).bind('join', function(evt) { // Sent to our client when a player joins after us 
+		
+		var actor = new Map_RemotePlayer(evt.eid, evt);
+		fro.world.addRenderableEntity(actor);
+	
+	}).bind('identity', function(evt) { // Sent to our client when we join a world, and players already exist
+		
+		var actor = new Map_RemotePlayer(evt.eid, evt);
+		fro.world.addRenderableEntity(actor);
+	
+	}).bind('say', function(evt) { // Chat message { msg: 'message' }
+		
+		var ent = fro.world.getEntity(evt.eid);
+		ent.say(evt.msg);
+		
+	}).bind('nick', function(evt) { // Update nickname { nick: 'John Doe' }
+		
+		var ent = fro.world.getEntity(evt.eid);
+		ent.setNick(evt.nick);
+		
+	}).bind('avatar', function(evt) { // Change avatar { url: 'http', w: 0, h: 0, delay: 0 }
+		
+		var ent = fro.world.getEntity(evt.eid);
+		ent.setAvatar(evt);
+		
+	}).bind('move', function(evt) { // Update action buffer { buffer: 'buffercontents' }
+		
+		var ent = fro.world.getEntity(evt.eid);
+		
+		// @todo something generic, that can change based on controller type
+		ent.actionController.write(evt.buffer);
+	
+	}).bind('leave', function(evt) { // Leave world { reason: 'Why I left' }
+	
+		var ent = fro.world.getEntity(evt.eid);
+		
+		// @todo rewrite
+		fro.timers.removeInterval(ent.thinkInterval);
+		fro.world.removeEntity(ent);
+	});
+
 }
 
 World.prototype.addRenderableEntity = function(obj) {
