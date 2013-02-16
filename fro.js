@@ -33,13 +33,6 @@ var fro = {
 		}
 	},
 	
-	// @todo move
-	loadWorld : function(worldJSON) {
-
-		this.world = new World();
-		this.world.load(worldJSON);
-	},
-
 	/**
 	 * Load an editor module to delegate events/rendering to
 	 */

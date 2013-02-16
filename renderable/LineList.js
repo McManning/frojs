@@ -9,14 +9,28 @@ function RenderableLineList() {
 
 RenderableLineList.prototype.setStyle = function(url) {
 
-	fro.resources.getTexture(url, this,
-			function(texture) {
-				this.loadTexture(texture);
-			},
-			function(texture) {
-				// @todo this
-			}
-		);
+	var resource = fro.resources.load(url);
+	
+	if (resource.isLoaded()) {
+	
+		// If it's already cached, load immediately
+		this.setTexture(resource.getTexture());
+	
+	} else {
+	
+		// Bind and wait for the image to be loaded
+		var self = this;
+		resource.bind('onload', function() {
+
+			self.setTexture(this.getTexture());
+		})
+		.bind('onerror', function() {
+		
+			// @todo do something, revert, load default, etc.
+			fro.log.error('LineList Image Load Error');
+			fro.log.error(this);
+		});
+	}
 }
 
 RenderableLineList.prototype.setWidth = function(width) {
@@ -78,11 +92,11 @@ RenderableLineList.prototype.render = function() {
 	}
 }
 
-RenderableLineList.prototype.loadTexture = function(texture) {
+RenderableLineList.prototype.setTexture = function(texture) {
 	
 	this.texture = texture;
 	
 	for (var i in this.lines) {
-		this.lines[i].loadTexture(texture);
+		this.lines[i].setTexture(texture);
 	}
 }

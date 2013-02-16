@@ -16,8 +16,13 @@ function Avatar() {
 
 Avatar.prototype.load = function(url, w, h, delay) {
 	
+	if (!url || !w || !h || !delay) {
+		throw 'Avatar is missing properties';
+	}
+	
 	this.renderable = new RenderableImage(w, h);
 	this.renderable.useAlphaKey = true;
+	this.renderable.textureStretching = false;
 	
 	this.currentFrame = 0;
 	this.currentRow = 0;
@@ -27,17 +32,33 @@ Avatar.prototype.load = function(url, w, h, delay) {
 	this.url = url;
 	
 	this.renderable.setClip(0, 0);
+
+	var resource = fro.resources.load(url);
 	
-	this.renderable.loadTexture(url, this,
-			function() { // onload
-				this.onImageLoad();
-				this.fire('ready');
-			},
-			function() { // onerror
-				// @todo Do something, revert or load a default some such
-				this.fire('error');
-			}
-		);
+	if (resource.isLoaded()) { 
+	
+		// If it's already cached, load immediately
+		this.renderable.setTexture(resource.getTexture());
+		this.onImageLoad();
+		this.fire('ready'); 
+	
+	} else {
+	
+		// Bind and wait for the image to be loaded
+		var self = this;
+		resource.bind('onload', function() {
+
+			self.renderable.setTexture(this.getTexture());
+			self.onImageLoad();
+			self.fire('ready'); // @todo get rid of this, used for row recalc on the Actor level
+		})
+		.bind('onerror', function() {
+		
+			// @todo do something, revert, load default, etc.
+			fro.log.error('Avatar Image Load Error');
+			fro.log.error(this);
+		});
+	}
 }
 
 /** 

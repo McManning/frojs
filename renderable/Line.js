@@ -39,14 +39,28 @@ RenderableLine.prototype = new Renderable();
 
 RenderableLine.prototype.setStyle = function(url) {
 	
-	fro.resources.getTexture(url, this,
-			function(texture) {
-				this.loadTexture(texture);
-			},
-			function(texture) {
-				// @todo this
-			}
-		);
+	var resource = fro.resources.load(url);
+	
+	if (resource.isLoaded()) {
+	
+		// If it's already cached, load immediately
+		this.setTexture(resource.getTexture());
+	
+	} else {
+	
+		// Bind and wait for the image to be loaded
+		var self = this;
+		resource.bind('onload', function() {
+
+			self.setTexture(this.getTexture());
+		})
+		.bind('onerror', function() {
+		
+			// @todo do something, revert, load default, etc.
+			fro.log.error('Line Image Load Error');
+			fro.log.error(this);
+		});
+	}
 }
 
 RenderableLine.prototype.setWidth = function(width) {
@@ -116,12 +130,10 @@ RenderableLine.prototype.render = function() {
 	this.endDraw();
 }
 
-/** Called after a texture image has finished downloading */
-RenderableLine.prototype.loadTexture = function(texture) {
+RenderableLine.prototype.setTexture = function(texture) {
 	
 	this.texture = texture;
 }
-
 
 RenderableLine.prototype.buildVertexBuffer = function() {
 	

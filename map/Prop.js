@@ -12,10 +12,9 @@ function Map_Prop(id, properties) {
 	
 	this.renderable = new RenderableImage(properties.w, properties.h);
 	this.renderable.useSrcAlpha = true;
+	this.renderable.textureStretching = false;
 	this.renderable.useAlphaKey = (properties.alphakey == 1);
-	
-	this.renderable.loadTexture(properties.texture);
-	
+
 	var pos = this.getPosition();
 	pos[0] = properties.x;
 	pos[1] = properties.y;
@@ -53,7 +52,30 @@ function Map_Prop(id, properties) {
 	}
 		
 	// @todo not even have position info for a renderable
+
+	var resource = fro.resources.load(properties.texture);
 	
+	if (resource.isLoaded()) { 
+	
+		// If it's already cached, load immediately
+		this.renderable.setTexture(resource.getTexture());
+	
+	} else {
+	
+		// Bind and wait for the image to be loaded
+		var self = this;
+		resource.bind('onload', function() {
+
+			self.renderable.setTexture(this.getTexture());
+		})
+		.bind('onerror', function() {
+		
+			// @todo do something, revert, load default, etc.
+			fro.log.error('Prop Image Load Error');
+			fro.log.error(this);
+		});
+	}
+
 	fro.log.debug('New prop "' + id + '" at ' + vec3.str(pos));
 }
 

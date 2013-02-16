@@ -10,14 +10,28 @@ function RenderableBox() {
 
 RenderableBox.prototype.setStyle = function(url) {
 
-	fro.resources.getTexture(url, this, 
-			function(texture) {
-				this.loadTexture(texture);
-			},
-			function(texture) {
-				// @todo this
-			}
-		);
+	var resource = fro.resources.load(url);
+	
+	if (resource.isLoaded()) {
+	
+		// If it's already cached, load immediately
+		this.setTexture(resource.getTexture());
+	
+	} else {
+	
+		// Bind and wait for the image to be loaded
+		var self = this;
+		resource.bind('onload', function() {
+
+			self.setTexture(this.getTexture());
+		})
+		.bind('onerror', function() {
+		
+			// @todo do something, revert, load default, etc.
+			fro.log.error('Box Image Load Error');
+			fro.log.error(this);
+		});
+	}
 }
 
 RenderableBox.prototype.setRect = function(r) {
@@ -31,7 +45,7 @@ RenderableBox.prototype.setRect = function(r) {
 			var line = new RenderableLine();
 			
 			line.setWidth(this.lineWidth);
-			line.loadTexture(this.texture);
+			line.setTexture(this.texture);
 			
 			this.lines.push(line);
 		}
@@ -72,11 +86,11 @@ RenderableBox.prototype.render = function() {
 	}
 }
 
-RenderableBox.prototype.loadTexture = function(texture) {
+RenderableBox.prototype.setTexture = function(texture) {
 	
 	this.texture = texture;
 	
 	for (var i in this.lines) {
-		this.lines[i].loadTexture(texture);
+		this.lines[i].setTexture(texture);
 	}
 }

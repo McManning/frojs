@@ -28,13 +28,16 @@ fro.resources = $.extend({
 			jpg : this._loadImage,
 			jpeg : this._loadImage,
 			png : this._loadImage,
+			image: this._loadImage, // Psuedo type
 			json : this._loadJSON,
 			js : this._loadJS,
 			vs : this._loadData,
-			fs : this._loadData
+			fs : this._loadData,
+			data : this._loadData, // Psuedo type
 		}
 		
 		this.loadedResources = new Array();
+		this.failedResources = new Array(); // Tracking of all resources failing download
 		
 		// Canvas used for generating temporary texture sources
 		this.scratchCanvas = document.createElement('canvas');
@@ -63,6 +66,7 @@ fro.resources = $.extend({
 					}
 				})
 				.bind('onerror', function() {
+					fro.resources.failedResources[id] = objects[id];
 					fro.resources.fire('preload.error', this);
 				});
 		}
@@ -77,8 +81,16 @@ fro.resources = $.extend({
 			return this.loadedResources[id];
 		}
 		
-		if (url == undefined) { // .load(id)
-			throw 'Cannot load ' + id + '. No supplied url, and not in cache';
+		if (url == undefined) { // .load(id|url)
+			
+			if (id.indexOf('http') == 0) { // .load(url), let id = url
+			
+				url = id;
+				
+			} else { // .load(id), invalid if it's not already loaded
+			
+				throw 'Cannot load ' + id + '. No supplied url, and not in cache';
+			}
 		}
 		
 		console.log('Loading new resource ' + id);
@@ -88,6 +100,7 @@ fro.resources = $.extend({
 		
 			var index = url.lastIndexOf('.');
 			if (index < 0) {
+				this.failedResources[id] = url;
 				throw 'Cannot determine resource type for ' + id;
 			}
 			
@@ -95,6 +108,7 @@ fro.resources = $.extend({
 		}
 
 		if (!(type in this.resourceLoaders)) {
+			this.failedResources[id] = url;
 			throw 'Cannot load ' + id + '. No loader for type ' + type;
 		}
 
@@ -102,6 +116,7 @@ fro.resources = $.extend({
 		this.loadedResources[id] = resource;
 		
 		resource.load(id, url);
+		// @todo catch and log onerror/onsuccess
 
 		return resource;
 	},
@@ -132,19 +147,19 @@ fro.resources = $.extend({
 						and test for any errors that may occur
 					*/
 					
-					res.fire('onload');
+					res.fire('onload', res);
 				}
 				
 				// hook an error handler
 				this.img.onerror = function() { 
-					res.fire('onerror');
+					res.fire('onerror', res);
 				}
 				
 			},
 			
 			isLoaded : function() {
 				
-				if (!(img in this) || !this.img.complete) {
+				if (!('img' in this) || !this.img.complete) {
 					return false;
 				}
 				
@@ -158,7 +173,7 @@ fro.resources = $.extend({
 			
 			getTexture : function() {
 				
-				if (!(texture in this)) {
+				if (!('texture' in this)) {
 				
 					// Make sure our image is actually loaded
 					if (!this.isLoaded()) {
@@ -203,7 +218,7 @@ fro.resources = $.extend({
 							} catch (e) {
 								console.log(e);
 								console.log(data);
-								res.fire('onerror');
+								res.fire('onerror', this);
 								return;
 							}
 							
@@ -211,13 +226,17 @@ fro.resources = $.extend({
 							res.json = data;
 						}
 						
-						res.fire('onload');
+						res.fire('onload', this);
 					},
 					error: function(request, status, error) {
 						console.log(error);
-						res.fire('onerror');
+						res.fire('onerror', this);
 					}
 				});
+			},
+			
+			isLoaded : function() {
+				return ('json' in this);
 			}
 			
 		}, EventHooks);
@@ -253,13 +272,17 @@ fro.resources = $.extend({
 					success: function(data) {
 
 						res.data = data;
-						res.fire('onload');
+						res.fire('onload', this);
 					},
 					error: function(request, status, error) {
 						console.log(error);
-						res.fire('onerror');
+						res.fire('onerror', this);
 					}
 				});
+			},
+			
+			isLoaded : function() {
+				return ('data' in this);
 			}
 			
 		}, EventHooks);

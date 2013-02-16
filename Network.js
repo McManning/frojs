@@ -89,6 +89,8 @@ fro.network = $.extend({
 		// Notify listeners
 		this.fire('close', evt);
 		
+		this.socket = undefined;
+		
 		fro.log.warning('Socket closed');
 		fro.log.debug(evt);
 	},
@@ -104,7 +106,9 @@ fro.network = $.extend({
 	
 	ping : function() {
 		
-		this.socket.send('{"id":"ping"}');
+		if (this.socket) {
+			this.socket.send('{"id":"ping"}');
+		}
 	},
 	
 	/**
@@ -112,17 +116,19 @@ fro.network = $.extend({
 	 */
 	send : function(packet) {
 	
-		if (typeof packet.id == 'string' && packet.id.length > 0) {
+		if (this.socket) {
+			if (typeof packet.id == 'string' && packet.id.length > 0) {
+				
+				var msg = JSON.stringify(packet);
+				fro.log.debug(msg);
+				
+				this.socket.send(msg);
 			
-			var msg = JSON.stringify(packet);
-			fro.log.debug(msg);
-			
-			this.socket.send(msg);
-		
-		} else {
-			
-			// @todo somehow track where this packet came from
-			fro.log.error('Invalid Packet');
+			} else {
+				
+				// @todo somehow track where this packet came from
+				fro.log.error('Invalid Packet');
+			}
 		}
 	},
 	

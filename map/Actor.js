@@ -27,7 +27,7 @@ var Action = {
 
 var DEFAULT_ACTOR_ZORDER = 1;
 
-var DEFAULT_AVATAR_URL = 'img/default_avatar.png';
+var DEFAULT_AVATAR_ID = 'default_avatar'; // ID of the avatar image resource
 var DEFAULT_AVATAR_W = 32;
 var DEFAULT_AVATAR_H = 64;
 var DEFAULT_AVATAR_DELAY = 1000;
@@ -110,7 +110,7 @@ Map_Actor.prototype.setAvatar = function(data) {
 		});
 	}
 	
-	//try {
+	try {
 		this.avatar.load(
 					data.url,
 					data.w,
@@ -121,16 +121,18 @@ Map_Actor.prototype.setAvatar = function(data) {
 		this.width = data.w;
 		this.height = data.h;
 		
-	/*}  catch (e) {
+	}  catch (e) {
 		// Error occured while loading avatar, load a default
-		this.avatar.load( 	DEFAULT_AVATAR_URL,
+		this.avatar.load( 	DEFAULT_AVATAR_ID,
 							DEFAULT_AVATAR_W,
 							DEFAULT_AVATAR_H,
 							DEFAULT_AVATAR_DELAY
 						);
 		this.width = DEFAULT_AVATAR_W;
 		this.height = DEFAULT_AVATAR_H;
-	}*/
+		
+		// @todo report error
+	}
 	
 	// Link position
 	this.avatar.renderable.position = this.position;

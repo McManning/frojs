@@ -8,19 +8,12 @@ function RenderableImage(width, height) {
 	this.color = [0.0, 0.0, 0.0, 0.0];
 	this.clip = rect.create();
 	this.offset = vec3.create(); // Offset of render from origin (center)
+	this.textureStretching = true;
 	
 	this.HSVShift = vec3.create();
 	this.position = vec3.create();
 
-	/*
-	var e = this;
-	ResourceManager.getTexture(url, function(texture) {
-		e.loadTexture(texture);
-	});*/
-	
-//	this.texture = ResourceManager.getTexture(url);
-//	this.width = this.texture.image.width;
-//	this.height = this.texture.image.height;
+	this.texture = fro.resources.getDefaultTexture();
 
 	this.buildVertexBuffer();
 	this.buildTextureBuffer();
@@ -29,27 +22,6 @@ function RenderableImage(width, height) {
 }
 
 RenderableImage.prototype = new Renderable();
-
-/**
- * Loads a url to use as this image's texture.
- * @param string url Path to retrieve the image
- * @param function onload If defined, will be called after a successful load
- * @param function onerror If defined, will be called after a failure to load
- */
-RenderableImage.prototype.loadTexture = function(url, caller, onload, onerror) {
-	
-	fro.resources.getTexture(url, this,
-			function(texture) {
-				this.setTexture(texture, false);
-				if (onload)
-					onload.apply(caller, [this]);
-			},
-			function(texture) {
-				if (onerror)
-					onerror.apply(caller, [this]);
-			}
-		);
-}
 
 RenderableImage.prototype.render = function() {
 
@@ -94,7 +66,6 @@ RenderableImage.prototype.setTexture = function(texture, fitToTexture) {
 	this.texture = texture;
 	
 	// Define dimensions if not defined already
-	
 	if (fitToTexture) {
 		this.width = texture.image.width;
 		this.height = texture.image.height;
@@ -165,7 +136,7 @@ RenderableImage.prototype.buildTextureBuffer = function() {
 	gl.bindBuffer(gl.ARRAY_BUFFER, this.tbuf);
 
 	var x = 0.0, y = 0.0, w = 1.0, h = 1.0;
-	if (this.texture)
+	if (this.texture && !this.textureStretching)
 	{
 		w = this.width / this.texture.image.width;
 		h = this.height / this.texture.image.height;
@@ -175,18 +146,15 @@ RenderableImage.prototype.buildTextureBuffer = function() {
 		throw '@todo implement in the shader';
 		
 	} else {
+
 		gl.bufferData(gl.ARRAY_BUFFER, 
-			new glMatrixArrayType([
-				1.0, 0.0,
-				1.0, 1.0,
-				0.0, 0.0, // These implement texture stretching, whereas the below values
-				0.0, 1.0  // implement clipping. @todo make this an optional setting 
-				/*x+w, y, // as we WANT stretching for the default texture.. but maybe not others.
-				x+w, y+h,
-				x, y,
-				x, y+h */
-				
-			]), gl.STATIC_DRAW);
+				new glMatrixArrayType([
+					x+w, y,
+					x+w, y+h,
+					x, y,
+					x, y+h
+					
+				]), gl.STATIC_DRAW);
 	}
 		
 	this.tbuf.itemSize = 2;

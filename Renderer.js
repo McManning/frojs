@@ -145,6 +145,10 @@ fro.renderer = {
 		fro.shaderProgram = sp;
 	},
 	
+	setClearColor : function(r, g, b, a) {
+		gl.clearColor(r/255.0, g/255.0, b/255.0, 1.0);
+	}
+	
 	// @todo the functionality of changing active shaders.
 	// Need to take in account that we probably need to link a vs/fs to 
 	// the same program, causing duplicates if we have duplicates in sets.

@@ -21,34 +21,27 @@ function Map_Player(eid, properties) {
 	this.position = vec3.create();
 	this.directionNormal = vec3.create();
 	
-	var pos = this.getPosition();
-	pos[0] = properties.x;
-	pos[1] = properties.y;
-	pos[2] = 0;
-
+	this.position[0] = properties.x;
+	this.position[1] = properties.y;
+	this.position[2] = 0;
+	
+	this.destination[0] = properties.x;
+	this.destination[1] = properties.y;
+	this.destination[2] = 0;
+	
 	this.thinkInterval = 
 		fro.timers.addInterval(this, this.think, PLAYER_THINK_INTERVAL);
 
 	// Register an action controller with us
 	// Currently using legacy version
 	this.actionController = new BufferedActionController(this, true);
+	
+	this.setAvatar(properties);
+	this.setNick(properties.nick);
 }
 
 // @todo how do I pass arguments to Map_Actor?
 Map_Player.prototype = new Map_Actor();
-
-/**
- * Populate the player with properties from the supplied JSON
- */
-Map_Player.prototype.load = function(json) {
-	
-	var properties = $.parseJSON(json);
-	
-	//this.setPosition(properties.x, properties.y);
-
-	this.setAvatar(properties);
-	this.setNick(properties.nick);
-}
 
 Map_Player.prototype.think = function() {
 
