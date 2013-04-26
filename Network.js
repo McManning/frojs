@@ -9,7 +9,7 @@ var PING_INTERVAL = 30*1000;
 fro.network = $.extend({
 
 	initialise : function() {
-
+		this.connected = false;
 	},
 	
 	/** 
@@ -54,6 +54,7 @@ fro.network = $.extend({
 	
 	_onOpen : function() {
 		
+		this.connected = true;
 		this.fire('open');
 		
 		// @todo only ping when necessary, and actually handle pings. 
@@ -87,6 +88,7 @@ fro.network = $.extend({
 	_onClose : function(evt) {
 		
 		// Notify listeners
+		this.connected = false;
 		this.fire('close', evt);
 		
 		this.socket = undefined;
@@ -98,7 +100,10 @@ fro.network = $.extend({
 	_onError : function(evt) {
 		
 		// Notify listeners
+		this.connected = false;
 		this.fire('error', evt);
+		
+		this.socket = undefined;
 		
 		fro.log.error('Socket Error');
 		fro.log.debug(evt);

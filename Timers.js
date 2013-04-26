@@ -126,3 +126,28 @@ fro.timers = {
 			
     }
 };
+
+/** Simple stopwatch object */
+function Stopwatch() {
+	var _start = null;
+	var _stop = null;
+	var _running = false;
+}
+
+Stopwatch.prototype.start = function() {
+	if (!this._running) {
+		this._running = true;
+		this._start = (new Date()).getTime();
+	}
+}
+
+Stopwatch.prototype.stop = function() {
+	if (this._running) {
+		this._running = false;
+		this._stop = (new Date()).getTime();
+	}
+}
+
+Stopwatch.prototype.delta = function() {
+	return (this._stop - this._start) / 1000; // in seconds
+}
