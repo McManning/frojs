@@ -31,6 +31,7 @@ BufferedActionController.prototype.processInput = function(direction, speed, act
 	
 	// Mark speed changes
 	if (speed != this.actor.speed) {
+
 		this.write((speed == Speed.WALK) ? 'w' : 'r');
 	}
 	
@@ -102,7 +103,21 @@ BufferedActionController.prototype.charToDirection = function(ch) {
 BufferedActionController.prototype.write = function(str) {
 
 	if (this.isPlayer) {
-		this.networkBuffer += str;
+
+		// if the last character in the network buffer was a speed change, and 
+		// nothing else happened, just collapse into one command, since remote
+		// clients wouldn't care about speed changes without movement
+		
+		var lchar = this.networkBuffer.charAt(this.networkBuffer.length-1);
+		
+		if ((lchar == 'w' || lchar == 'r') && (str == 'r' || str == 'w')) {
+		
+			this.networkBuffer = this.networkBuffer.substr(0,this.networkBuffer.length-1) + str;
+			
+		} else { // just append normally
+		
+			this.networkBuffer += str;
+		}
 	}
 	
 	this.buffer += str;
@@ -110,7 +125,8 @@ BufferedActionController.prototype.write = function(str) {
 
 BufferedActionController.prototype.sendToNetwork = function() {
 
-	if (this.networkBuffer) {
+	// Prevent sending if it's just a speed change character
+	if (this.networkBuffer && this.networkBuffer.length > 1) {
 
 		var packet = {
 			'id': 'move',
@@ -123,7 +139,8 @@ BufferedActionController.prototype.sendToNetwork = function() {
 		
 		fro.network.send(packet);
 		
-		this.networkBuffer = '';
+		// Write our current speed back down into the buffer
+		this.networkBuffer = (this.actor.speed == Speed.WALK) ? 'w' : 'r';
 	}
 }
 
