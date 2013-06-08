@@ -137,6 +137,7 @@ fro.resources = $.extend({
 				this.url = url;
 				
 				this.img = new Image(); 
+				this.img.crossOrigin = ''; // Enable CORS support (Ticket #59)
 				this.img.src = url;
 				
 				var res = this;
