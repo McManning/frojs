@@ -22,7 +22,10 @@ function Map_RemotePlayer(eid, properties) {
 	this.directionNormal = vec3.create();
 	this.setPosition(properties.x, properties.y);
 	
-	this.setAvatar(properties);
+	this.loadAvatarFromMetadata(DEFAULT_AVATAR);
+	
+	this.setAvatar(properties.avatar);
+	
 	this.setNick(properties.nick);
 
 	this.thinkInterval = 
@@ -40,8 +43,22 @@ Map_RemotePlayer.prototype.think = function() {
 	if (!this.isMoving())
 		this.actionController.processActions();
 
-	if (this.isMoving())
+	if (this.isMoving()) {
+	
 		this.processMovement();
+	
+	} else {
+		if (this.avatar) {
+			var time = new Date().getTime();
+			// Idle animate our avatar
+			if (this.avatar.nextChange < time) {
+			
+				this.avatar.nextFrame(false);
+				this.avatar.nextChange = time + this.avatar.currentDelay;
+			}
+		}
+	}
+		
 	
 }
 

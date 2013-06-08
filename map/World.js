@@ -249,7 +249,7 @@ fro.world = {
 		}).bind('avatar', function(evt) { // Change avatar { url: 'http', w: 0, h: 0, delay: 0 }
 			
 			var ent = fro.world.getEntity(evt.eid);
-			ent.setAvatar(evt);
+			ent.setAvatar(evt.src);
 			
 		}).bind('move', function(evt) { // Update action buffer { buffer: 'buffercontents' }
 			

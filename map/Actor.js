@@ -99,43 +99,66 @@ Map_Actor.prototype.setNick = function(nick) {
 	this.updateNameImage();
 }
 
-Map_Actor.prototype.setAvatar = function(data) {
-
+Map_Actor.prototype.loadAvatarFromMetadata = function(metadata) {
+	
 	if (!this.avatar) { // @todo move me to an initializer
 		this.avatar = new Avatar();
 		
 		// Hook a load event to the avatar
+		// @todo is this necessary? 
 		this.avatar.bind('ready', this, function(evt) {
 			this.recalculateAvatarRow();
 		});
 	}
 	
 	try {
-		this.avatar.load(
-					data.url,
-					data.w,
-					data.h,
-					data.delay
-				);
+		this.avatar.load(metadata);
 				
-		this.width = data.w;
-		this.height = data.h;
+		this.width = metadata.metadata.width;
+		this.height = metadata.metadata.height;
 		
 	}  catch (e) {
+		// @todo revert?
+	
 		// Error occured while loading avatar, load a default
-		this.avatar.load( 	DEFAULT_AVATAR_ID,
-							DEFAULT_AVATAR_W,
-							DEFAULT_AVATAR_H,
-							DEFAULT_AVATAR_DELAY
-						);
-		this.width = DEFAULT_AVATAR_W;
-		this.height = DEFAULT_AVATAR_H;
+		this.avatar.load(DEFAULT_AVATAR);
+		this.width = DEFAULT_AVATAR.metadata.width;
+		this.height = DEFAULT_AVATAR.metadata.height;
 		
 		// @todo report error
 	}
 	
 	// Link position
 	this.avatar.renderable.position = this.position;
+}
+
+Map_Actor.prototype.setAvatar = function(id) {
+
+	// @todo might have some issues with scope 
+	var self = this;
+	$.ajax({
+		url: 'http://localhost/TinyMVC/indev/api/avatar/id/' + id + '?json',
+		success: function(data) {
+			if (typeof data == 'string')
+				data = JSON.parse(data);
+
+			// @todo error check for parsing JSON
+				
+			self.loadAvatarFromMetadata(data);
+			self.recalculateAvatarRow();
+			
+			// Reposition attached entities (@todo better logic)
+			if (self.bubble)
+				self.updateBubble();
+				
+			if (self.nameImage)
+				self.updateNameImage();
+		},
+		error: function() {
+			// @todo ??? Just probably kill loader anim and keep w/e the current avatar is
+		}
+	});
+	
 }
 
 Map_Actor.prototype.render = function() {
@@ -218,7 +241,7 @@ Map_Actor.prototype.getOffset = function() {
 	if (this.avatar)
 		return this.avatar.renderable.offset;
 	else
-		throw 'Cannot getOffset() without an avatar';
+		return [0, 0]; //throw 'Cannot getOffset() without an avatar';
 }
 
 /**
@@ -234,8 +257,14 @@ Map_Actor.prototype.getBoundingBox = function(r) {
 	
 	r[0] = pos[0] + offset[0];
 	r[1] = pos[1] + offset[1];
-	r[2] = this.width;
-	r[3] = this.height;
+	
+	if (this.avatar) {
+		r[2] = this.avatar.getWidth();
+		r[3] = this.avatar.getHeight();
+	} else {
+		r[2] = 0;
+		r[3] = 0;
+	}
 }
 
 /** 
@@ -302,8 +331,8 @@ Map_Actor.prototype.processMovement = function() {
 	
 	if (distance > 0) { // Move toward destination
 	
-		direction[0] = Math.floor(direction[0]);
-		direction[1] = Math.floor(direction[1]);
+		direction[0] = Math.ceil(direction[0]);
+		direction[1] = Math.ceil(direction[1]);
 	
 		vec3.add(position, direction);
 	} else { // close enough, just set
@@ -346,21 +375,37 @@ Map_Actor.prototype.recalculateAvatarRow = function() {
 	var row;
 	
 	if (this.direction & Direction.NORTH) // N/NE/NW
-		row = 1;
+		row = 8;
 	else if (this.direction & Direction.SOUTH) // S/SE/SW
-		row = 0;
-	else if (this.direction == Direction.WEST)
 		row = 2;
+	else if (this.direction == Direction.WEST)
+		row = 4;
 	else if (this.direction == Direction.EAST) 
-		row = 3;
+		row = 6;
 	else // default to south again, just in case
-		row = 0;
+		row = 2;
 
+	var frame = 'move_';
+		
+	// If we're not moving, use the stop animation (if we have it)
+	/* @todo isMoving isn't returning what we want, yet. 
+	if (!this.isMoving()) {
+		frame = 'stop_';
+		if (!this.avatar.hasKeyframe(frame + row)) {
+			frame = 'move_';
+		}
+	}
+	*/
+		
 	// @todo check if the sit exists in the avatar before activating?
-	if (this.action == Action.SIT)
-		row += 4;
+	if (this.action == Action.SIT) {
+		frame = 'act_';
+		if (!this.avatar.hasKeyframe(frame + row)) {
+			frame = 'move_';
+		}
+	}
 
-	this.avatar.setRow(row);
+	this.avatar.setKeyframe(frame + row);
 }
 
 Map_Actor.prototype.stepInDirection = function(dir) {

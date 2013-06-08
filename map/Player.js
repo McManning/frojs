@@ -36,7 +36,10 @@ function Map_Player(eid, properties) {
 	// Currently using legacy version
 	this.actionController = new BufferedActionController(this, true);
 	
-	this.setAvatar(properties);
+	this.loadAvatarFromMetadata(DEFAULT_AVATAR);
+	
+	this.setAvatar(properties.avatar);
+	
 	this.setNick(properties.nick);
 }
 
@@ -54,8 +57,21 @@ Map_Player.prototype.think = function() {
 	if (!this.isMoving())
 		this.actionController.processActions();
 
-	if (this.isMoving())
+	if (this.isMoving()) {
+	
 		this.processMovement();
+	
+	} else {
+		if (this.avatar) {
+			var time = new Date().getTime();
+			// Idle animate our avatar
+			if (this.avatar.nextChange < time) {
+			
+				this.avatar.nextFrame(false);
+				this.avatar.nextChange = time + this.avatar.currentDelay;
+			}
+		}
+	}
 }
 
 /** Overrides Map_Actor.setPosition */
@@ -146,10 +162,7 @@ Map_Player.prototype.sendAvatar = function() {
 	
 		var packet = {
 			id: 'avatar',
-			url: this.avatar.url,
-			w: this.width,
-			h: this.height,
-			delay: this.avatar.delay
+			src: this.avatar.id,
 		};
 		
 		fro.network.send(packet);
