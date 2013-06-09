@@ -17,27 +17,36 @@ var EventHooks = {
 		
 		var namespaces = '';
 		
-		// Check if the bind is namespaced
-		if (evt.indexOf('.') >= 0) {
-			namespaces = evt.split('.');
-			evt = namespaces.shift();
-			namespaces.sort();
-			namespaces = namespaces.join('.');
-		}
+		// Split multiple event bindings into multiple triggers
+		var events = evt.split(',');
 		
-		if (this._events == undefined) {
-			this._events = {};
-			this._events[evt] = new Array();
+		for (var i in events) {
 			
-		} else if (!(evt in this._events)) {
-			this._events[evt] = new Array();
+			// Clean up each bind
+			evt = events[i].trim();
+
+			// Check if the bind is namespaced
+			if (evt.indexOf('.') >= 0) {
+				namespaces = evt.split('.');
+				evt = namespaces.shift();
+				namespaces.sort();
+				namespaces = namespaces.join('.');
+			}
+			
+			if (this._events == undefined) {
+				this._events = {};
+				this._events[evt] = new Array();
+				
+			} else if (!(evt in this._events)) {
+				this._events[evt] = new Array();
+			}
+			
+			this._events[evt].push({
+				callback: fn,
+				obj: obj,
+				namespaces: namespaces,
+			});
 		}
-		
-		this._events[evt].push({
-			callback: fn,
-			obj: obj,
-			namespaces: namespaces,
-		});
 		
 		return this;
 	},
