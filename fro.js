@@ -28,8 +28,6 @@ var fro = {
 			
 			this.background = new RenderableImage(400, 300);
 			this.background.setTexture(this.resources.getDefaultTexture(), false);
-			this.background.position[0] = 0;
-			this.background.position[1] = 0;
 		}
 	},
 	
@@ -90,11 +88,8 @@ var fro = {
 					this.camera._translation[1], 
 					this.camera._translation[2]);
 		
-		if (this.backgroundRect)
-			this.backgroundRect.render();
-		
 		if (this.background)
-			this.background.render();
+			this.background.render(0, 0);
 			
 		if (this.world) {
 			this.world.render();

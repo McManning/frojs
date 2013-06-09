@@ -11,6 +11,8 @@ Map_Nickname.prototype.initialise = function(eid, properties) {
 	Map_Entity.prototype.initialise.call(this, eid, properties);
 	
 	this.zorder = NICKNAME_ZORDER;
+	this.position = vec3.create();
+	this.offset = vec3.create();
 	
 	this.trackedEntity = properties.entity;
 	
@@ -38,7 +40,7 @@ Map_Nickname.prototype.change = function(nick) {
 	
 	// Regenerate our name texture 
 	var texture = fro.resources.getFontTexture(nick, {
-			height: 12,
+			height: 14,
 			family: '"Helvetica Neue", Helvetica, Arial, sans-serif',
 			color: '#00FFFF',
 		});
@@ -68,8 +70,8 @@ Map_Nickname.prototype._updatePosition = function() {
 }
 
 Map_Nickname.prototype.render = function() {
-	
-	this.renderable.render();
+
+	this.renderable.render(this.position, 0);
 }
 
 /**
@@ -77,25 +79,7 @@ Map_Nickname.prototype.render = function() {
  * @return vec3
  */
 Map_Nickname.prototype.getPosition = function() {
-	
-	if ('renderable' in this) {
-		return this.renderable.position;
-	} else {
-		return vec3.create();
-	}
-}
-
-/**
- * Returns a reference to our renderables vector offset position
- * @return vec3
- */
-Map_Nickname.prototype.getOffset = function() {
-
-	if ('renderable' in this) {
-		return this.renderable.offset;
-	} else {
-		return vec3.create();
-	}
+	return this.position;
 }
 
 /**
@@ -106,8 +90,8 @@ Map_Nickname.prototype.getBoundingBox = function(r) {
 	// @todo factor in rotations and scaling
 	// and utilize this.renderable.getTopLeft(), getBottomRight(), etc
 	
-	r[0] = this.renderable.position[0] + this.renderable.offset[0];
-	r[1] = this.renderable.position[1] + this.renderable.offset[1];
+	r[0] = this.position[0];
+	r[1] = this.position[1];
 	r[2] = this.width;
 	r[3] = this.height;
 

@@ -1,45 +1,34 @@
 
 "use strict";
-	
+
 function RenderableImage(width, height) {
-	
 	this.width = width;
 	this.height = height;
-	this.useAlphaKey = false;
-	
+	this.flipped = false;
+	this.color = [0.0, 0.0, 0.0, 0.0];
+	this.clip = rect.create();
+	this.offset = vec3.create(); // Offset of render from origin (center)
 	this.textureStretching = true;
+	
+	this.HSVShift = vec3.create();
+	this.position = vec3.create();
+
 	this.texture = fro.resources.getDefaultTexture();
 
 	this.buildVertexBuffer();
 	this.buildTextureBuffer();
+
+	// @todo create normal mapping
 }
 
-RenderableImage.prototype.render = function(position, rotation, clip, HSVShift) {
+RenderableImage.prototype = new Renderable();
 
-	// Begin draw, setup
-	gl.mvPushMatrix();
+RenderableImage.prototype.render = function() {
 
-	mat4.translate(gl.mvMatrix, position);
-	
-	if (rotation) {
-		mat4.rotateZ(gl.mvMatrix, rotation);
-	}
-	
-	gl.uniform1i(fro.shaderProgram.alphaKeyUniform, this.useAlphaKey);
-	
-	// Unused
-	gl.uniform4f(fro.shaderProgram.colorUniform, 0,0,0,0);
-	
-	if (HSVShift) {
-		gl.uniform3f(fro.shaderProgram.HSVShiftUniform, 
-					HSVShift[0], HSVShift[1], 
-					HSVShift[2]);
-	} else {
-		gl.uniform3f(fro.shaderProgram.HSVShiftUniform, 0, 0, 0);
-	}
-	
-	// Draw
+	this.beginDraw();
 
+	mat4.translate(gl.mvMatrix, this.offset);
+	
 	// Set up buffers to use
 	gl.bindBuffer(gl.ARRAY_BUFFER, this.vbuf);
 	gl.vertexAttribPointer(fro.shaderProgram.vertexPositionAttribute, 
@@ -49,33 +38,21 @@ RenderableImage.prototype.render = function(position, rotation, clip, HSVShift) 
 	gl.vertexAttribPointer(fro.shaderProgram.textureCoordAttribute, 
 							this.tbuf.itemSize, gl.FLOAT, false, 0, 0);
 	var texture;
-	if (this.texture) {
+	if (this.texture)
 		texture = this.texture;
-	} else {
+	else
 		texture = fro.resources.defaultTexture;
-	}
-	
+
 	gl.activeTexture(gl.TEXTURE0);
 	gl.bindTexture(gl.TEXTURE_2D, texture);
 	gl.uniform1i(fro.shaderProgram.samplerUniform, 0);
 	
-	if (clip) {
+	gl.uniform2f(fro.shaderProgram.clipUniform, this.clip[0], this.clip[1]);
 
-		var h = (this.height == 0) ? 1.0 : this.height / this.texture.image.height;
-		var x = clip[0] / this.texture.image.width;
-		var y = 1.0 - h - clip[1] / this.texture.image.height;
-
-		gl.uniform2f(fro.shaderProgram.clipUniform, x, y);
-	} else {
-		gl.uniform2f(fro.shaderProgram.clipUniform, 0, 0);
-	}
-	
 	gl.setMatrixUniforms();
 	gl.drawArrays(gl.TRIANGLE_STRIP, 0, this.vbuf.itemCount);
 	
-
-	// End draw, reset
-	gl.mvPopMatrix();
+	this.endDraw();
 }
 
 /** 
@@ -108,6 +85,13 @@ RenderableImage.prototype.getTextureHeight = function() {
 	return this.texture.image.height;
 }
 
+RenderableImage.prototype.setScale = function(val) {
+	this.scale = val;
+	// @todo put in shader
+	
+	this.buildVertexBuffer();
+}
+
 RenderableImage.prototype.resize = function(w, h) {
 	
 	this.width = w;
@@ -121,8 +105,8 @@ RenderableImage.prototype.buildVertexBuffer = function() {
 	if (this.vbuf)
 		gl.deleteBuffer(this.vbuf);
 		
-	var w = this.width * 0.5;
-	var h = this.height * 0.5;
+	var w = this.width * this.scale * 0.5;
+	var h = this.height * this.scale * 0.5;
 
 	this.vbuf = gl.createBuffer();
 	gl.bindBuffer(gl.ARRAY_BUFFER, this.vbuf);
@@ -139,6 +123,7 @@ RenderableImage.prototype.buildVertexBuffer = function() {
 		
 	this.vbuf.itemSize = 3;
 	this.vbuf.itemCount = 4;
+
 }
 
 RenderableImage.prototype.buildTextureBuffer = function() {
@@ -156,16 +141,59 @@ RenderableImage.prototype.buildTextureBuffer = function() {
 		w = this.width / this.texture.image.width;
 		h = this.height / this.texture.image.height;
 	}
+	
+	if (this.flipped) {
+		throw '@todo implement in the shader';
+		
+	} else {
 
-	gl.bufferData(gl.ARRAY_BUFFER, 
-			new glMatrixArrayType([
-				x+w, y,
-				x+w, y+h,
-				x, y,
-				x, y+h
-				
-			]), gl.STATIC_DRAW);
-
+		gl.bufferData(gl.ARRAY_BUFFER, 
+				new glMatrixArrayType([
+					x+w, y,
+					x+w, y+h,
+					x, y,
+					x, y+h
+					
+				]), gl.STATIC_DRAW);
+	}
+		
 	this.tbuf.itemSize = 2;
 	this.tbuf.itemCount = 4;
+
 }
+
+RenderableImage.prototype.flipHorizontal = function() {
+	this.flipped = !this.flipped;
+}
+
+/** Set a specific rectangle of the texture to be used for rendering,
+	rather than the entire texture
+	
+@param x position to start the clip (from the left), in pixels
+@param y position to start the clip (from the bottom), in pixels
+
+*/
+RenderableImage.prototype.setClip = function(x, y) {
+
+	if (!this.texture)
+	{
+		fro.log.warning('Trying to set clip without texture');
+		this.clip[0] = 0;
+		this.clip[1] = 0;
+		this.clip[2] = 1;
+		this.clip[3] = 1;
+	}
+	else
+	{
+		var w = this.width;
+		var h = this.height;
+	
+		// convert and apply
+		this.clip[2] = (w == 0) ? 1.0 : w / this.texture.image.width;
+		this.clip[3] = (h == 0) ? 1.0 : h / this.texture.image.height;
+		this.clip[0] = x / this.texture.image.width;
+		this.clip[1] = 1.0 - this.clip[3] - y / this.texture.image.height;
+	}
+}
+
+

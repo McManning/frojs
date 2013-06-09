@@ -61,6 +61,7 @@ Map_Actor.prototype.initialise = function(eid, properties) {
 	
 	this.destination = vec3.create();
 	this.position = vec3.create();
+	this.offset = vec3.create();
 	this.directionNormal = vec3.create();
 	
 	this.setPosition(properties.x, properties.y);
@@ -105,9 +106,6 @@ Map_Actor.prototype.loadAvatarFromMetadata = function(metadata) {
 		
 		// @todo report error
 	}
-	
-	// Link position
-	this.avatar.renderable.position = this.position;
 }
 
 Map_Actor.prototype.setAvatar = function(id) {
@@ -144,8 +142,14 @@ Map_Actor.prototype.setAvatar = function(id) {
 
 Map_Actor.prototype.render = function() {
 
-	if (this.avatar)
-		this.avatar.render();
+	if (this.avatar) {
+		
+		var p = vec3.create(); // @todo stop allocating
+		p[0] = this.position[0];
+		p[1] = this.position[1] + this.height * 0.5;
+		
+		this.avatar.render(p);
+	}
 }
 
 Map_Actor.prototype.think = function() {
@@ -211,18 +215,6 @@ Map_Actor.prototype.getPosition = function() {
 }
 
 /**
- * Returns a reference to our renderables vector offset position
- * @return vec3
- */
-Map_Actor.prototype.getOffset = function() {
-
-	if (this.avatar)
-		return this.avatar.renderable.offset;
-	else
-		return [0, 0]; //throw 'Cannot getOffset() without an avatar';
-}
-
-/**
  * @param rect r
  */
 Map_Actor.prototype.getBoundingBox = function(r) {
@@ -231,10 +223,9 @@ Map_Actor.prototype.getBoundingBox = function(r) {
 	// and utilize this.renderable.getTopLeft(), getBottomRight(), etc
 	
 	var pos = this.getPosition();
-	var offset = this.getOffset();
-	
-	r[0] = pos[0] + offset[0];
-	r[1] = pos[1] + offset[1];
+
+	r[0] = pos[0];
+	r[1] = pos[1] + this.height * 0.5;
 	
 	if (this.avatar) {
 		r[2] = this.avatar.getWidth();

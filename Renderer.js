@@ -42,6 +42,18 @@ fro.renderer = {
 				gl.uniformMatrix4fv(fro.shaderProgram.mvMatrixUniform, false, gl.mvMatrix);
 			}
 			
+			/*
+				From http://en.wikipedia.org/wiki/Alpha_compositing#Alpha_blending
+				outA = srcA + dstA(1 - srcA)
+				outRGB = srcRGB(srcA) + dstRGB*dstA(1 - srcA)
+				
+				Orgb = srgb * Srgb + drgb * Drgb
+				Oa = sa * Sa + da * Da
+				glBlendFuncSeparate(srgb, drgb, sa, da)
+			*/
+			gl.enable(gl.BLEND);
+			gl.blendFuncSeparate(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA, gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
+
 		} catch (e) {
 			fro.log.error(e.message);
 		}

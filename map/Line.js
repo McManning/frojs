@@ -45,14 +45,6 @@ Map_Line.prototype.getPosition = function() {
 }
 
 /**
- * Returns a reference to our renderables vector offset position
- * @return vec3
- */
-Map_Line.prototype.getOffset = function() {
-	return this.renderable.offset;
-}
-
-/**
  * @param rect r
  */
 Map_Line.prototype.getBoundingBox = function(r) {

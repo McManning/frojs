@@ -16,14 +16,18 @@ Map_Prop.prototype.initialise = function(eid, properties) {
 	this.renderable.textureStretching = false;
 	this.renderable.useAlphaKey = (properties.alphakey == 1);
 
-	var pos = this.getPosition();
-	pos[0] = properties.x;
-	pos[1] = properties.y;
-	pos[2] = 0;
+	this.position = vec3.create();
+	this.position[0] = properties.x;
+	this.position[1] = properties.y;
+	
+	this.offset = vec3.create();
 	
 	this.width = properties.w;
 	this.height = properties.h;
 	this.zorder = properties.z;
+	
+	this.HSVShift = vec3.create();
+	this.clip = rect.create();
 
 	if (properties.collisions) {
 		this.loadCollisions(properties.collisions);
@@ -31,10 +35,10 @@ Map_Prop.prototype.initialise = function(eid, properties) {
 	}
 
 	if (properties.offset_x != undefined)
-		this.renderable.offset[0] = properties.offset_x;
+		this.offset[0] = properties.offset_x;
 	
 	if (properties.offset_y != undefined)
-		this.renderable.offset[1] = properties.offset_y;
+		this.offset[1] = properties.offset_y;
 	
 	/* 	If there's a delay key, this prop is animated.
 		Our dimensions will define a clip of the image, rather than the whole thing
@@ -42,8 +46,6 @@ Map_Prop.prototype.initialise = function(eid, properties) {
 	if (properties.delay != undefined && properties.delay > 0) {
 		this.delay = properties.delay;
 		this.frame = 0;
-		
-		this.renderable.setClip(0, 0, this.width, this.height);
 		
 		// @todo fix timer to account for deleted entities
 		fro.timers.addInterval(this, this.animate, this.delay);
@@ -77,7 +79,7 @@ Map_Prop.prototype.initialise = function(eid, properties) {
 		});
 	}
 
-	fro.log.debug('New prop "' + eid + '" at ' + vec3.str(pos));
+	fro.log.debug('New prop "' + eid + '" at ' + vec3.str(this.position));
 }
 
 /** 
@@ -114,13 +116,15 @@ Map_Prop.prototype.animate = function() {
 
 		// Determine if the next calculated frame is actually within the source image
 		if (this.renderable.getTextureWidth() >= (this.width * (this.frame + 1))) {
-		
-			this.renderable.setClip(this.frame * this.width, 0);
+
+			this.clip[0] = this.frame * this.width;
+			this.clip[1] = 0;
 			
 		} else { // loop to the start
 		
 			this.frame = 0;
-			this.renderable.setClip(0, 0);
+			this.clip[0] = 0;
+			this.clip[1] = 0;
 		}
 	}
 }
@@ -135,8 +139,11 @@ Map_Prop.prototype.failedToLoad = function() {
 
 Map_Prop.prototype.render = function() {
 
-	this.renderable.render();
+	var p = vec3.create(); // @todo stop allocating
+	p[0] = this.position[0] + this.offset[0];
+	p[1] = this.position[1] + this.offset[1];
 
+	this.renderable.render(p, 0, this.clip, this.HSVShift);
 }
 
 Map_Prop.prototype.think = function() {
@@ -149,15 +156,7 @@ Map_Prop.prototype.think = function() {
  * @return vec3
  */
 Map_Prop.prototype.getPosition = function() {
-	return this.renderable.position;
-}
-
-/**
- * Returns a reference to our renderables vector offset position
- * @return vec3
- */
-Map_Prop.prototype.getOffset = function() {
-	return this.renderable.offset;
+	return this.position;
 }
 
 /**
@@ -168,8 +167,8 @@ Map_Prop.prototype.getBoundingBox = function(r) {
 	// @todo factor in rotations and scaling
 	// and utilize this.renderable.getTopLeft(), getBottomRight(), etc
 	
-	r[0] = this.renderable.position[0] + this.renderable.offset[0];
-	r[1] = this.renderable.position[1] + this.renderable.offset[1];
+	r[0] = this.position[0] + this.offset[0];
+	r[1] = this.position[1] + this.offset[1];
 	r[2] = this.width;
 	r[3] = this.height;
 }

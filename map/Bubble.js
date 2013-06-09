@@ -49,6 +49,7 @@ Map_Bubble.prototype.initialise = function(eid, properties) {
 	// Initially hide this bubble and only display when the entity speaks
 	this.visible = false;
 	this.zorder = BUBBLE_ZORDER;
+	this.position = vec3.create();
 	
 	this.trackedEntity = properties.entity;
 
@@ -94,8 +95,8 @@ Map_Bubble.prototype.display = function(text) {
 	this.width = this.renderable.width;
 	this.height = this.renderable.height;
 	
-	this.renderable.offset[0] = 0;
-	this.renderable.offset[1] = Math.floor(this.height / 2);
+	//this.offset[0] = 0;
+	//this.offset[1] = Math.floor(this.height / 2);
 
 	this.visible = true;
 
@@ -125,12 +126,12 @@ Map_Bubble.prototype._updatePosition = function() {
 	this.trackedEntity.getBoundingBox(r);
 	
 	pos[0] = epos[0];
-	pos[1] = epos[1] + r[3]; // Above the tracked entity's head
+	pos[1] = epos[1] + r[3] + this.height * 0.5; // Above the tracked entity's head
 }
 
 Map_Bubble.prototype.render = function() {
 	
-	this.renderable.render();
+	this.renderable.render(this.position, 0);
 }
 
 /**
@@ -138,25 +139,7 @@ Map_Bubble.prototype.render = function() {
  * @return vec3
  */
 Map_Bubble.prototype.getPosition = function() {
-	
-	if ('renderable' in this) {
-		return this.renderable.position;
-	} else {
-		return vec3.create();
-	}
-}
-
-/**
- * Returns a reference to our renderables vector offset position
- * @return vec3
- */
-Map_Bubble.prototype.getOffset = function() {
-	
-	if ('renderable' in this) {
-		return this.renderable.offset;
-	} else {
-		return vec3.create();
-	}
+	return this.position;
 }
 
 /**
@@ -167,8 +150,8 @@ Map_Bubble.prototype.getBoundingBox = function(r) {
 	// @todo factor in rotations and scaling
 	// and utilize this.renderable.getTopLeft(), getBottomRight(), etc
 	
-	r[0] = this.renderable.position[0] + this.renderable.offset[0];
-	r[1] = this.renderable.position[1] + this.renderable.offset[1];
+	r[0] = this.position[0];
+	r[1] = this.position[1];
 	r[2] = this.width;
 	r[3] = this.height;
 }

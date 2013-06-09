@@ -68,7 +68,8 @@ var DEFAULT_AVATAR = {
  */
 function Avatar() {
 	// stuff
-	
+	this.clip = rect.create();
+	this.HSVShift = vec3.create();
 	
 	$.extend(this, EventHooks);
 }
@@ -88,9 +89,6 @@ Avatar.prototype.load = function(settings) {
 	this.renderable.useAlphaKey = true;
 	this.renderable.textureStretching = false;
 
-	// Put origin at bottom center
-	this.renderable.offset[1] = this.getHeight()/2;
-	
 	this.settings = settings;
 	
 	this.currentKeyframe = '';
@@ -100,8 +98,6 @@ Avatar.prototype.load = function(settings) {
 	
 	// @todo some magic here for the URL 
 	this.url = settings.url;
-	
-	this.renderable.setClip(0, 0);
 
 	var resource = fro.resources.load(settings.url);
 	
@@ -208,7 +204,8 @@ Avatar.prototype.updateTextureClip = function() {
 	//var y = this.getHeight() * this.currentRow;
 	
 	// Update texture clip
-	this.renderable.setClip(x * this.getWidth(), y * this.getHeight());
+	this.clip[0] = x * this.getWidth();
+	this.clip[1] = y * this.getHeight();
 }
 
 /** Callback for when RenderableImage finally receives a texture */
@@ -222,11 +219,11 @@ Avatar.prototype.onImageLoad = function() {
 */
 }
 
-Avatar.prototype.render = function() {
+Avatar.prototype.render = function(position) {
 
 	// @todo fancy additional stuff
 	
-	this.renderable.render();
+	this.renderable.render(position, 0.0, this.clip, this.HSVShift);
 }
 
 
