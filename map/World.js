@@ -183,16 +183,16 @@ fro.world = {
 
 		var props = this.properties;
 
-		fro.network.bind('open', function(evt) {
+		fro.network.bind('open', this, function(evt) {
 			
 			var pos = fro.world.player.getPosition();
 			
 			// On opening the socket, send authentication
-			this.send({
+			fro.network.send({
 				id: 'auth',
 				token: props.network.auth, 
 				user: 'Lab Rat', // @todo resolve
-				nick: fro.world.player.nick,
+				nick: this.player.nick,
 				world: props.network.channel,
 				x: pos[0],
 				y: pos[1]
@@ -200,60 +200,50 @@ fro.world = {
 			
 			// Send a follow up message with our avatar data
 			// @todo maybe send this in auth response instead, just in case of bad auth?
-			fro.world.player.sendAvatar();
+			this.player.sendAvatar();
 			
-		}).bind('auth', function(evt) {
+		}).bind('auth', this, function(evt) {
 			
 			// After we've been authenticated, join the world channel
 			
 			// @todo rewrite this handshake!
 			
-			fro.world.player.eid = evt.eid;
+			this.player.eid = evt.eid;
 			//fro.world.join(fro.world.config.spawn_x, fro.world.config.spawn_y);
 		
-		}).bind('join', function(evt) { // Sent to our client when a player joins after us 
+		}).bind('join, identity', this, function(evt) { // Sent to our client when a player is added to the map
 			
 			var actor = new Map_RemotePlayer();
 			actor.initialise(evt.eid, evt);
 			
-			fro.world.addRenderableEntity(actor);
+			this.addRenderableEntity(actor);
 		
-		}).bind('identity', function(evt) { // Sent to our client when we join a world, and players already exist
+		}).bind('say', this, function(evt) { // Chat message { msg: 'message' }
 			
-			var actor = new Map_RemotePlayer();
-			actor.initialise(evt.eid, evt);
-			
-			fro.world.addRenderableEntity(actor);
-		
-		}).bind('say', function(evt) { // Chat message { msg: 'message' }
-			
-			var ent = fro.world.getEntity(evt.eid);
+			var ent = this.getEntity(evt.eid);
 			ent.say(evt.msg);
 			
-		}).bind('nick', function(evt) { // Update nickname { nick: 'John Doe' }
+		}).bind('nick', this, function(evt) { // Update nickname { nick: 'John Doe' }
 			
-			var ent = fro.world.getEntity(evt.eid);
+			var ent = this.getEntity(evt.eid);
 			ent.setNick(evt.nick);
 			
-		}).bind('avatar', function(evt) { // Change avatar { url: 'http', w: 0, h: 0, delay: 0 }
+		}).bind('avatar', this, function(evt) { // Change avatar { url: 'http', w: 0, h: 0, delay: 0 }
 			
-			var ent = fro.world.getEntity(evt.eid);
+			var ent = this.getEntity(evt.eid);
 			ent.setAvatar(evt.src);
 			
-		}).bind('move', function(evt) { // Update action buffer { buffer: 'buffercontents' }
+		}).bind('move', this, function(evt) { // Update action buffer { buffer: 'buffercontents' }
 			
-			var ent = fro.world.getEntity(evt.eid);
+			var ent = this.getEntity(evt.eid);
 			
 			// @todo something generic, that can change based on controller type
 			ent.actionController.write(evt.buffer);
 		
-		}).bind('leave', function(evt) { // Leave world { reason: 'Why I left' }
+		}).bind('leave', this, function(evt) { // Leave world { reason: 'Why I left' }
 		
-			var ent = fro.world.getEntity(evt.eid);
-			
-			// @todo rewrite
-			fro.timers.removeInterval(ent.thinkInterval);
-			fro.world.removeEntity(ent);
+			var ent = this.getEntity(evt.eid);
+			this.removeEntity(ent);
 		});
 
 	},
@@ -287,6 +277,7 @@ fro.world = {
 				// it can kill related timers/listeners/etc
 				
 				// @todo array cleanup somewhere after all iterations are complete, since delete just nullfies
+				// A proper delete queue and cleanup process would be useful. 
 			}
 		}
 	},

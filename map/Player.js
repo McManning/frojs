@@ -18,6 +18,11 @@ Map_Player.prototype.initialise = function(eid, properties) {
 	this.actionController = new BufferedActionController(this, true);
 }
 
+Map_Player.prototype.destroy = function() {
+
+	fro.timers.removeInterval(this.thinkInterval);
+}
+
 Map_Player.prototype.think = function() {
 
 	// Check input state, do stuff, etc.

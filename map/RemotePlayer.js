@@ -18,6 +18,11 @@ Map_RemotePlayer.prototype.initialise = function(eid, properties) {
 	this.actionController = new BufferedActionController(this, false);
 }
 
+Map_RemotePlayer.prototype.destroy = function() {
+
+	fro.timers.removeInterval(this.thinkInterval);
+}
+
 Map_RemotePlayer.prototype.think = function() {
 
 	if (!this.isMoving())
