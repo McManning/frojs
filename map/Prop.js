@@ -5,11 +5,12 @@
  * A visible object placed on the map, with its own image/animation 
  * and collision data 
  */
-function Map_Prop(id, properties) {
+function Map_Prop() {}
+Map_Prop.prototype = new Map_Entity();
 
-	this.id = id;
-	this.required = properties.required;
-	
+Map_Prop.prototype.initialise = function(eid, properties) {
+	Map_Entity.prototype.initialise.call(this, eid, properties);
+
 	this.renderable = new RenderableImage(properties.w, properties.h);
 	this.renderable.useSrcAlpha = true;
 	this.renderable.textureStretching = false;
@@ -26,7 +27,7 @@ function Map_Prop(id, properties) {
 
 	if (properties.collisions) {
 		this.loadCollisions(properties.collisions);
-		fro.log.debug('Collisions for ' + id + ': ' + this.collisions.length);
+		fro.log.debug('Collisions for ' + eid + ': ' + this.collisions.length);
 	}
 
 	if (properties.offset_x != undefined)
@@ -76,10 +77,8 @@ function Map_Prop(id, properties) {
 		});
 	}
 
-	fro.log.debug('New prop "' + id + '" at ' + vec3.str(pos));
+	fro.log.debug('New prop "' + eid + '" at ' + vec3.str(pos));
 }
-
-Map_Prop.prototype = new Map_Entity();
 
 /** 
  * Our loaded state depends on the loaded texture 

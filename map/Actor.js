@@ -42,61 +42,39 @@ var RUN_STEP_DISTANCE = 8;
 var DISTANCE_THRESHOLD = 6;
 
 /** Base class for actors on the map */
-function Map_Actor(eid, properties) {
-
-	/*this.eid = eid;
-	
-	this.avatar = new Avatar(
-						properties.avatar.url,
-						properties.avatar.w,
-						properties.avatar.h,
-						properties.avatar.delay
-					);
-
-	this.position = vec3.create();
-	this.position[0] = properties.x;ddddddd
-	this.position[1] = properties.y;
-	this.position[2] = 0;
-	
-	this.width = properties.avatar.w;
-	this.height = properties.avatar.h;
-	this.zorder = properties.z;
-	
-	// Use this props position attribute as a reference for the renderable
-	// @todo better management of this
-	this.avatar.renderable.position = this.position;
-	*/
-	
-	//console.log('Map_Actor constructor');
-	
-	//this.width = 0;
-	//this.height = 0;
-	//this.directionNormal = vec3.create();
-	
-	//console.log('Width' + this.width);
-}
-
+function Map_Actor() {}
 Map_Actor.prototype = new Map_Entity();
+
+Map_Actor.prototype.initialise = function(eid, properties) {
+	Map_Entity.prototype.initialise.call(this, eid, properties);
+
+	this.step = 0;
+	
+	this.action = properties.action;
+	this.speed = Speed.WALK;
+	this.direction = properties.direction;
+	this.zorder = DEFAULT_ACTOR_ZORDER;
+	
+	// @todo Are these two required/used?
+	this.width = 0;
+	this.height = 0;
+	
+	this.destination = vec3.create();
+	this.position = vec3.create();
+	this.directionNormal = vec3.create();
+	
+	this.setPosition(properties.x, properties.y);
+	
+	this.loadAvatarFromMetadata(DEFAULT_AVATAR);
+	
+	this.setAvatar(properties.avatar);
+	
+	this.setNick(properties.nick);
+}
 
 Map_Actor.prototype.setNick = function(nick) {
 	
 	this.nick = nick;
-	
-	// Regenerate our name texture 
-	var texture = fro.resources.getFontTexture(nick, {
-			height: 12,
-			family: '"Helvetica Neue", Helvetica, Arial, sans-serif',
-			color: '#FFFFFF',
-		});
-	
-	if (!this.nameImage) {
-		this.nameImage = new RenderableImage();
-	}
-
-	this.nameImage.setTexture(texture, true);
-	
-	// Reposition the image
-	this.updateNameImage();
 }
 
 Map_Actor.prototype.loadAvatarFromMetadata = function(metadata) {
@@ -140,19 +118,22 @@ Map_Actor.prototype.setAvatar = function(id) {
 		url: 'http://localhost/TinyMVC/indev/api/avatar/id/' + id + '?json',
 		success: function(data) {
 			if (typeof data == 'string')
-				data = JSON.parse(data);
-
+			{
+				try {
+					data = JSON.parse(data);
+				} catch (e) {
+					// Could not parse JSON, call it a fail
+					fro.log.error('Could not load Avatar ID ' + id);
+					return;
+				}
+			}
+			
 			// @todo error check for parsing JSON
 				
 			self.loadAvatarFromMetadata(data);
 			self.recalculateAvatarRow();
 			
-			// Reposition attached entities (@todo better logic)
-			if (self.bubble)
-				self.updateBubble();
-				
-			if (self.nameImage)
-				self.updateNameImage();
+			this.fire('avatar');
 		},
 		error: function() {
 			// @todo ??? Just probably kill loader anim and keep w/e the current avatar is
@@ -165,9 +146,6 @@ Map_Actor.prototype.render = function() {
 
 	if (this.avatar)
 		this.avatar.render();
-		
-	if (this.nameImage)
-		this.nameImage.render();
 }
 
 Map_Actor.prototype.think = function() {
@@ -278,13 +256,8 @@ Map_Actor.prototype.setPosition = function(x, y) {
 	pos[0] = Math.floor(x);
 	pos[1] = Math.floor(y);
 	vec3.set(pos, this.destination);
-	
-	// If a chat bubble is displayed, update it to track our position
-	if (this.bubble)
-		this.updateBubble();
-		
-	if (this.nameImage)
-		this.updateNameImage();
+
+	this.fire('move');
 }
 
 /** Sets our current action (idle, sit, etc) and updates the avatar */
@@ -357,13 +330,8 @@ Map_Actor.prototype.processMovement = function() {
 	if (d != this.direction) {
 		this.setDirection(d);
 	}
-	
-	// If a chat bubble is displayed, update it to track our position
-	if (this.bubble)
-		this.updateBubble();
-		
-	if (this.nameImage)
-		this.updateNameImage();
+
+	this.fire('move');
 }
 
 /** 
@@ -456,78 +424,6 @@ Map_Actor.prototype.directionFromVector = function(vec) {
 
 Map_Actor.prototype.say = function(message) {
 
-	// @todo add to chatbox, filter it for the bubble, and add to bubble
-	// Also involves crazy filtering stuff (for links, styling, etc)
-
-	// Increase TTL loosely based on message length and reading time
-	var ttl = CHAT_BUBBLE_MIN_TTL * Math.ceil(message.length / 50);
-	
-	if (this.bubble) {
-	
-		// Remove bubble entity from the map
-		fro.world.removeEntity(this.bubble);
-		
-		// Stop the timeout from firing for the previous bubble
-		fro.timers.removeTimeout(this.popBubbleTimeout);
-	}
-
-	// Reference world defaults
-	var properties = fro.world.chatBubbleDefaults;
-	
-	// override certain properties for rendering
-	properties.text = message;
-	properties.x = 0;
-	properties.y = 0;
-	
-	this.bubble = new Map_Bubble(this.id + '_bubble', properties);
-			
-	fro.world.addRenderableEntity(this.bubble);
-	this.updateBubble();
-	
-	// Destroy the bubble after some time has passed
-	this.popBubbleTimeout = fro.timers.addTimeout(this, this.popBubble, ttl);
+	this.fire('say', message);
 }
-
-/** Destroy our text bubble. Called as a timeout callback */
-Map_Actor.prototype.popBubble = function() {
-	
-	if (this.bubble) {
-		fro.world.removeEntity(this.bubble);
-		delete this.bubble;
-	}
-}
-
-/** Repositions bubble based on our own position */
-Map_Actor.prototype.updateBubble = function() {
-	
-	var pos = this.getPosition();
-	var r = rect.create();
-	this.getBoundingBox(r);
-
-	var p = this.bubble.getPosition();
-	
-	p[0] = pos[0];
-	p[1] = pos[1] + r[3]; // above our head
-}
-
-/** Repositions name image based on our position */
-Map_Actor.prototype.updateNameImage = function() {
-	
-	/* @todo this and the bubble are obviously using the same logic in the
-		same places. There should be a generic way to update things that are
-		attached to our actor 
-	*/
-	
-	var pos = this.getPosition();
-	
-	
-	var r = rect.create();
-	this.getBoundingBox(r);
-	
-	this.nameImage.position[0] = pos[0];
-	this.nameImage.position[1] = pos[1] + r[3] + 5; // above our head
-}
-
-
-
 

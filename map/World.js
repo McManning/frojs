@@ -10,20 +10,6 @@ fro.world = {
 		config - 
 	*/
 	
-	chatBubbleDefaults : {
-		family: 'Helvetica',
-		color: '#000',
-		height: 12,
-		max_width: 256,
-		min_width: 25,
-		padding: 7,
-		bg_color1: '#BBB',
-		bg_color2: '#FFF',
-		st_width: 1.5,
-		st_color1: '#000',
-		st_color2: '#000',
-	},
-
 	initialise : function(json) {
 		
 		this._renderableEntities = new Array();
@@ -46,6 +32,9 @@ fro.world = {
 		if (!this.player) {
 			throw('Did not load a player entity with world json');
 		}
+		
+		// Enable event binding
+		//$.extend(this, EventHooks);
 	},
 
 	parseProperties : function(properties) {
@@ -56,21 +45,11 @@ fro.world = {
 		
 		this.id = properties.id;
 		this.templates = properties.templates;
-		
-		// If we defined an override for bubble styles, override any properties defined
-		if ('bubble_style' in properties) {
-			
-			for (var key in this.chatBubbleDefaults) {
-				if (key in properties.bubble_style) {
-					this.chatBubbleDefaults[key] = properties.bubble_style[key];
-				}
-			}
-		}
 
 		if ('background' in properties) {
 			fro.renderer.setClearColor(
-					properties.background[0], properties.background[1], 
-					properties.background[2], properties.background[3]
+				properties.background[0], properties.background[1], 
+				properties.background[2], properties.background[3]
 			);
 		}
 		
@@ -96,18 +75,20 @@ fro.world = {
 
 		// If this entity has an associated template, merge
 		// properties from the template into this entity instance
-		var template = entity.template;
-		
-		if (template && this.templates[template]) {
-			for (var p in this.templates[template]) {
+		if ('template' in entity) {
+			var template = entity.template;
 			
-				// Overwrite only if the entity doesn't have the property
-				if (!entity[p]) {
-					entity[p] = this.templates[template][p];
+			if (this.templates[template]) {
+				for (var p in this.templates[template]) {
+				
+					// Overwrite only if the entity doesn't have the property
+					if (!entity[p]) {
+						entity[p] = this.templates[template][p];
+					}
 				}
 			}
 		}
-
+		
 		var type = entity.type;
 		
 		// Call a loader based on entity type
@@ -135,6 +116,7 @@ fro.world = {
 		// Check for loading props
 		var index;
 		// @todo isLoading
+		return false;
 	},
 
 	/**
@@ -154,7 +136,8 @@ fro.world = {
 	/** Loader callback for entities with type = 'prop' */
 	loadProp : function(id, properties) {
 
-		var prop = new Map_Prop(id, properties);
+		var prop = new Map_Prop();
+		prop.initialise(id, properties);
 		
 		// Add it to the map
 		this.addRenderableEntity(prop);
@@ -184,7 +167,9 @@ fro.world = {
 			throw 'fro.world.player has already been loaded';
 		}
 		
-		this.player = new Map_Player(id, properties);
+		this.player = new Map_Player();
+		this.player.initialise(id, properties);
+		
 		this.addRenderableEntity(this.player);
 		
 		fro.camera.followEntity(this.player);
@@ -228,12 +213,16 @@ fro.world = {
 		
 		}).bind('join', function(evt) { // Sent to our client when a player joins after us 
 			
-			var actor = new Map_RemotePlayer(evt.eid, evt);
+			var actor = new Map_RemotePlayer();
+			actor.initialise(evt.eid, evt);
+			
 			fro.world.addRenderableEntity(actor);
 		
 		}).bind('identity', function(evt) { // Sent to our client when we join a world, and players already exist
 			
-			var actor = new Map_RemotePlayer(evt.eid, evt);
+			var actor = new Map_RemotePlayer();
+			actor.initialise(evt.eid, evt);
+			
 			fro.world.addRenderableEntity(actor);
 		
 		}).bind('say', function(evt) { // Chat message { msg: 'message' }
@@ -273,6 +262,8 @@ fro.world = {
 		
 		this._renderableEntities.push(obj);
 		this.resort();
+		
+		//this.fire('addentity', obj);
 	},
 
 	/** 
@@ -285,6 +276,11 @@ fro.world = {
 		for (var index in this._renderableEntities) {
 			if (this._renderableEntities[index] == entity) {
 			
+				//this.fire('removeentity', this._renderableEntities[index]);
+				
+				// Call a cleanup for the entity
+				this._renderableEntities[index].destroy();
+				
 				delete this._renderableEntities[index];
 				
 				// @todo somehow flag the delete event for that renderable, so that
@@ -348,22 +344,11 @@ fro.world = {
 		
 		// Doodle some props
 		for (index in this._renderableEntities) {
-			this._renderableEntities[index].render();
+			if (this._renderableEntities[index].visible) {
+				this._renderableEntities[index].render();
+			}
 		}
 
-	},
-
-	/** 
-	 * Runs think() for all entities on the map that want to think
-	 */
-	think : function() {
-		
-		/* @todo a register system
-		var index;
-		
-		for (index in this.brainyEntities) {
-			this.brainyEntities[index].think();
-		}*/
 	},
 
 	/** 

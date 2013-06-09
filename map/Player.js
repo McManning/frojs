@@ -3,48 +3,20 @@
 
 var PLAYER_THINK_INTERVAL = 50; // @todo Movement speed is too dependent on this value
 
-function Map_Player(eid, properties) {
-	// @todo does this call Map_Actor constructor code, with the right properties & id?
+function Map_Player() {}
+Map_Player.prototype = new Map_Actor();
 
-	// Replicated from Map_Actor until I can find out how to pass arguments to
-	// use its constructor
-	this.eid = eid;
-
-	this.step = 0;
+Map_Player.prototype.initialise = function(eid, properties) {
+	Map_Actor.prototype.initialise.call(this, eid, properties);
 	
-	this.action = Action.IDLE;
-	this.speed = Speed.WALK;
-	this.direction = Direction.SOUTH;
-	this.zorder = DEFAULT_ACTOR_ZORDER;
-	
-	this.destination = vec3.create();
-	this.position = vec3.create();
-	this.directionNormal = vec3.create();
-	
-	this.position[0] = properties.x;
-	this.position[1] = properties.y;
-	this.position[2] = 0;
-	
-	this.destination[0] = properties.x;
-	this.destination[1] = properties.y;
-	this.destination[2] = 0;
-	
-	this.thinkInterval = 
-		fro.timers.addInterval(this, this.think, PLAYER_THINK_INTERVAL);
+	this.thinkInterval = fro.timers.addInterval(
+		this, this.think, 
+		PLAYER_THINK_INTERVAL
+	);
 
 	// Register an action controller with us
-	// Currently using legacy version
 	this.actionController = new BufferedActionController(this, true);
-	
-	this.loadAvatarFromMetadata(DEFAULT_AVATAR);
-	
-	this.setAvatar(properties.avatar);
-	
-	this.setNick(properties.nick);
 }
-
-// @todo how do I pass arguments to Map_Actor?
-Map_Player.prototype = new Map_Actor();
 
 Map_Player.prototype.think = function() {
 

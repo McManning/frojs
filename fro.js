@@ -23,7 +23,7 @@ var fro = {
 			
 			this.camera.setCenter(0, 0);
 			
-			// @todo to renderer
+			// @todo to renderer or third party
 			this.framerate = new Framerate('framerate');
 			
 			this.background = new RenderableImage(400, 300);
