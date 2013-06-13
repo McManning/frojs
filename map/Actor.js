@@ -43,13 +43,12 @@ var DISTANCE_THRESHOLD = 6;
 
 /** Base class for actors on the map */
 function Map_Actor() {}
-Map_Actor.prototype = new Map_Entity();
+Map_Actor.prototype = new Map_RenderableEntity();
 
 Map_Actor.prototype.initialise = function(eid, properties) {
-	Map_Entity.prototype.initialise.call(this, eid, properties);
+	Map_RenderableEntity.prototype.initialise.call(this, eid, properties);
 
 	this.step = 0;
-	
 	this.action = properties.action;
 	this.speed = Speed.WALK;
 	this.direction = properties.direction;
@@ -187,7 +186,7 @@ Map_Actor.prototype.canMove = function(dir) {
 				16, 16
 			]);
 	
-	return !(fro.world.isBlocked(r, this));
+	return !(fro.world.isRectBlocked(r, this));
 }
 
 

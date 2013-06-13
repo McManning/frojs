@@ -13,6 +13,7 @@ fro.world = {
 	initialise : function(json) {
 		
 		this._renderableEntities = new Array();
+		this._otherEntities = new Array();
 		
 		this._entityLoaders = {
 			prop : this.loadProp,
@@ -66,7 +67,7 @@ fro.world = {
 
 		// If we have a network section, this world is using the Universe server
 		if ('network' in properties) {
-			this.bindNetwork();
+			this._bindNetwork();
 			fro.network.connect(properties.network.server);
 		}
 	},
@@ -122,9 +123,15 @@ fro.world = {
 	/**
 	 * @return Entity object or undefined
 	 */
-	getEntity : function(eid) {
+	find : function(eid) {
 		
 		var ents = this._renderableEntities;
+		for (var index in ents) {
+			if (ents[index].eid == eid)
+				return ents[index];
+		}
+		
+		ents = this._otherEntities;
 		for (var index in ents) {
 			if (ents[index].eid == eid)
 				return ents[index];
@@ -140,14 +147,14 @@ fro.world = {
 		prop.initialise(id, properties);
 		
 		// Add it to the map
-		this.addRenderableEntity(prop);
+		this.add(prop);
 	},
 
 	loadActor : function(id, properties) {
 		
 		//var actor = new Map_Actor(id, properties);
 		
-		//this.addRenderableEntity(actor);
+		//this.add(actor);
 	},
 
 	/** Loader callback for entities with type = 'light' */
@@ -170,7 +177,7 @@ fro.world = {
 		this.player = new Map_Player();
 		this.player.initialise(id, properties);
 		
-		this.addRenderableEntity(this.player);
+		this.add(this.player);
 		
 		fro.camera.followEntity(this.player);
 	},
@@ -179,7 +186,7 @@ fro.world = {
 	 * Binds map level events to our fro.network module. This includes things like 
 	 * adding/removing entities, chat, movement, avatar changes, etc
 	 */
-	bindNetwork : function() {
+	_bindNetwork : function() {
 
 		var props = this.properties;
 
@@ -216,44 +223,48 @@ fro.world = {
 			var actor = new Map_RemotePlayer();
 			actor.initialise(evt.eid, evt);
 			
-			this.addRenderableEntity(actor);
+			this.add(actor);
 		
 		}).bind('say', this, function(evt) { // Chat message { msg: 'message' }
 			
-			var ent = this.getEntity(evt.eid);
+			var ent = this.find(evt.eid);
 			ent.say(evt.msg);
 			
 		}).bind('nick', this, function(evt) { // Update nickname { nick: 'John Doe' }
 			
-			var ent = this.getEntity(evt.eid);
+			var ent = this.find(evt.eid);
 			ent.setNick(evt.nick);
 			
 		}).bind('avatar', this, function(evt) { // Change avatar { url: 'http', w: 0, h: 0, delay: 0 }
 			
-			var ent = this.getEntity(evt.eid);
+			var ent = this.find(evt.eid);
 			ent.setAvatar(evt.src);
 			
 		}).bind('move', this, function(evt) { // Update action buffer { buffer: 'buffercontents' }
 			
-			var ent = this.getEntity(evt.eid);
+			var ent = this.find(evt.eid);
 			
 			// @todo something generic, that can change based on controller type
 			ent.actionController.write(evt.buffer);
 		
 		}).bind('leave', this, function(evt) { // Leave world { reason: 'Why I left' }
 		
-			var ent = this.getEntity(evt.eid);
-			this.removeEntity(ent);
+			var ent = this.find(evt.eid);
+			this.remove(ent);
 		});
 
 	},
 
-	addRenderableEntity : function(obj) {
+	add : function(obj) {
 		
-		this._renderableEntities.push(obj);
-		this.resort();
+		if (obj.isRenderable) {
+			this._renderableEntities.push(obj);
+			this.resort();
+		} else {
+			this._otherEntities.push(obj);
+		}
 		
-		//this.fire('addentity', obj);
+		//this.fire('add', obj);
 	},
 
 	/** 
@@ -261,12 +272,12 @@ fro.world = {
 	 * 
 	 * @param entity Entity to remove
 	 */
-	removeEntity : function(entity) {
+	remove : function(entity) {
 		
 		for (var index in this._renderableEntities) {
 			if (this._renderableEntities[index] == entity) {
 			
-				//this.fire('removeentity', this._renderableEntities[index]);
+				//this.fire('remove', this._renderableEntities[index]);
 				
 				// Call a cleanup for the entity
 				this._renderableEntities[index].destroy();
@@ -278,8 +289,30 @@ fro.world = {
 				
 				// @todo array cleanup somewhere after all iterations are complete, since delete just nullfies
 				// A proper delete queue and cleanup process would be useful. 
+				return true;
 			}
 		}
+		
+		for (var index in this._otherEntities) {
+			if (this._otherEntities[index] == entity) {
+			
+				//this.fire('remove', this._otherEntities[index]);
+				
+				// Call a cleanup for the entity
+				this._otherEntities[index].destroy();
+				
+				delete this._otherEntities[index];
+				
+				// @todo somehow flag the delete event for that renderable, so that
+				// it can kill related timers/listeners/etc
+				
+				// @todo array cleanup somewhere after all iterations are complete, since delete just nullfies
+				// A proper delete queue and cleanup process would be useful. 
+				return true;
+			}
+		}
+		
+		return false;
 	},
 
 	/** Flag a resort of the renderable entities. Called whenever an entity moves */
@@ -288,7 +321,7 @@ fro.world = {
 	},
 
 	/** Reorganizes props on the map based on their Z order and position */
-	sortRenderables : function() {
+	_sortRenderables : function() {
 		
 		/*
 			Return less than zero if left should be lower indexed than right
@@ -330,7 +363,7 @@ fro.world = {
 		// If we need to resort our renderables, do so
 		if (this.needsResort) {
 			this.needsResort = false;
-			this.sortRenderables();
+			this._sortRenderables();
 		}
 		
 		// Doodle some props
@@ -349,7 +382,7 @@ fro.world = {
 	 * @param vec3 end
 	 * @return boolean
 	 */
-	pathBlocked : function(start, end) {
+	isPathBlocked : function(start, end) {
 		return false; // @todo
 	},
 
@@ -360,10 +393,16 @@ fro.world = {
 	 * @param entity excluding If supplied, this entity will be ignored
 	 * @return boolean
 	 */
-	isBlocked : function(r, excluding) {
+	isRectBlocked : function(r, excluding) {
 
-		var entities = this._renderableEntities;
+		var entities = this._renderableEntities;	
+		for (var index in entities) {
+			if (entities[index] != excluding && entities[index].collides(r)) {
+				return true;
+			}
+		}
 		
+		var entities = this._otherEntities;	
 		for (var index in entities) {
 			if (entities[index] != excluding && entities[index].collides(r)) {
 				return true;

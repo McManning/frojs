@@ -41,11 +41,11 @@ var bubbleProperties = {
 }
 
 function Map_Bubble() {}
-Map_Bubble.prototype = new Map_Entity();
+Map_Bubble.prototype = new Map_RenderableEntity();
 
 Map_Bubble.prototype.initialise = function(eid, properties) {
-	Map_Entity.prototype.initialise.call(this, eid, properties);
-	
+	Map_RenderableEntity.prototype.initialise.call(this, eid, properties);
+
 	// Initially hide this bubble and only display when the entity speaks
 	this.visible = false;
 	this.zorder = BUBBLE_ZORDER;
@@ -65,7 +65,7 @@ Map_Bubble.prototype.initialise = function(eid, properties) {
 	}).bind('destroy.bubble', this, function() {
 		
 		// Also remove this attached bubble entity
-		fro.world.removeEntity(this);
+		fro.world.remove(this);
 	});
 }
 

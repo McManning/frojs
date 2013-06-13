@@ -7,7 +7,7 @@ function Map_Entity() {}
 Map_Entity.prototype.initialise = function(eid, properties) {
 	
 	this.eid = eid;
-	this.visible = true;
+	this.isRenderable = false;
 	this.properties = properties;
 	
 	$.extend(this, EventHooks);

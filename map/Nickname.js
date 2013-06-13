@@ -5,11 +5,11 @@
 var NICKNAME_ZORDER = 9998; // Above everything else
 
 function Map_Nickname() {}
-Map_Nickname.prototype = new Map_Entity();
+Map_Nickname.prototype = new Map_RenderableEntity();
 
 Map_Nickname.prototype.initialise = function(eid, properties) {
-	Map_Entity.prototype.initialise.call(this, eid, properties);
-	
+	Map_RenderableEntity.prototype.initialise.call(this, eid, properties);
+
 	this.zorder = NICKNAME_ZORDER;
 	this.position = vec3.create();
 	this.offset = vec3.create();
@@ -28,7 +28,7 @@ Map_Nickname.prototype.initialise = function(eid, properties) {
 	}).bind('destroy.nickname', this, function() {
 		
 		// Also remove this attached entity
-		fro.world.removeEntity(this);
+		fro.world.remove(this);
 	});
 	
 	// Render their current nick

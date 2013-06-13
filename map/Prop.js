@@ -6,10 +6,10 @@
  * and collision data 
  */
 function Map_Prop() {}
-Map_Prop.prototype = new Map_Entity();
+Map_Prop.prototype = new Map_RenderableEntity();
 
 Map_Prop.prototype.initialise = function(eid, properties) {
-	Map_Entity.prototype.initialise.call(this, eid, properties);
+	Map_RenderableEntity.prototype.initialise.call(this, eid, properties);
 
 	this.renderable = new RenderableImage(properties.w, properties.h);
 	this.renderable.useSrcAlpha = true;
