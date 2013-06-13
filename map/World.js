@@ -250,7 +250,8 @@ fro.world = {
 		}).bind('leave', this, function(evt) { // Leave world { reason: 'Why I left' }
 		
 			var ent = this.find(evt.eid);
-			this.remove(ent);
+			ent.destroy();
+			// @todo handle reason
 		});
 
 	},
@@ -264,6 +265,12 @@ fro.world = {
 			this._otherEntities.push(obj);
 		}
 		
+		// Bind to the entity's destroy event, 
+		// to remove from our tracked entities list
+		ent.bind('destroy.world', function() {
+			fro.world.remove(this);
+		});
+		
 		//this.fire('add', obj);
 	},
 
@@ -276,12 +283,7 @@ fro.world = {
 		
 		for (var index in this._renderableEntities) {
 			if (this._renderableEntities[index] == entity) {
-			
-				//this.fire('remove', this._renderableEntities[index]);
-				
-				// Call a cleanup for the entity
-				this._renderableEntities[index].destroy();
-				
+
 				delete this._renderableEntities[index];
 				
 				// @todo somehow flag the delete event for that renderable, so that
@@ -295,12 +297,7 @@ fro.world = {
 		
 		for (var index in this._otherEntities) {
 			if (this._otherEntities[index] == entity) {
-			
-				//this.fire('remove', this._otherEntities[index]);
-				
-				// Call a cleanup for the entity
-				this._otherEntities[index].destroy();
-				
+
 				delete this._otherEntities[index];
 				
 				// @todo somehow flag the delete event for that renderable, so that

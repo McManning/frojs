@@ -27,8 +27,7 @@ Map_Nickname.prototype.initialise = function(eid, properties) {
 		
 	}).bind('destroy.nickname', this, function() {
 		
-		// Also remove this attached entity
-		fro.world.remove(this);
+		this.destroy();
 	});
 	
 	// Render their current nick

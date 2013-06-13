@@ -64,8 +64,7 @@ Map_Bubble.prototype.initialise = function(eid, properties) {
 		
 	}).bind('destroy.bubble', this, function() {
 		
-		// Also remove this attached bubble entity
-		fro.world.remove(this);
+		this.destroy();
 	});
 }
 
