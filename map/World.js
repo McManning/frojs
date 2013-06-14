@@ -271,7 +271,7 @@ fro.world = {
 			fro.world.remove(this);
 		});
 		
-		//this.fire('add', obj);
+		this.fire('add', obj);
 	},
 
 	/** 
@@ -289,6 +289,8 @@ fro.world = {
 				// @todo somehow flag the delete event for that renderable, so that
 				// it can kill related timers/listeners/etc
 				
+				this.fire('remove', entity);
+				
 				// @todo array cleanup somewhere after all iterations are complete, since delete just nullfies
 				// A proper delete queue and cleanup process would be useful. 
 				return true;
@@ -302,6 +304,8 @@ fro.world = {
 				
 				// @todo somehow flag the delete event for that renderable, so that
 				// it can kill related timers/listeners/etc
+				
+				this.fire('remove', entity);
 				
 				// @todo array cleanup somewhere after all iterations are complete, since delete just nullfies
 				// A proper delete queue and cleanup process would be useful. 

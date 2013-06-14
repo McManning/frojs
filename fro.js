@@ -5,6 +5,8 @@ var HEARTBEAT_INTERVAL = 1000/30;
 
 var fro = {
 
+	version : '0.1.0',
+
 	initialise : function(canvas) {
 	
 		this.shaderProgram = null;
@@ -31,20 +33,6 @@ var fro = {
 		}
 	},
 	
-	/**
-	 * Load an editor module to delegate events/rendering to
-	 */
-	editor : function(editor) {
-		
-		// @todo cannot disable an editor via this method
-		if (editor != null) {
-			this._editor = editor;
-		}
-		// @todo non underscore'd editor
-		
-		return editor;
-	},
-
 	run : function() {
 	
 		//this.heartbeat();
@@ -93,8 +81,6 @@ var fro = {
 			
 		if (this.world) {
 			this.world.render();
-		} else if (this._editor) {
-			this._editor.render();
 		}
 	},
 };
