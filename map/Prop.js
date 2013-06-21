@@ -16,11 +16,8 @@ Map_Prop.prototype.initialise = function(eid, properties) {
 	this.renderable.textureStretching = false;
 	this.renderable.useAlphaKey = (properties.alphakey == 1);
 
-	this.position = vec3.create();
 	this.position[0] = properties.x;
 	this.position[1] = properties.y;
-	
-	this.offset = vec3.create();
 	
 	this.width = properties.w;
 	this.height = properties.h;
@@ -149,14 +146,6 @@ Map_Prop.prototype.render = function() {
 Map_Prop.prototype.think = function() {
 	
 	// do stuff
-}
-
-/**
- * Returns a reference to our renderables vector position
- * @return vec3
- */
-Map_Prop.prototype.getPosition = function() {
-	return this.position;
 }
 
 /**

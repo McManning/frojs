@@ -44,17 +44,15 @@ fro.resources = $.extend({
 	},
 	
 	preload : function(json) {
-		
-		var objects = JSON.parse(json);
-		
+
 		this.totalPreload = 0;
 		this.completedPreload = 0;
 		
-		for (var id in objects) {
+		for (var id in json) {
 			
 			++this.totalPreload;
 			
-			this.load(id, objects[id])
+			this.load(id, json[id])
 				.bind('onload', function() {
 				
 					++fro.resources.completedPreload;
@@ -66,7 +64,7 @@ fro.resources = $.extend({
 					}
 				})
 				.bind('onerror', function() {
-					fro.resources.failedResources[id] = objects[id];
+					fro.resources.failedResources[id] = json[id];
 					fro.resources.fire('preload.error', this);
 				});
 		}

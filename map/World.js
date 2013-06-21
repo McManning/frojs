@@ -1,7 +1,7 @@
 
 "use strict";
 
-fro.world = {
+fro.world = $.extend({
 
 	/*
 		_entityLoaders - name->method loaders for entity types
@@ -23,10 +23,8 @@ fro.world = {
 			player : this.loadPlayer,
 		};
 		
-		var mapData = $.parseJSON(json);
-
-		this.parseProperties(mapData);
-		this.parseEntities(mapData.entities);
+		this.parseProperties(json);
+		this.parseEntities(json.entities);
 		
 		// Make sure we have a player entity
 		// @todo maybe this check BEFORE network initialisation? (To avoid false starts)
@@ -267,7 +265,7 @@ fro.world = {
 		
 		// Bind to the entity's destroy event, 
 		// to remove from our tracked entities list
-		ent.bind('destroy.world', function() {
+		obj.bind('destroy.world', function() {
 			fro.world.remove(this);
 		});
 		
@@ -412,5 +410,6 @@ fro.world = {
 		
 		return false;
 	}
-}
+	
+}, EventHooks);
 

@@ -10,14 +10,22 @@ Map_RenderableEntity.prototype.initialise = function(eid, properties) {
 
 	this.visible = true; // Whether or not we should draw this entity this frame
 	this.isRenderable = true; // Entities inherited from this type will be added to the render queue
-
+	this.zorder = 0;
+	
+	this.position = vec3.create();
+	this.offset = vec3.create();
+	
 	$.extend(this, EventHooks);
 }
 
-Map_Entity.prototype.destroy = function() {
+Map_RenderableEntity.prototype.destroy = function() {
 
 	// Fire a destroy event to any listeners 
 	this.fire('destroy');
+}
+
+Map_RenderableEntity.prototype.getPosition = function() {
+	return this.position;
 }
 
 /**

@@ -59,8 +59,6 @@ Map_Actor.prototype.initialise = function(eid, properties) {
 	this.height = 0;
 	
 	this.destination = vec3.create();
-	this.position = vec3.create();
-	this.offset = vec3.create();
 	this.directionNormal = vec3.create();
 	
 	this.setPosition(properties.x, properties.y);
@@ -202,15 +200,6 @@ Map_Actor.prototype.isMoving = function() {
 
 	return (pos[0] != this.destination[0] 
 			|| pos[1] != this.destination[1]);
-}
-
-/**
- * Returns a reference to our renderables vector position
- * 
- * @return vec3
- */
-Map_Actor.prototype.getPosition = function() {
-	return this.position;
 }
 
 /**
