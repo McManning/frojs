@@ -6,7 +6,7 @@ fro.camera = {
 	followedEntity : false,
 	_position : vec3.create(), /**< Our position would be the same as the canvas
 									@todo type convert to rect? */
-	zoom: 1.0, /**< Factor to zoom the viewport */
+	zoom: 1.0, /**< Factor to zoom the viewport @todo disable for Canvas mode */
 	_lastFollowedPosition : vec3.create(),
 	_translation : vec3.create(),
 	_bounds : rect.create(),
@@ -20,22 +20,30 @@ fro.camera = {
 	
 		this.update();
 	
-		gl.viewport(0, 0, gl.viewportWidth, gl.viewportHeight);
-		gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+		if (fro.renderer.isWebGL()) {
+	
+			gl.viewport(0, 0, gl.viewportWidth, gl.viewportHeight);
+			
+			// set up projection matrix
+			// @todo don't I only have to do this once? Or only when zoom changes?
+			mat4.ortho(0, gl.viewportWidth * this.zoom, 0, gl.viewportHeight * this.zoom, 0.0, 100.0, gl.pMatrix);
+			
+			// set up model view matrix
+			mat4.identity(gl.mvMatrix);
+			
+			// Translate origin away from our camera
+			//var trans = vec3.create(this._position);
+			//trans[0] *= -1;
+			//trans[1] *= -1;
 		
-		// set up projection matrix
-		// @todo don't I only have to do this once? Or only when zoom changes?
-		mat4.ortho(0, gl.viewportWidth * this.zoom, 0, gl.viewportHeight * this.zoom, 0.0, 100.0, gl.pMatrix);
-		
-		// set up model view matrix
-		mat4.identity(gl.mvMatrix);
-		
-		// Translate origin away from our camera
-		//var trans = vec3.create(this._position);
-		//trans[0] *= -1;
-		//trans[1] *= -1;
+		} else {
+			// @todo Canvas transformation reset and handling
+			gl.setTransform(1, 0, 0, 1, 0, 0);
+		}
 		
 		mat4.translate(gl.mvMatrix, this._translation);
+		
+		fro.renderer.clear();
 	},
 	
 	setBounds : function(bounds) {

@@ -16,66 +16,109 @@ function RenderableImage(width, height) {
 
 RenderableImage.prototype.render = function(position, rotation, clip, HSVShift) {
 
-	// Begin draw, setup
-	gl.mvPushMatrix();
-
-	mat4.translate(gl.mvMatrix, position);
+	if (fro.renderer.isWebGL()) {
 	
-	if (rotation) {
-		mat4.rotateZ(gl.mvMatrix, rotation);
+		// Begin draw, setup
+		gl.mvPushMatrix();
+		mat4.translate(gl.mvMatrix, position);
+		
+		if (rotation) {
+			mat4.rotateZ(gl.mvMatrix, rotation);
+		}
+		
+		// @todo remove this uniform, no longer used
+		gl.uniform1i(fro.shaderProgram.alphaKeyUniform, this.useAlphaKey);
+		
+		// Unused
+		gl.uniform4f(fro.shaderProgram.colorUniform, 0,0,0,0);
+		
+		if (HSVShift) {
+			gl.uniform3f(fro.shaderProgram.HSVShiftUniform, 
+						HSVShift[0], HSVShift[1], 
+						HSVShift[2]);
+		} else {
+			gl.uniform3f(fro.shaderProgram.HSVShiftUniform, 0, 0, 0);
+		}
+		
+		// Draw
+
+		// Set up buffers to use
+		gl.bindBuffer(gl.ARRAY_BUFFER, this.vbuf);
+		gl.vertexAttribPointer(fro.shaderProgram.vertexPositionAttribute, 
+								this.vbuf.itemSize, gl.FLOAT, false, 0, 0);
+		
+		gl.bindBuffer(gl.ARRAY_BUFFER, this.tbuf);
+		gl.vertexAttribPointer(fro.shaderProgram.textureCoordAttribute, 
+								this.tbuf.itemSize, gl.FLOAT, false, 0, 0);
+		var texture;
+		if (this.texture) {
+			texture = this.texture;
+		} else {
+			texture = fro.resources.defaultTexture;
+		}
+		
+		gl.activeTexture(gl.TEXTURE0);
+		gl.bindTexture(gl.TEXTURE_2D, texture);
+		gl.uniform1i(fro.shaderProgram.samplerUniform, 0);
+		
+		// @todo does the default texture also perform clipping? 
+		// I wanted it to be scaled, but rendered fully.
+		if (clip) {
+
+			var h = (this.height == 0) ? 1.0 : this.height / this.texture.image.height;
+			var x = clip[0] / this.texture.image.width;
+			var y = 1.0 - h - clip[1] / this.texture.image.height;
+
+			gl.uniform2f(fro.shaderProgram.clipUniform, x, y);
+		} else {
+			gl.uniform2f(fro.shaderProgram.clipUniform, 0, 0);
+		}
+		
+		gl.setMatrixUniforms();
+		gl.drawArrays(gl.TRIANGLE_STRIP, 0, this.vbuf.itemCount);
+
+		// End draw, reset
+		gl.mvPopMatrix();
+		
+	} else { // Canvas API rendering
+		
+		var cx = 0, cy = 0;
+		
+		if (clip) {
+			cx = clip[0];
+			cy = clip[1];
+		}
+		
+		// @todo factor in offsets/centering of the position
+		
+		gl.save(); // Save current transformation
+
+		gl.translate(position[0], position[1]);
+		
+		// @todo rotation
+		gl.rotate(rotation);
+		
+		// @todo HSV shift
+		
+		if (this.texture) {
+			gl.drawImage(this.texture.image, 
+					cx, cy, this.width, this.height, 
+					0, 0, this.width, this.height
+			);
+			
+		} else {
+		
+			var texture = fro.resources.defaultTexture;
+			gl.drawImage(texture.image, 
+					cx, cy, texture.image.width, textue.image.height, 
+					0, 0, this.width, this.height
+			);	
+		}
+		
+		// Restore previous transformation
+		gl.restore();
 	}
-	
-	gl.uniform1i(fro.shaderProgram.alphaKeyUniform, this.useAlphaKey);
-	
-	// Unused
-	gl.uniform4f(fro.shaderProgram.colorUniform, 0,0,0,0);
-	
-	if (HSVShift) {
-		gl.uniform3f(fro.shaderProgram.HSVShiftUniform, 
-					HSVShift[0], HSVShift[1], 
-					HSVShift[2]);
-	} else {
-		gl.uniform3f(fro.shaderProgram.HSVShiftUniform, 0, 0, 0);
-	}
-	
-	// Draw
 
-	// Set up buffers to use
-	gl.bindBuffer(gl.ARRAY_BUFFER, this.vbuf);
-	gl.vertexAttribPointer(fro.shaderProgram.vertexPositionAttribute, 
-							this.vbuf.itemSize, gl.FLOAT, false, 0, 0);
-	
-	gl.bindBuffer(gl.ARRAY_BUFFER, this.tbuf);
-	gl.vertexAttribPointer(fro.shaderProgram.textureCoordAttribute, 
-							this.tbuf.itemSize, gl.FLOAT, false, 0, 0);
-	var texture;
-	if (this.texture) {
-		texture = this.texture;
-	} else {
-		texture = fro.resources.defaultTexture;
-	}
-	
-	gl.activeTexture(gl.TEXTURE0);
-	gl.bindTexture(gl.TEXTURE_2D, texture);
-	gl.uniform1i(fro.shaderProgram.samplerUniform, 0);
-	
-	if (clip) {
-
-		var h = (this.height == 0) ? 1.0 : this.height / this.texture.image.height;
-		var x = clip[0] / this.texture.image.width;
-		var y = 1.0 - h - clip[1] / this.texture.image.height;
-
-		gl.uniform2f(fro.shaderProgram.clipUniform, x, y);
-	} else {
-		gl.uniform2f(fro.shaderProgram.clipUniform, 0, 0);
-	}
-	
-	gl.setMatrixUniforms();
-	gl.drawArrays(gl.TRIANGLE_STRIP, 0, this.vbuf.itemCount);
-	
-
-	// End draw, reset
-	gl.mvPopMatrix();
 }
 
 /** 
@@ -118,6 +161,10 @@ RenderableImage.prototype.resize = function(w, h) {
 
 RenderableImage.prototype.buildVertexBuffer = function() {
 	
+	// @todo don't make a call at all to build
+	if (!fro.renderer.isWebGL())
+		return;
+	
 	if (this.vbuf)
 		gl.deleteBuffer(this.vbuf);
 		
@@ -143,6 +190,10 @@ RenderableImage.prototype.buildVertexBuffer = function() {
 
 RenderableImage.prototype.buildTextureBuffer = function() {
 
+	// @todo don't make a call at all to build
+	if (!fro.renderer.isWebGL())
+		return;
+	
 	if (this.tbuf)
 		gl.deleteBuffer(this.tbuf);
 		
