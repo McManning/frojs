@@ -6,6 +6,7 @@ var HEARTBEAT_INTERVAL = 1000/30;
 var fro = {
 
 	version : '0.1.0',
+	plugins : {},
 
 	initialise : function(canvas) {
 	
