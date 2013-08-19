@@ -73,6 +73,7 @@ Map_Actor.prototype.initialise = function(eid, properties) {
 Map_Actor.prototype.setNick = function(nick) {
 	
 	this.nick = nick;
+	this.fire('nick', nick);
 }
 
 Map_Actor.prototype.loadAvatarFromMetadata = function(metadata) {
