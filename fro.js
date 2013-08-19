@@ -27,8 +27,10 @@ var fro = {
 			
 			this.camera.setCenter(0, 0);
 			
-			// @todo to renderer or third party
-			this.framerate = new Framerate('framerate');
+			// Set up properties to record framerates
+			this.framerates = [];
+			this.numFramerates = 10;
+			this.renderTime = -1;
 			
 			this.background = new RenderableImage(400, 300);
 			this.background.setTexture(this.resources.getDefaultTexture(), false);
@@ -61,7 +63,7 @@ var fro = {
 		// dealt with on a browser-by-browser basis, in terms of threading/polling/etc)
 		
 		fro.render();
-		fro.framerate.snapshot();
+		fro.snapshot();
 	},
 
 	render : function() {
@@ -85,6 +87,34 @@ var fro = {
 			this.world.render();
 		}
 	},
+	
+	snapshot : function() {
+	
+		if (this.renderTime < 0) {
+			this.renderTime = new Date().getTime();
+		} else {
+			var newTime = new Date().getTime();
+			var t = newTime - this.renderTime;
+			if (t == 0)
+				return;
+			var framerate = 1000/t;
+			this.framerates.push(framerate);
+			while (this.framerates.length > this.numFramerates)
+				this.framerates.shift();
+			this.renderTime = newTime;
+		}
+	},
+	
+	getFramerate : function() {
+		 var tot = 0;
+		for (var i = 0; i < this.framerates.length; ++i)
+			tot += this.framerates[i];
+
+		var framerate = tot / this.framerates.length;
+		framerate = Math.round(framerate);
+		
+		return framerate;
+	}
 };
 
 
