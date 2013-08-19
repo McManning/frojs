@@ -31,7 +31,7 @@
 			fro.world.bind('add', function(entity) {
 				
 				// Spawn and attach a bubble entity for each actor spawned
-				if (entity instanceof Actor) {
+				if (entity instanceof Map_Actor) {
 					var properties = {};
 					properties.entity = entity;
 

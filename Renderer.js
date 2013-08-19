@@ -8,9 +8,11 @@ var DEFAULT_FS = 'precision mediump float;varying vec2 vTextureCoord;varying vec
 
 fro.renderer = {
 	
-	initialise : function(canvas) {
+	initialise : function(options) {
 		
-		this.usesWebGL = false;
+		var canvas = options.canvas;
+		
+		this.usesWebGL = options.webGL;
 		
 		try {
 			
@@ -101,7 +103,7 @@ fro.renderer = {
 			gl.fillStyle = this.clearStyle;
 			gl.fillRect(0, 0, gl.viewportWidth, gl.viewportHeight);
 		}
-	}
+	},
 	
 	createTexture : function(image) {
 		

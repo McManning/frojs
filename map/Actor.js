@@ -118,6 +118,7 @@ Map_Actor.prototype.setAvatar = function(id) {
 					data = JSON.parse(data);
 				} catch (e) {
 					// Could not parse JSON, call it a fail
+					// @todo better handling, holy crap.
 					fro.log.error('Could not load Avatar ID ' + id);
 					return;
 				}

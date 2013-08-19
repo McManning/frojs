@@ -32,9 +32,10 @@ we can completely stop referencing the world as an entity, or something.
 	
 			$.fn.frojs._wrapCanvas(ele, options);
 	
-			fro.initialise(ele[0]);
-			fro.options = options; // @todo not this.
+			options.canvas = ele[0];
 			
+			fro.initialise(options);
+
 			// Load in all the plugins and let them bind to objects/events
 			$.fn.frojs._initPlugins(ele, options);
 			
@@ -105,8 +106,18 @@ we can completely stop referencing the world as an entity, or something.
 	$.fn.frojs._run = function(ele, options) {
 
 		// Load up the world itself!
-		fro.world.initialise(options.world);
-
+		try {
+			fro.world.initialise(options.world);
+		} catch (e) {
+			alert('Uncaught exception: ' + e);
+		}
+		
+		$('.frojs-preloader').css('display', 'none');
+		
+		// Populate our nav
+		$('#frojs-nickname').val(fro.world.player.nick);
+		$('#frojs-avatar').val(fro.world.player.avatar.url);
+		
 		// Start the renderer
 		fro.run();
 	};
@@ -159,8 +170,37 @@ we can completely stop referencing the world as an entity, or something.
 	
 	$.fn.frojs._wrapCanvas = function(ele, options) {
 		
-		ele.wrap('<div class="frojs-container"/>');
-		var container = ele.parent();
+		ele.wrap('<div id="frojs-content"/>');
+		var contentDiv = ele.parent();
+		
+		contentDiv.wrap('<div class="frojs-container"/>');
+		var containerDiv = contentDiv.parent();
+		
+		// Generate a navigation bar
+		contentDiv.after(
+			'<div id="frojs-navigation">'
+			+   '<legend>Settings</legend>'
+			+   '<fieldset><label>Nickname</label>'
+			+	'<input id="frojs-nickname" /><div class="input-icon icon-ok"></div></fieldset>'
+			+   '<fieldset><label>Avatar</label>'
+			+	'<input id="frojs-avatar" class="hasaddon" />'
+			+	'<div class="input-icon icon-spinner icon-spin"></div>'
+			+	'<button class="addon"><i class="icon-ok"></i></button>'
+			+	'<div class="alert"><i class="icon-remove"></i>Oh no, something bad happened!</div></fieldset>'
+			+ 	'<legend>Share</legend>'
+			+	'<div class="share-group">'
+			+	'<span class="share-icon twitter icon-stack"><i class="icon-sign-blank icon-stack-base"></i><i class="icon-twitter icon-light"></i></span>'
+			+	'<span class="share-icon facebook icon-stack"><i class="icon-sign-blank icon-stack-base"></i><i class="icon-facebook icon-light"></i></span>'
+			+	'<span class="share-icon tumblr icon-stack"><i class="icon-sign-blank icon-stack-base"></i><i class="icon-tumblr icon-light"></i></span>'
+			+	'</div>'
+			+'</div>'
+		);
+		
+		// Nav icon in content bar
+		ele.after(
+			'<div id="frojs-navigation-icon" class="icon-reorder">'
+			+'</div>'
+		);
 		
 		// Generate a preloader bar, logo, and status icon 
 		ele.before(
@@ -181,19 +221,26 @@ we can completely stop referencing the world as an entity, or something.
 		);
 		
 		// Generate an about link
-		ele.before(
+	/*	ele.before(
 			'<div class="frojs-about"><a href="#"><span>'
 			+ '<strong>froJs</strong>'
 			+ ' Build ' + fro.version
 			+'</span></a></div>'
 		);
 		
+		
 		container.find('.frojs-about').mouseover(function() {
 			$(this).find('a').css('display', 'block');
 		}).mouseout(function() {
 			$(this).find('a').css('display', 'none');
 		});
-		
+	*/	
+	
+		// on nickname change, send to server
+		$('#frojs-nickname').blur(function() {
+			
+			fro.world.player.setNick($(this).val());
+		});
 	};
 	
 	// Globally defined, overridable options
@@ -209,6 +256,7 @@ we can completely stop referencing the world as an entity, or something.
 		server : 'http://api.sybolt.com/frojs',
 		
 		plugins : {},
+		webGL : true,
 	};
 	
 })(jQuery, window, document);

@@ -127,19 +127,19 @@ if (typeof KeyEvent == "undefined") {
  */
 fro.input = $.extend({
 	
-	initialise : function(canvas) {
+	initialise : function(options) {
 		
 		// State management for inputs
 		this.pressedKeys = new Array();
 		this.cursorPosition = vec3.create();
 		
 		// Allow the canvas to detect focus/blur events
-		$(canvas).attr('tabindex', -1);
+		$(options.canvas).attr('tabindex', -1);
 		
-		canvas.onmousedown = this.onMouseDown;
+		options.canvas.onmousedown = this.onMouseDown;
 		
-		canvas.onfocus = this.onCanvasFocus;
-		canvas.onblur = this.onCanvasBlur;
+		options.canvas.onfocus = this.onCanvasFocus;
+		options.canvas.onblur = this.onCanvasBlur;
 
 		document.onmouseup = this.onMouseUp;
 		document.onmousemove = this.onMouseMove;

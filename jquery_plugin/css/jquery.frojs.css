@@ -1,4 +1,11 @@
 
+#frojs-canvas {
+    outline: 0;
+    background: #272727;
+    width: 800px;
+    height: 600px;
+}
+
 .frojs-preloader .progress.progress-reflection > .overlay {
 	width: 100%;
     height: 100%;
@@ -36,13 +43,16 @@
 
 .frojs-container {
 	position: relative;
-	width: 802px; 
-	height: 602px; 
+	width: 800px; 
+	height: 600px; 
 	margin: 0 auto;
-	padding: 5px;
+	padding: 0;
 	background: #272727;
 	font-family: Helvetica;
 	color: #BBB;
+	
+	overflow: hidden;
+	
 }
 
 .frojs-container .preloader-logo {
@@ -76,11 +86,6 @@
 	width: 600px;
 	left: 100px;
 	bottom: 50px;
-}
-
-#canvas {
-	width: 800px;
-	height: 600px;
 }
 
 /* Progress bar styles adapted from Bootstrap */
@@ -221,4 +226,308 @@
 .frojs-container .frojs-about span {
 	margin-right: 25px;
 	background: #000;
+}
+
+
+#frojs-navigation {
+	display: none;
+	position: absolute;
+	
+	top: 0;
+	height: 100%;
+	width: 260px;
+	overflow-x: hidden;
+	overflow-y: auto;
+	
+
+	left: -260px;
+	right: auto;
+	
+	/* Bootstrap style stuff */
+
+	-webkit-box-shadow: rgba(255, 255, 255, 0.1) 0 1px 0, rgba(0, 0, 0, 0.8) 0 1px 30px 0px inset;
+	   -moz-box-shadow: rgba(255, 255, 255, 0.1) 0 1px 0, rgba(0, 0, 0, 0.8) 0 1px 30px 0px inset;
+	        
+	box-shadow: rgba(255, 255, 255, 0.1) 0 1px 0, rgba(0, 0, 0, 0.8) 0 1px 15px 0px inset;
+	        
+	background: #272727;
+	border: 0;
+
+}
+
+button.addon {
+    
+	display: inline-block;
+	width: 22px;
+	height: 30px;
+	min-width: 30px;
+	font-size: 16px;
+
+	line-height: 9px;
+
+    font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
+    font-weight: normal;
+	border: 0;
+    
+	vertical-align: top;
+    cursor: pointer;
+
+    
+	text-align: center;
+    
+    color: #fff;
+    
+	background-color: rgb(130, 168, 88);
+    border-bottom-right-radius: 5px;
+    border-top-right-radius: 5px;
+    
+    border-bottom: 2px solid rgba(0,0,0,0.3);
+    
+    text-shadow: 0 2px 0px rgba(0, 0, 0, 0.25); 
+    cursor: pointer;
+    
+    /*
+    border: 1px solid black;
+    border-color: rgba(0,0,0,0.8) rgba(0,0,0,0.8) rgba(0,0,0,0.5);
+    */
+    
+}
+
+button.addon:hover,
+button.addon:focus,
+button.addon:active,
+button.addon.active,
+button.addon.disabled,
+button.addon[disabled] {
+    /*transition: background-position .1s linear;
+    background-position: 0 -15px;  */ 
+    text-decoration: none;
+    
+    margin-top:2px;
+    border-bottom: none;
+    height:28px;
+    padding-bottom: 5px;
+    text-shadow: 0 3px 0px rgba(0, 0, 0, 0.25); 
+}
+
+button.addon.active,button.addon:active {  background-image: none;
+    outline: 0;
+    text-shadow: none; 
+    padding-bottom: 0;
+}
+
+#frojs-navigation legend {
+
+    -webkit-box-shadow: rgba(255, 255, 255, 0.07) 0 1px 0;
+	   -moz-box-shadow: rgba(255, 255, 255, 0.07) 0 1px 0;
+	        box-shadow: rgba(255, 255, 255, 0.07) 0 1px 0;
+	
+	border-bottom: 1px solid #121212;
+	color: #fff;
+
+	display: block;
+	width: 100%;
+	padding-left: 10px;
+	margin-bottom: 20px;
+	font-size: 21px;
+	line-height: 40px;
+}
+
+#frojs-navigation input {
+    margin: 0;
+    outline: none;
+    
+	color: white;
+	height: 21px;
+
+	box-shadow: rgba(255, 255, 255, 0.1) 0 1px 0, rgba(0, 0, 0, 0.8) 0 1px 7px 0px inset;
+	
+	background: #202020;
+	border: 0;
+
+	display: inline-block;
+	vertical-align: middle;
+
+	padding: 4px 6px;
+
+	font-size: 14px;
+	line-height: 20px;
+
+	-webkit-border-radius: 4px;
+	-moz-border-radius: 4px;
+	border-radius: 4px;
+
+	width: 200px;
+
+	font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
+	font-weight: normal;
+}
+
+#frojs-navigation input.hasaddon {
+    width: 170px;
+    
+    -webkit-border-radius: 4px 0 0 4px;
+       -moz-border-radius: 4px 0 0 4px;
+            border-radius: 4px 0 0 4px;  
+}
+
+#frojs-navigation .alert {
+    position: relative;
+	background-color: #fc5b5e;
+	text-shadow: 0 1px 0 rgba(0, 0, 0, 0.25);
+	color: rgb(255, 255, 255);
+	border-radius: 4px;
+	
+    border: 1px solid rgb(194, 54, 56);
+    margin: 12px 0;
+	font-size: 12px;	
+	padding: 4px;
+}
+
+#frojs-navigation .alert:after, #frojs-navigation .alert:before {
+	bottom: 100%;
+	border: solid transparent;
+	content: " ";
+	height: 0;
+	width: 0;
+	position: absolute;
+	pointer-events: none;
+}
+
+#frojs-navigation .alert:after {
+	border-color: rgba(252, 91, 94, 0);
+	border-bottom-color: #fc5b5e;
+	border-width: 5px;
+	left: 20%;
+	margin-left: -5px;
+}
+#frojs-navigation .alert:before {
+	border-color: rgba(212, 4, 8, 0);
+	border-bottom-color: rgb(194, 54, 56);
+	border-width: 7px;
+	left: 20%;
+	margin-left: -7px;
+}
+
+#frojs-navigation .alert > .icon-remove {
+	float: right;
+	color: rgb(255, 192, 193);
+}
+
+#frojs-navigation .input-icon {
+	display: inline-block;
+	margin-left: -21px;
+	color: white;
+	margin-right: 7px;
+}
+
+#frojs-navigation label {
+	
+	display: block;
+	margin-bottom: 5px;
+
+	font-size: 14px;
+	font-weight: normal;
+	line-height: 20px;
+
+	cursor: pointer;
+	color: #c6c6c6;
+	font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
+	
+}
+
+
+#frojs-navigation fieldset {
+	padding: 10px 23px;
+	margin: 0;
+	border: 0;
+}
+
+#frojs-content {
+
+	overflow: hidden;
+}
+
+#frojs-navigation-icon {
+	position: absolute;
+	top: 0;
+	left: 0;
+	padding: 5px;
+	font-size: 36px;
+	color: white;
+	
+	text-shadow: 0 2px 0px #888; 
+}
+
+#frojs-navigation-icon:hover {
+     text-shadow: none;
+     padding-top: 7px;   
+}
+
+#frojs-navigation .share-icon {
+    font-size: 2.5em;
+    margin: 7px;
+    
+}
+
+.share-icon {
+    text-shadow: 0 3px 0px rgba(0, 0, 0, 0.25); 
+    cursor: pointer;
+}    
+
+.share-icon.twitter {
+    color:#00ACEE;
+}
+
+.share-icon.tumblr {
+    color:#2c4762;
+}
+
+.share-icon.facebook {
+    color:#3b5998;
+}
+
+.share-icon.twitter > .icon-stack-base {
+     text-shadow: 0 5px 0px rgba(0, 172, 238, 0.5);   
+}
+
+.share-icon.tumblr > .icon-stack-base {
+     text-shadow: 0 5px 0px rgba(44, 71, 98, 0.5);   
+}
+
+.share-icon.facebook > .icon-stack-base {
+     text-shadow: 0 5px 0px rgba(59, 89, 152, 0.5);   
+}
+
+.share-icon:hover > .icon-light {
+    text-shadow: 0 5px 0px rgba(0, 0, 0, 0.25);     
+}
+
+.share-icon:hover > .icon-stack-base {
+    text-shadow: none;
+    padding-top: 5px;
+    
+}
+
+.share-icon:active > .icon-light {
+     text-shadow: none;
+     padding-top: 5px;
+}
+
+
+/* Override for font-awesome */
+.icon-stack .icon-stack-base {
+	font-size: 1.5em;
+}
+
+.icon-stack {
+	width: 1.5em;
+	height: 1.5em;
+	line-height: 1.5em;
+}
+
+.share-group {
+    width: 100%;
+	
+    text-align: center;
 }

@@ -8,8 +8,9 @@ var fro = {
 	version : '0.1.0',
 	plugins : {},
 
-	initialise : function(canvas) {
+	initialise : function(options) {
 	
+		this.options = options;
 		this.shaderProgram = null;
 	
 		this.log.initialise();
@@ -19,9 +20,9 @@ var fro = {
 		// If the renderer submodule is included, 
 		// initialise it and related submodules
 		if ('renderer' in this) {
-			this.renderer.initialise(canvas);
+			this.renderer.initialise(options);
 
-			this.input.initialise(canvas);
+			this.input.initialise(options);
 			this.camera.initialise();
 			
 			this.camera.setCenter(0, 0);

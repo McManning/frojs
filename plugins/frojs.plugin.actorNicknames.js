@@ -18,7 +18,7 @@
 			fro.world.bind('add', function(entity) {
 				
 				// Spawn and attach a nickname entity for each actor spawned
-				if (entity instanceof Actor) {
+				if (entity instanceof Map_Actor) {
 					var properties = {};
 					properties.entity = entity;
 
