@@ -427,9 +427,11 @@
 	border-radius: 4px;
 	
     border: 1px solid rgb(194, 54, 56);
-    margin: 12px;
-	font-size: 12px;	
+    margin: 10px;
+	
+    font-size: 14px;	
 	padding: 4px;
+    line-height: 18px;
 }
 
 #frojs-navigation .alert.arrow:after, 
@@ -594,4 +596,5 @@
 	
     text-align: center;
 }
+
 

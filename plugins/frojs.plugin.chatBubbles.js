@@ -77,7 +77,7 @@
 		// Generate bubble texture
 		
 		// @todo texture generating in the closure
-		var texture = fro.resources.getBubbleTexture(text, bubbleProperties.style);
+		var texture = fro.resources.getBubbleTexture(text, fro.plugins.chatBubbles.options);
 		
 		if (!this.renderable) {
 			this.renderable = new RenderableImage();

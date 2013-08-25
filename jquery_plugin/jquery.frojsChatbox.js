@@ -121,15 +121,36 @@
 			// Bind network say event to add text to the chatbox
 			fro.network.bind('say', function(evt) {
 				$.fn.frojsChatbox._appendSay(ele, evt.eid, evt.msg);
+			})
+			.bind('leave', function(evt) { // Leave world { reason: 'Why I left' }
+		
+				var ent = fro.world.find(evt.eid);
+				$.fn.frojsChatbox.append(ele, 
+					escapeHtml(ent.nick) + ' disconnected (' + escapeHtml(evt.reason) + ')',
+					true
+				);
+			})
+			.bind('join', function(evt) {
+				
+				// Entity may not exist yet, but we do know their nick from the join message
+				$.fn.frojsChatbox.append(ele, 
+					escapeHtml(evt.nick) + ' connected', 
+					true
+				);
 			});
 			
 		});
 	};
 	
-	$.fn.frojsChatbox.append = function(ele, message) {
+	$.fn.frojsChatbox.append = function(ele, message, timestamped) {
+	
+		// Prepend a timestamp to the message
+		if (timestamped === true) {
+			message = '<span class="timestamp">' + getTimestamp() + '</span> ' + message;
+		}
 	
 		var api = ele.find('.scroll-pane').data('jsp');
-		api.getContentPane().append(message);
+		api.getContentPane().append('<p>'+message+'</p>');
 		api.reinitialise();
 		api.scrollToBottom();
 	}
@@ -139,14 +160,11 @@
 		var entity = fro.world.find(eid);
 		if (entity) {
 		
-			var output = '<p><span class="timestamp">';
-			output += getTimestamp();
-			output += '</span> ';
-			output += '<span class="nickname"><a href="#">' + escapeHtml(entity.nick) + '</a></span>: ';
-			output += escapeHtml(message);
-			output += '</p>';
+			var output = '<span class="nickname"><a href="#">' 
+						+ escapeHtml(entity.nick) + '</a></span>: '
+						+ escapeHtml(message);
 			
-			$.fn.frojsChatbox.append(ele, output);
+			$.fn.frojsChatbox.append(ele, output, true);
 		}
 	};
 	
