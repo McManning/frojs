@@ -19,8 +19,10 @@ Map_Player.prototype.initialise = function(eid, properties) {
 }
 
 Map_Player.prototype.destroy = function() {
-
+	
 	fro.timers.removeInterval(this.thinkInterval);
+	
+	Map_Actor.prototype.destroy.call(this);
 }
 
 Map_Player.prototype.think = function() {

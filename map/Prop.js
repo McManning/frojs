@@ -79,6 +79,10 @@ Map_Prop.prototype.initialise = function(eid, properties) {
 	fro.log.debug('New prop "' + eid + '" at ' + vec3.str(this.position));
 }
 
+Map_Prop.prototype.destroy = function() {
+	Map_RenderableEntity.prototype.destroy.call(this);
+}
+
 /** 
  * Our loaded state depends on the loaded texture 
  * @return boolean

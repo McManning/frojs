@@ -236,30 +236,53 @@ fro.world = $.extend({
 		}).bind('say', this, function(evt) { // Chat message { msg: 'message' }
 			
 			var ent = this.find(evt.eid);
-			ent.say(evt.msg);
+			
+			if (ent) {
+				ent.say(evt.msg);
+			} else {
+				fro.log.error('[net.say] EID ' + evt.eid + ' does not exist');
+			}
 			
 		}).bind('nick', this, function(evt) { // Update nickname { nick: 'John Doe' }
 			
 			var ent = this.find(evt.eid);
-			ent.setNick(evt.nick);
+			
+			if (ent) {
+				ent.setNick(evt.nick);
+			} else {
+				fro.log.error('[net.nick] EID ' + evt.eid + ' does not exist');
+			}
 			
 		}).bind('avatar', this, function(evt) { // Change avatar { url: 'http', w: 0, h: 0, delay: 0 }
 			
 			var ent = this.find(evt.eid);
-			ent.setAvatar(evt.src);
+			
+			if (ent) {
+				ent.setAvatar(evt.src);
+			} else {
+				fro.log.error('[net.avatar] EID ' + evt.eid + ' does not exist');
+			}
 			
 		}).bind('move', this, function(evt) { // Update action buffer { buffer: 'buffercontents' }
 			
 			var ent = this.find(evt.eid);
 			
-			// @todo something generic, that can change based on controller type
-			ent.actionController.write(evt.buffer);
+			if (ent) {
+				// @todo something generic, that can change based on controller type
+				ent.actionController.write(evt.buffer);
+			} else {
+				fro.log.error('[net.move] EID ' + evt.eid + ' does not exist');
+			}
 		
 		}).bind('leave', this, function(evt) { // Leave world { reason: 'Why I left' }
 		
 			var ent = this.find(evt.eid);
-			ent.destroy();
-			// @todo handle reason
+			
+			if (ent) {
+				ent.destroy();
+			} else {
+				fro.log.error('[net.leave] EID ' + evt.eid + ' does not exist');
+			}
 		});
 
 	},
@@ -283,7 +306,8 @@ fro.world = $.extend({
 	},
 
 	/** 
-	 * Removes an entity by reference from the world 
+	 * Removes an entity by reference from the world. In order to fully delete an entity,
+	 * do NOT call this method and instead call entity.destroy() which will also perform removal
 	 * 
 	 * @param entity Entity to remove
 	 */
@@ -293,12 +317,7 @@ fro.world = $.extend({
 			if (this._renderableEntities[index] == entity) {
 
 				delete this._renderableEntities[index];
-				
-				// @todo somehow flag the delete event for that renderable, so that
-				// it can kill related timers/listeners/etc
-				
-				this.fire('remove', entity);
-				
+
 				// @todo array cleanup somewhere after all iterations are complete, since delete just nullfies
 				// A proper delete queue and cleanup process would be useful. 
 				return true;
@@ -309,11 +328,6 @@ fro.world = $.extend({
 			if (this._otherEntities[index] == entity) {
 
 				delete this._otherEntities[index];
-				
-				// @todo somehow flag the delete event for that renderable, so that
-				// it can kill related timers/listeners/etc
-				
-				this.fire('remove', entity);
 				
 				// @todo array cleanup somewhere after all iterations are complete, since delete just nullfies
 				// A proper delete queue and cleanup process would be useful. 

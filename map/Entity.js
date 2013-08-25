@@ -17,6 +17,9 @@ Map_Entity.prototype.destroy = function() {
 
 	// Fire a destroy event to any listeners 
 	this.fire('destroy');
+	
+	// Nuke the entity itself
+	fro.world.remove(this);
 }
 
 /**

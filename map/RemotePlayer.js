@@ -21,6 +21,8 @@ Map_RemotePlayer.prototype.initialise = function(eid, properties) {
 Map_RemotePlayer.prototype.destroy = function() {
 
 	fro.timers.removeInterval(this.thinkInterval);
+	
+	Map_Actor.prototype.destroy.call(this);
 }
 
 Map_RemotePlayer.prototype.think = function() {

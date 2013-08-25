@@ -19,9 +19,7 @@ Map_RenderableEntity.prototype.initialise = function(eid, properties) {
 }
 
 Map_RenderableEntity.prototype.destroy = function() {
-
-	// Fire a destroy event to any listeners 
-	this.fire('destroy');
+	Map_Entity.prototype.destroy.call(this);
 }
 
 Map_RenderableEntity.prototype.getPosition = function() {

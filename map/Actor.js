@@ -70,6 +70,10 @@ Map_Actor.prototype.initialise = function(eid, properties) {
 	this.setNick(properties.nick);
 }
 
+Map_Actor.prototype.destroy = function() {
+	Map_RenderableEntity.prototype.destroy.call(this);
+}
+
 Map_Actor.prototype.setNick = function(nick) {
 	
 	this.nick = nick;
