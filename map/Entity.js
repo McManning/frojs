@@ -10,6 +10,8 @@ Map_Entity.prototype.initialise = function(eid, properties) {
 	this.isRenderable = false;
 	this.properties = properties;
 	
+	this.position = vec3.create();
+	
 	$.extend(this, EventHooks);
 }
 
@@ -20,6 +22,10 @@ Map_Entity.prototype.destroy = function() {
 	
 	// Nuke the entity itself
 	fro.world.remove(this);
+}
+
+Map_Entity.prototype.getPosition = function() {
+	return this.position;
 }
 
 /**
