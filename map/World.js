@@ -90,11 +90,21 @@ fro.world = $.extend({
 		
 		var type = entity.type;
 		
-		// Call a loader based on entity type
-		if (this._entityLoaders[type]) {
-			this._entityLoaders[type].apply(this, [id, entity]);
-		} else {
-			throw 'Unknown entity type "' + type + '" for ' + id;
+		try {
+			// Call a loader based on entity type
+			if (this._entityLoaders[type]) {
+				this._entityLoaders[type].apply(this, [id, entity]);
+			} else {
+				throw 'Unknown entity type "' + type + '" for ' + id;
+			}
+		} catch (e) {
+			
+			// If this entity was required, fail the load entirely
+			if (entity.required == true) {
+				throw e;
+			} else { // just log the error
+				fro.log.error('Exception while loading entity ' + id + ': ' + e);
+			}
 		}
 	},
 
