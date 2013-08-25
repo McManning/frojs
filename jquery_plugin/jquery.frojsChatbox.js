@@ -1,5 +1,44 @@
 
+// @todo rewrite plugin to work with only one instance of a frojs chatbox, and stop passing ele
+// around to all the methods
+
 ;(function($, window, document, undefined) {
+
+	var _htmlEntityMap = {
+		"&": "&amp;",
+		"<": "&lt;",
+		">": "&gt;",
+		'"': '&quot;',
+		"'": '&#39;',
+		"/": '&#x2F;'
+	};
+
+	/**
+	 * Utility method to escape HTML content from strings (chat, nicknames, etc)
+	 */
+	function escapeHtml(string) {
+
+		return String(string).replace(/[&<>"'\/]/g, function (s) {
+		  return _htmlEntityMap[s];
+		});
+	}
+
+	function getTimestamp() {
+	
+		var date = new Date();
+
+		var hour = date.getHours();
+		
+		var min = date.getMinutes();
+		if (min < 10)
+			min = '0' + min;
+			
+		var sec = date.getSeconds();
+		if (sec < 10)
+			sec = '0' + sec;
+		
+		return hour + ":" + min + ":" + sec;
+	}
 	
 	$.fn.frojsChatbox = function(options) {
 		
@@ -8,6 +47,10 @@
 		// Only allow this plugin to be initialised on one div
 		if (this.length > 1) {
 			$.error('Cannot initialise multiple instances of frojsChatbox');
+		}
+	
+		if (!fro || !fro.network) {
+			$.error('Cannot initialise frojsChatbox without fro.network!');
 		}
 	
 		return this.each(function() {
@@ -46,12 +89,16 @@
 				
 				if (e.which == 13) { // hit enter
 				
-					var api = ele.find('.scroll-pane').data('jsp');
-					api.getContentPane().append('<p>' + $(this).val() + '</p>');
-					api.reinitialise();
-					api.scrollToBottom();
-					
-					$(this).val('');
+					var msg = $(this).val();
+					if (msg.length > 0) {
+						if (fro.network.connected) {
+							fro.world.player.sendSay(msg);
+							$(this).val('');
+						} else {
+							
+							$.fn.frojsChatbox.append('Not connected!');
+						}
+					}
 				}
 			});
 			
@@ -71,8 +118,36 @@
 				parent.prepend(ele);
 			}
 			
+			// Bind network say event to add text to the chatbox
+			fro.network.bind('say', function(evt) {
+				$.fn.frojsChatbox._appendSay(ele, evt.eid, evt.msg);
+			});
 			
 		});
+	};
+	
+	$.fn.frojsChatbox.append = function(ele, message) {
+	
+		var api = ele.find('.scroll-pane').data('jsp');
+		api.getContentPane().append(message);
+		api.reinitialise();
+		api.scrollToBottom();
+	}
+	
+	$.fn.frojsChatbox._appendSay = function(ele, eid, message) {
+		
+		var entity = fro.world.find(eid);
+		if (entity) {
+		
+			var output = '<p><span class="timestamp">';
+			output += getTimestamp();
+			output += '</span> ';
+			output += '<span class="nickname"><a href="#">' + escapeHtml(entity.nick) + '</a></span>: ';
+			output += escapeHtml(message);
+			output += '</p>';
+			
+			$.fn.frojsChatbox.append(ele, output);
+		}
 	};
 	
 	$.fn.frojsChatbox._resize = function(ele) {

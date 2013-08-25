@@ -155,3 +155,14 @@ Map_Player.prototype.sendNewNick = function(nick) {
 	
 	fro.network.send(packet);
 }
+
+Map_Player.prototype.sendSay = function(message) {
+
+	var packet = {
+		id: 'say',
+		msg: message
+	};
+	
+	fro.network.send(packet);
+}
+

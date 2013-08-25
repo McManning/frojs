@@ -31,6 +31,14 @@ we can completely stop referencing the world as an entity, or something.
 			// @todo world JSON validation code of some sort
 	
 			$.fn.frojs._wrapCanvas(ele, options);
+			
+			// Load default navigation content
+			$.ajax({
+				url: options.navurl,
+				success: function(html) {
+					$.fn.frojs._setNavigationContent(options.navurl, html);
+				}
+			});
 	
 			options.canvas = ele[0];
 			
@@ -50,11 +58,6 @@ we can completely stop referencing the world as an entity, or something.
 					// Load the JSON 
 					options.world = this.json;
 					
-					// Expand settings into the world config
-					// @todo get rid of this, or somethin, idk. 
-					options.world.entities.player.nick = options.nickname;
-					options.world.entities.player.avatar = options.avatar;
-
 					$.fn.frojs._preload(ele, options);
 				})
 				.bind('onerror', function() {
@@ -106,11 +109,7 @@ we can completely stop referencing the world as an entity, or something.
 	$.fn.frojs._run = function(ele, options) {
 
 		// Load up the world itself!
-		try {
-			fro.world.initialise(options.world);
-		} catch (e) {
-			alert('Uncaught exception: ' + e);
-		}
+		fro.world.initialise(options.world);
 		
 		$('.frojs-preloader').css('display', 'none');
 		
@@ -168,6 +167,81 @@ we can completely stop referencing the world as an entity, or something.
 				.html(message);
 	};
 	
+	$.fn.frojs._navLoadSettings = function() {
+		
+		// If it's not already loaded, ajax retrieve form 
+		if ($('#frojs-navigation > form').data('page') != 'settings') {
+			$.ajax({
+				url: '/frojs/nav-settings.php',
+				success: function(html) {
+					$('#frojs-navigation > form')
+						.html(html)
+						.data('page', 'settings')
+						
+					// Bind nick changing
+					
+					// on nickname change, send to server
+					$('#frojs-nickname').blur(function() {
+						
+						// @todo swap over to networked version 
+						fro.world.player.setNick($(this).val());
+					});
+					
+					// @todo bind avatar changing... or something
+				}
+			});
+		}
+	};
+	
+	$.fn.frojs._setNavigationContent = function(url, html) {
+	
+		var nav = $('#frojs-navigation');
+		
+		nav.html(html);
+		nav.trigger('pagechange', url);
+		
+		// Override standard page change events to only change the
+		// content of our navigation via AJAX
+		
+		nav.find('form').submit(function(e) {
+			
+			var url = $(this).attr('action');
+			
+			// Ajax post this form instead
+			$.ajax({
+				type: 'POST',
+				url: url,
+				data: $(this).serialize(),
+				success: function(html) {
+					$.fn.frojs._setNavigationContent(url, html);
+				}
+			});
+			
+			e.preventDefault();
+			return false;
+		});
+		
+		nav.find('a').click(function(e) {
+
+			if ($(this).attr('target') == undefined)
+			{
+				var url = $(this).attr('href');
+			
+				// Ajax post this form instead
+				$.ajax({
+					url: url,
+					success: function(html) {
+						$.fn.frojs._setNavigationContent(url, html);
+					}
+				});
+				
+				e.preventDefault();
+				return false;
+			}
+		});
+		
+	};
+	
 	$.fn.frojs._wrapCanvas = function(ele, options) {
 		
 		ele.wrap('<div id="frojs-content"/>');
@@ -178,28 +252,13 @@ we can completely stop referencing the world as an entity, or something.
 		
 		// Generate a navigation bar
 		contentDiv.after(
-			'<div id="frojs-navigation">'
-			+   '<legend>Settings</legend>'
-			+   '<fieldset><label>Nickname</label>'
-			+	'<input id="frojs-nickname" /><div class="input-icon icon-ok"></div></fieldset>'
-			+   '<fieldset><label>Avatar</label>'
-			+	'<input id="frojs-avatar" class="hasaddon" />'
-			+	'<div class="input-icon icon-spinner icon-spin"></div>'
-			+	'<button class="addon"><i class="icon-ok"></i></button>'
-			+	'<div class="alert"><i class="icon-remove"></i>Oh no, something bad happened!</div></fieldset>'
-			+ 	'<legend>Share</legend>'
-			+	'<div class="share-group">'
-			+	'<span class="share-icon twitter icon-stack"><i class="icon-sign-blank icon-stack-base"></i><i class="icon-twitter icon-light"></i></span>'
-			+	'<span class="share-icon facebook icon-stack"><i class="icon-sign-blank icon-stack-base"></i><i class="icon-facebook icon-light"></i></span>'
-			+	'<span class="share-icon tumblr icon-stack"><i class="icon-sign-blank icon-stack-base"></i><i class="icon-tumblr icon-light"></i></span>'
-			+	'</div>'
-			+'</div>'
+			'<div id="frojs-navigation"></div>'
+			
 		);
 		
 		// Nav icon in content bar
 		ele.after(
-			'<div id="frojs-navigation-icon" class="icon-reorder">'
-			+'</div>'
+			'<div id="frojs-navigation-icon" class="icon-reorder"></div>'
 		);
 		
 		// Generate a preloader bar, logo, and status icon 
@@ -236,11 +295,6 @@ we can completely stop referencing the world as an entity, or something.
 		});
 	*/	
 	
-		// on nickname change, send to server
-		$('#frojs-nickname').blur(function() {
-			
-			fro.world.player.setNick($(this).val());
-		});
 	};
 	
 	// Globally defined, overridable options
@@ -250,10 +304,10 @@ we can completely stop referencing the world as an entity, or something.
 	
 		key : null,
 		origin : location.href,
-		avatar : '',
-		nickname : 'Player',
 		
 		server : 'http://api.sybolt.com/frojs',
+		
+		navurl : 'http://api.sybolt.com/frojs/nav',
 		
 		plugins : {},
 		webGL : true,

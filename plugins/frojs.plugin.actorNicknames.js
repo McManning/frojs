@@ -12,7 +12,7 @@
 			this.options = $.extend({
 				family: 'Helvetica',
 				color: '#000',
-				height: 12
+				height: 14
 			}, options);
 		
 			fro.world.bind('add', function(entity) {
@@ -64,11 +64,7 @@
 	Map_ActorNickname.prototype.change = function(nick) {
 		
 		// Regenerate our name texture 
-		var texture = fro.resources.getFontTexture(nick, {
-				height: 14,
-				family: '"Helvetica Neue", Helvetica, Arial, sans-serif',
-				color: '#00FFFF',
-			});
+		var texture = fro.resources.getFontTexture(nick, fro.plugins.actorNicknames.options);
 		
 		if (!this.renderable) {
 			this.renderable = new RenderableImage();

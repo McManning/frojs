@@ -255,12 +255,41 @@
 
 }
 
-button.addon {
+#frojs-navigation a {
+    
+    color: white;
+    text-decoration: none;
+}
+
+#frojs-navigation a:hover, #frojs-navigation a:active {
+    color: #CCC;
+}
+
+#frojs-report-link {
+    position: absolute;
+    bottom: 5px;
+    right: 10px;
+}
+
+#frojs-technical-link {
+    position: absolute;
+    bottom: 5px;
+    left: 10px;
+	font-size: 20px;
+}
+
+#network-status.connected {
+	color: #82A858;
+}
+
+#network-status.disconnected {
+	color: #fc5b5e;
+}
+
+#frojs-navigation button {
     
 	display: inline-block;
-	width: 22px;
 	height: 30px;
-	min-width: 30px;
 	font-size: 16px;
 
 	line-height: 9px;
@@ -269,36 +298,31 @@ button.addon {
     font-weight: normal;
 	border: 0;
     
-	vertical-align: top;
     cursor: pointer;
 
-    
 	text-align: center;
     
     color: #fff;
     
 	background-color: rgb(130, 168, 88);
-    border-bottom-right-radius: 5px;
-    border-top-right-radius: 5px;
-    
+    border-radius: 5px;
+
     border-bottom: 2px solid rgba(0,0,0,0.3);
     
     text-shadow: 0 2px 0px rgba(0, 0, 0, 0.25); 
     cursor: pointer;
     
-    /*
-    border: 1px solid black;
-    border-color: rgba(0,0,0,0.8) rgba(0,0,0,0.8) rgba(0,0,0,0.5);
-    */
     
+    float: right;
+    margin-right: 25px;
 }
 
-button.addon:hover,
-button.addon:focus,
-button.addon:active,
-button.addon.active,
-button.addon.disabled,
-button.addon[disabled] {
+#frojs-navigation button:hover,
+#frojs-navigation button:focus,
+#frojs-navigation button:active,
+#frojs-navigation button.active,
+#frojs-navigation button.disabled,
+#frojs-navigation button[disabled] {
     /*transition: background-position .1s linear;
     background-position: 0 -15px;  */ 
     text-decoration: none;
@@ -310,10 +334,23 @@ button.addon[disabled] {
     text-shadow: 0 3px 0px rgba(0, 0, 0, 0.25); 
 }
 
-button.addon.active,button.addon:active {  background-image: none;
+#frojs-navigation button.active,
+#frojs-navigation button:active {  
+	background-image: none;
     outline: 0;
     text-shadow: none; 
     padding-bottom: 0;
+}
+
+
+#frojs-navigation button.addon {
+
+	width: 22px;
+	height: 30px;
+	min-width: 30px;
+	font-size: 16px;
+
+	line-height: 9px;
 }
 
 #frojs-navigation legend {
@@ -329,11 +366,14 @@ button.addon.active,button.addon:active {  background-image: none;
 	width: 100%;
 	padding-left: 10px;
 	margin-bottom: 20px;
-	font-size: 21px;
+	
+
+    font-size: 19px;
 	line-height: 40px;
 }
 
-#frojs-navigation input {
+#frojs-navigation input[type="text"],
+#frojs-navigation textarea {
     margin: 0;
     outline: none;
     
@@ -363,6 +403,14 @@ button.addon.active,button.addon:active {  background-image: none;
 	font-weight: normal;
 }
 
+#frojs-navigation textarea {
+	height: 200px;
+}
+
+#frojs-navigation input[disabled] {
+	color: #666;
+}
+
 #frojs-navigation input.hasaddon {
     width: 170px;
     
@@ -379,12 +427,13 @@ button.addon.active,button.addon:active {  background-image: none;
 	border-radius: 4px;
 	
     border: 1px solid rgb(194, 54, 56);
-    margin: 12px 0;
+    margin: 12px;
 	font-size: 12px;	
 	padding: 4px;
 }
 
-#frojs-navigation .alert:after, #frojs-navigation .alert:before {
+#frojs-navigation .alert.arrow:after, 
+#frojs-navigation .alert.arrow:before {
 	bottom: 100%;
 	border: solid transparent;
 	content: " ";
@@ -394,15 +443,15 @@ button.addon.active,button.addon:active {  background-image: none;
 	pointer-events: none;
 }
 
-#frojs-navigation .alert:after {
-	border-color: rgba(252, 91, 94, 0);
+#frojs-navigation .alert.arrow:after {
+	border-color: transparent;
 	border-bottom-color: #fc5b5e;
 	border-width: 5px;
 	left: 20%;
 	margin-left: -5px;
 }
-#frojs-navigation .alert:before {
-	border-color: rgba(212, 4, 8, 0);
+#frojs-navigation .alert.arrow:before {
+	border-color: transparent;
 	border-bottom-color: rgb(194, 54, 56);
 	border-width: 7px;
 	left: 20%;
@@ -412,6 +461,20 @@ button.addon.active,button.addon:active {  background-image: none;
 #frojs-navigation .alert > .icon-remove {
 	float: right;
 	color: rgb(255, 192, 193);
+}
+
+#frojs-navigation .alert.success {
+	background-color: rgb(130, 168, 88);
+	border-color: #668346;
+}
+
+#frojs-navigation .alert.success.arrow:after {
+    border-bottom-color: rgb(130, 168, 88);
+}
+
+#frojs-navigation .alert.success.arrow:before {
+
+	border-bottom-color: #668346;
 }
 
 #frojs-navigation .input-icon {
@@ -436,6 +499,10 @@ button.addon.active,button.addon:active {  background-image: none;
 	
 }
 
+#frojs-technical-details {
+    margin: 15px;
+}
+
 
 #frojs-navigation fieldset {
 	padding: 10px 23px;
@@ -455,7 +522,7 @@ button.addon.active,button.addon:active {  background-image: none;
 	padding: 5px;
 	font-size: 36px;
 	color: white;
-	
+	cursor: pointer;
 	text-shadow: 0 2px 0px #888; 
 }
 
@@ -467,13 +534,9 @@ button.addon.active,button.addon:active {  background-image: none;
 #frojs-navigation .share-icon {
     font-size: 2.5em;
     margin: 7px;
-    
-}
-
-.share-icon {
     text-shadow: 0 3px 0px rgba(0, 0, 0, 0.25); 
     cursor: pointer;
-}    
+}
 
 .share-icon.twitter {
     color:#00ACEE;
@@ -531,3 +594,4 @@ button.addon.active,button.addon:active {  background-image: none;
 	
     text-align: center;
 }
+
