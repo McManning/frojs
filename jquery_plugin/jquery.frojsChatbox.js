@@ -22,6 +22,11 @@
 		  return _htmlEntityMap[s];
 		});
 	}
+	
+	function replaceURLWithHTMLLinks(text) {
+		var exp = /(\b(https?|ftps?):\&#x2F;\&#x2F;[-A-Z0-9+&@#\&#x2F;%?=~_|!:,.;]*[-A-Z0-9+&@#\&#x2F;%=~_|])/ig;
+		return text.replace(exp,"<a href='$1'>$1</a>"); 
+	}
 
 	function getTimestamp() {
 	
@@ -162,9 +167,13 @@
 		
 			var output = '<span class="nickname"><a href="#">' 
 						+ escapeHtml(entity.nick) + '</a></span>: '
-						+ escapeHtml(message);
+						+ replaceURLWithHTMLLinks(escapeHtml(message));
 			
 			$.fn.frojsChatbox.append(ele, output, true);
+			
+			// Play bleep clip (@todo probably move this)
+			var sound = fro.world.find('chat_audio_node');
+			sound.play();
 		}
 	};
 	
