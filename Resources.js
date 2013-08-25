@@ -34,6 +34,9 @@ fro.resources = $.extend({
 			vs : this._loadData,
 			fs : this._loadData,
 			data : this._loadData, // Psuedo type
+			wav : this._loadSound,
+			mp3 : this._loadSound,
+			ogg : this._loadSound,
 		}
 		
 		this.loadedResources = new Array();
@@ -183,6 +186,71 @@ fro.resources = $.extend({
 				}
 				
 				return this.texture;
+			}
+			
+		}, EventHooks);
+
+		return resource;
+	},
+	
+	/**
+	 * Loads an audio buffer into resource.buffer, converted into 
+	 * an AudioBuffer object via resource.getAudioBuffer()
+	 *
+	 * @return new resource object
+	 */
+	_loadSound : function() {
+		
+		// @todo possibly new class initiating, rather than this?
+		var resource = $.extend({
+			
+			load : function(id, url) {
+				
+				this.id = id;
+				this.url = url;
+				
+				var res = this;
+
+				var request = new XMLHttpRequest();
+				
+				request.open('GET', url, true);
+				request.responseType = 'arraybuffer';
+				
+				// Decode asynchronously
+				request.onload = function() {
+				
+					var context = fro.audio.getAudioContext();
+					context.decodeAudioData(request.response, function(buffer) {
+
+						res.buffer = buffer;
+						res.fire('onload', res);
+						
+					}, function() {
+						res.fire('onerror', res);
+					});
+				};
+				
+				// hook an error handler for network errors
+				request.onerror = function() { 
+					res.fire('onerror', res);
+				}
+				
+				request.send();
+				
+			},
+			
+			isLoaded : function() {
+				
+				if (!this.buffer) {
+					return false;
+				}
+				
+				return true;
+			},
+
+			getBuffer : function() {
+				
+				return this.buffer;
 			}
 			
 		}, EventHooks);

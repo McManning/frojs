@@ -21,6 +21,7 @@ fro.world = $.extend({
 			light : this.loadLight,
 			event : this.loadEvent,
 			player : this.loadPlayer,
+			sound : this.loadSound,
 		};
 		
 		this.parseProperties(json);
@@ -157,7 +158,7 @@ fro.world = $.extend({
 		// Add it to the map
 		this.add(prop);
 	},
-
+	
 	loadActor : function(id, properties) {
 		
 		//var actor = new Map_Actor(id, properties);
@@ -188,6 +189,15 @@ fro.world = $.extend({
 		this.add(this.player);
 		
 		fro.camera.followEntity(this.player);
+	},
+	
+	/** Add an audio object to the map */
+	loadSound : function(id, properties) {
+		
+		var sound = new Map_Sound();
+		sound.initialise(id, properties);
+		
+		this.add(sound);
 	},
 
 	/** 
@@ -295,12 +305,6 @@ fro.world = $.extend({
 		} else {
 			this._otherEntities.push(obj);
 		}
-		
-		// Bind to the entity's destroy event, 
-		// to remove from our tracked entities list
-		obj.bind('destroy.world', function() {
-			fro.world.remove(this);
-		});
 		
 		this.fire('add', obj);
 	},

@@ -16,7 +16,8 @@ var fro = {
 		this.log.initialise();
 		this.timers.initialise();
 		this.resources.initialise();
-
+		this.audio.initialise(options);
+		
 		// If the renderer submodule is included, 
 		// initialise it and related submodules
 		if ('renderer' in this) {
