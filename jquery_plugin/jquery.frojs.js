@@ -167,32 +167,6 @@ we can completely stop referencing the world as an entity, or something.
 				.html(message);
 	};
 	
-	$.fn.frojs._navLoadSettings = function() {
-		
-		// If it's not already loaded, ajax retrieve form 
-		if ($('#frojs-navigation > form').data('page') != 'settings') {
-			$.ajax({
-				url: '/frojs/nav-settings.php',
-				success: function(html) {
-					$('#frojs-navigation > form')
-						.html(html)
-						.data('page', 'settings')
-						
-					// Bind nick changing
-					
-					// on nickname change, send to server
-					$('#frojs-nickname').blur(function() {
-						
-						// @todo swap over to networked version 
-						fro.world.player.setNick($(this).val());
-					});
-					
-					// @todo bind avatar changing... or something
-				}
-			});
-		}
-	};
-	
 	$.fn.frojs._setNavigationContent = function(url, html) {
 	
 		var nav = $('#frojs-navigation');
@@ -227,13 +201,15 @@ we can completely stop referencing the world as an entity, or something.
 			{
 				var url = $(this).attr('href');
 			
-				// Ajax post this form instead
-				$.ajax({
-					url: url,
-					success: function(html) {
-						$.fn.frojs._setNavigationContent(url, html);
-					}
-				});
+				if (url != '#') {
+					// Ajax post this form instead
+					$.ajax({
+						url: url,
+						success: function(html) {
+							$.fn.frojs._setNavigationContent(url, html);
+						}
+					});
+				}
 				
 				e.preventDefault();
 				return false;
