@@ -12,6 +12,8 @@
 	border: none;
 	z-index: 2;
 	opacity: 1;
+	
+	display: none;
 }
 
 .frojs-chatbox .scroll-pane

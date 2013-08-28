@@ -91,25 +91,3 @@ fro.audio = $.extend({
 	
 }, EventHooks);
 
-/*
-	Instead of a central manager, we'll have audio objects that we can move
-	around, and a central reference for the context and global audio nonsense.
-	We'll use resource loader to generate the audio objects, which can then be
-	played on their own, using the settings in fro.audio.
-	
-	fro.audio should then be able to add new loader methods to the resource
-	loader, which means we should have some sort of plugin interface for the
-	resource loader...
-	
-	Why aren't timers objects too? Instead of reference numbers?
-	
-	Let's make map audio actual map objects. That would be a LOT fucking neater.
-	There could be a global audio option, loop option, positional audio option, etc.
-	
-	DO IT. FUCKING DO IT! WOOOH!
-	That way we can finally use the non-renderable entities listing
-	
-	fro.sound can manage audio globals, maybe playback and mixing?
-	
-*/
-

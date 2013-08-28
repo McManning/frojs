@@ -109,13 +109,26 @@ we can completely stop referencing the world as an entity, or something.
 	$.fn.frojs._run = function(ele, options) {
 
 		// Load up the world itself!
-		fro.world.initialise(options.world);
+		try {
+			fro.world.initialise(options.world);
+		} catch (e) {
+			$.fn.frojs._setPreloaderError(ele, e);
+			return;
+		}
+		
+		// If everything initialised properly, connect to our network
+		if ('network' in options.world) {
+			fro.network.connect(options.world.network.server);
+		}
 		
 		$('.frojs-preloader').css('display', 'none');
 		
 		// Populate our nav
 		$('#frojs-nickname').val(fro.world.player.nick);
 		$('#frojs-avatar').val(fro.world.player.avatar.url);
+		
+		// If we have a chatbox, display it
+		$('.frojs-chatbox').css('display', 'block');
 		
 		// Start the renderer
 		fro.run();
@@ -152,7 +165,7 @@ we can completely stop referencing the world as an entity, or something.
 			var percent = current / total * 100;
 			
 			container
-				.find('.progress > .bar, .overlay') // @todo might be wrong selector for .overlay
+				.find('.progress > .bar, .progress > .overlay') // @todo might be wrong selector for .overlay
 					.css('width', percent.toString() + '%');
 		}
 	};
@@ -242,8 +255,10 @@ we can completely stop referencing the world as an entity, or something.
 			'<div class="frojs-preloader">'
 			+	'<div class="preloader-logo"></div>'
 			+	'<div class="preloader-bar">'
-			+		'<span class="preloader-status"></span>'
-			+		'<span class="preloader-progress"></span>'
+			+		'<div class="preloader-info">'
+			+			'<span class="preloader-status"></span>'
+			+			'<span class="preloader-progress"></span>'
+			+		'</div>'
 			+		'<div class="progress progress-striped active">'
 			+			'<div class="bar" style="width: 0%"></div>'
 			+		'</div>'

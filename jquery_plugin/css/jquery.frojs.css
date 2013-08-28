@@ -1,4 +1,31 @@
 
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+ 
+::-webkit-scrollbar-track {
+    -webkit-border-radius: 10px;
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+    -webkit-border-radius: 10px;
+    border-radius: 10px;
+    background: #161616;
+    opacity: 0.5;
+}
+
+::-webkit-scrollbar-thumb:window-inactive {
+	background: #161616;
+    opacity: 0.4;
+}
+
+::-webkit-scrollbar-corner {
+    background-color: black;
+}
+
+
 #frojs-canvas {
     outline: 0;
     background: #272727;
@@ -57,11 +84,11 @@
 
 .frojs-container .preloader-logo {
 	position: absolute;
-	background-image: url('/frojs_resources/img/frojs_logo.png');
-	width: 103px;
-	height: 201px;
-	top: 200px;
-	left: 350px;
+	background-image: url('/frojs/resources/img/preloader-logo.png');
+	width: 128px;
+	height: 242px;
+	top: 180px;
+	left: 336px;
 }
 
 .frojs-container .preloader-logo.alpha {
@@ -69,16 +96,22 @@
 }
 
 .frojs-preloader .preloader-status {
+	display: inline-block;
 	text-shadow: 0 2px 2px #000;
-	line-height: 28px;
-	padding-left: 5px;
+	line-height: 20px;
+	padding: 5px;
+	max-width: 500px;
 }
 
 .frojs-preloader .preloader-progress {
 	float: right;
+	display: inline-block;
 	text-shadow: 0 2px 2px #000;
-	line-height: 28px;
-	padding-right: 5px;
+	line-height: 20px;
+	padding: 5px;
+	position: absolute;
+	right: 0;
+	bottom: 36px;
 }
 
 .frojs-preloader .preloader-bar {
@@ -133,6 +166,7 @@
 .frojs-preloader .progress {
   overflow: hidden;
   height: 18px;
+  width: 600px;
   background-color: #383838;
 
   background-repeat: repeat-x;
@@ -198,6 +232,7 @@
 
 .frojs-preloader.preload-error {
 	color: #D84B4B;
+	vertical-align: bottom;
 }
 
 .frojs-preloader.preload-error .progress > .bar {
@@ -278,6 +313,13 @@
 	font-size: 20px;
 }
 
+#frojs-keymap-link {
+    position: absolute;
+    bottom: 5px;
+    left: 40px;
+    font-size:20px;
+}
+
 #network-status.connected {
 	color: #82A858;
 }
@@ -312,9 +354,7 @@
     text-shadow: 0 2px 0px rgba(0, 0, 0, 0.25); 
     cursor: pointer;
     
-    
     float: right;
-    margin-right: 25px;
 }
 
 #frojs-navigation button:hover,
@@ -332,6 +372,16 @@
     height:28px;
     padding-bottom: 5px;
     text-shadow: 0 3px 0px rgba(0, 0, 0, 0.25); 
+}
+
+#frojs-navigation button.disabled, 
+#frojs-navigation button[disabled] {
+    
+    text-shadow: none;
+    margin-top: 2px;
+    padding-bottom: 0;
+    cursor: default;
+    opacity: 0.5;
 }
 
 #frojs-navigation button.active,
@@ -754,3 +804,13 @@
     width: 15px;
     display: inline-block;
 }
+
+#frojs-keymap label {
+	display: inline-block;
+	float: left;
+}
+
+.frojs-keymap {
+	width: 60px;
+}
+

@@ -64,10 +64,10 @@ fro.world = $.extend({
 			fro.camera.setBounds(bounds);
 		}
 
-		// If we have a network section, this world is using the Universe server
+		// If we have a network section, this world is using the Universe server,
+		// so bind events
 		if ('network' in properties) {
 			this._bindNetwork();
-			fro.network.connect(properties.network.server);
 		}
 	},
 

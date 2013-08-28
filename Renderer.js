@@ -24,7 +24,8 @@ fro.renderer = {
 			fro.log.warning('Using canvas fallback');
 		
 			// No WebGL support, fallback to Canvas
-			gl = canvas.getContext('2d');
+			//gl = canvas.getContext('2d');
+			// @todo implement!
 			
 			// @todo double buffering offscreen canvas
 			
@@ -32,7 +33,7 @@ fro.renderer = {
 		
 		// No WebGL or canvas support, they can't play!
 		if (!gl) {
-			throw 'Neither WebGL or canvas support';
+			throw 'No WebGL support!';
 		}
 	
 		gl.viewportWidth = canvas.width;
