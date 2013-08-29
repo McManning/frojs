@@ -32,14 +32,6 @@ we can completely stop referencing the world as an entity, or something.
 	
 			$.fn.frojs._wrapCanvas(ele, options);
 			
-			// Load default navigation content
-			$.ajax({
-				url: options.navurl,
-				success: function(html) {
-					$.fn.frojs._setNavigationContent(options.navurl, html);
-				}
-			});
-	
 			options.canvas = ele[0];
 			
 			fro.initialise(options);
@@ -180,6 +172,15 @@ we can completely stop referencing the world as an entity, or something.
 				.html(message);
 	};
 	
+	$.fn.frojs.loadNavigationUrl = function(url) {
+		$.ajax({
+			url: url,
+			success: function(html) {
+				$.fn.frojs._setNavigationContent(url, html);
+			}
+		});
+	};
+	
 	$.fn.frojs._setNavigationContent = function(url, html) {
 	
 		var nav = $('#frojs-navigation');
@@ -297,8 +298,6 @@ we can completely stop referencing the world as an entity, or something.
 		origin : location.href,
 		
 		server : 'http://api.sybolt.com/frojs',
-		
-		navurl : 'http://api.sybolt.com/frojs/nav',
 		
 		plugins : {},
 		webGL : true,

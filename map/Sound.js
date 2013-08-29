@@ -21,34 +21,41 @@ Map_Sound.prototype.initialise = function(eid, properties) {
 		this.position[1] = properties.y;
 	}
 	
-	// Use an internal gain node to control this single sound's volume
-	this.audioGainNode = fro.audio.getAudioContext().createGain();
-	this.setVolume(properties.volume);
+	if (fro.audio.isAvailable()) {
 	
-	var resource = fro.resources.load(properties.url);
-	
-	if (resource.isLoaded()) {
-	
-		// Audio source is already loaded
-		this.setBuffer(resource.getBuffer());
+		// Use an internal gain node to control this single sound's volume
+		this.audioGainNode = fro.audio.getAudioContext().createGain();
+		this.setVolume(properties.volume);
+		
+		var resource = fro.resources.load(properties.url);
+		
+		if (resource.isLoaded()) {
+		
+			// Audio source is already loaded
+			this.setBuffer(resource.getBuffer());
+			
+		} else {
+			
+			// Bind and wait for the audio source to load
+			var self = this;
+			resource.bind('onload', function() {
+
+				self.setBuffer(this.getBuffer());
+			})
+			.bind('onerror', function() {
+			
+				// @todo do something, revert, load default, etc.
+				fro.log.error('Audio File Load Error');
+				fro.log.error(this);
+			});
+		}
+		
+		fro.log.debug('New audio node "' + eid + '" at ' + vec3.str(this.position));
 		
 	} else {
-		
-		// Bind and wait for the audio source to load
-		var self = this;
-		resource.bind('onload', function() {
-
-			self.setBuffer(this.getBuffer());
-		})
-		.bind('onerror', function() {
-		
-			// @todo do something, revert, load default, etc.
-			fro.log.error('Audio File Load Error');
-			fro.log.error(this);
-		});
+		fro.log.warning('Muting audio node "' + eid + '". Browser does not support fro.audio');
 	}
 	
-	fro.log.debug('New audio node "' + eid + '" at ' + vec3.str(this.position));
 }
 
 Map_Sound.prototype.destroy = function() {
@@ -79,9 +86,11 @@ Map_Sound.prototype.setVolume = function(volume) {
 	if (volume > 1.0)
 		volume = 1.0;
 
-	// Using an x-squared curve since simple linear (x) 
-	// does not sound as good (via html5rocks.com)
-	this.audioGainNode.gain.value = volume * volume;
+	if (this.audioGainNode) {
+		// Using an x-squared curve since simple linear (x) 
+		// does not sound as good (via html5rocks.com)
+		this.audioGainNode.gain.value = volume * volume;
+	}
 }
 
 Map_Sound.prototype.play = function() {
@@ -90,24 +99,27 @@ Map_Sound.prototype.play = function() {
 	
 	this.stop();
 	
-	// Each time we play, we need to generate a new audioBuffer object
-	var source = fro.audio.getAudioContext().createBufferSource();
-	source.buffer = this.buffer;
-	source.loop = this.loop;
+	if (fro.audio.isAvailable()) {
 	
-	// Patch some cross-browser differences
-	if (!source.start)
-		source.start = source.noteOn;
+		// Each time we play, we need to generate a new audioBuffer object
+		var source = fro.audio.getAudioContext().createBufferSource();
+		source.buffer = this.buffer;
+		source.loop = this.loop;
 		
-	if (!source.stop)
-		source.stop = source.noteOff;
-		
-	this.audioBuffer = source;
+		// Patch some cross-browser differences
+		if (!source.start)
+			source.start = source.noteOn;
+			
+		if (!source.stop)
+			source.stop = source.noteOff;
+			
+		this.audioBuffer = source;
 
-	this.audioBuffer.connect(this.audioGainNode);
-	fro.audio.addConnection(this.audioGainNode, this.ambient);
-	
-	fro.audio.play(this.audioBuffer);
+		this.audioBuffer.connect(this.audioGainNode);
+		fro.audio.addConnection(this.audioGainNode, this.ambient);
+		
+		fro.audio.play(this.audioBuffer);
+	}
 }
 
 Map_Sound.prototype.stop = function() {

@@ -220,14 +220,21 @@ fro.resources = $.extend({
 				request.onload = function() {
 				
 					var context = fro.audio.getAudioContext();
-					context.decodeAudioData(request.response, function(buffer) {
-
-						res.buffer = buffer;
-						res.fire('onload', res);
+					if (context) {
 						
-					}, function() {
+						context.decodeAudioData(request.response, function(buffer) {
+
+							res.buffer = buffer;
+							res.fire('onload', res);
+							
+						}, function() {
+							res.fire('onerror', res);
+						});
+						
+					} else {
 						res.fire('onerror', res);
-					});
+					}
+					
 				};
 				
 				// hook an error handler for network errors
