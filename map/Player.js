@@ -135,17 +135,16 @@ Map_Player.prototype.handlePlayerInput = function() {
 /**
  * Send a packet to the server with our current avatar metadata
  */
-Map_Player.prototype.sendAvatar = function() {
-
-	if (this.avatar) {
+Map_Player.prototype.setAvatar = function(id) {
+	Map_Actor.prototype.setAvatar.call(this, id);
 	
-		var packet = {
-			id: 'avatar',
-			src: this.avatar.id,
-		};
-		
-		fro.network.send(packet);
-	}
+	// Also tell the server we're attempting a change
+	var packet = {
+		id: 'avatar',
+		src: id,
+	};
+	
+	fro.network.send(packet);
 }
 
 Map_Player.prototype.sendNewNick = function(nick) {

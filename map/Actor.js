@@ -74,73 +74,29 @@ Map_Actor.prototype.destroy = function() {
 	Map_RenderableEntity.prototype.destroy.call(this);
 }
 
-Map_Actor.prototype.setNick = function(nick) {
+Map_Actor-.prototype.setNick = function(nick) {
 	
 	this.nick = nick;
 	this.fire('nick', nick);
 }
 
-Map_Actor.prototype.loadAvatarFromMetadata = function(metadata) {
+/**
+ * Sets this.avatar to the new Avatar object, and reconfigures
+ * the actor's properties as appropriate (resize, animation reset, etc)
+ */
+Map_Actor.prototype.applyAvatar = function(avatar) {
+	this.avatar = avatar;
 	
-	if (!this.avatar) { // @todo move me to an initializer
-		this.avatar = new Avatar();
-		
-		// Hook a load event to the avatar
-		// @todo is this necessary? 
-		this.avatar.bind('ready', this, function(evt) {
-			this.recalculateAvatarRow();
-		});
-	}
+	this.width = avatar.getWidth();
+	this.height = avatar.getHeight();
 	
-	try {
-		this.avatar.load(metadata);
-				
-		this.width = metadata.metadata.width;
-		this.height = metadata.metadata.height;
-		
-	}  catch (e) {
-		// @todo revert?
-	
-		// Error occured while loading avatar, load a default
-		this.avatar.load(DEFAULT_AVATAR);
-		this.width = DEFAULT_AVATAR.metadata.width;
-		this.height = DEFAULT_AVATAR.metadata.height;
-		
-		// @todo report error
-	}
+	this.recalculateAvatarRow();
 }
 
 Map_Actor.prototype.setAvatar = function(id) {
 
-	// @todo might have some issues with scope 
-	var self = this;
-	$.ajax({
-		url: 'http://localhost/TinyMVC/indev/api/avatar/id/' + id + '?json',
-		success: function(data) {
-			if (typeof data == 'string')
-			{
-				try {
-					data = JSON.parse(data);
-				} catch (e) {
-					// Could not parse JSON, call it a fail
-					// @todo better handling, holy crap.
-					fro.log.error('Could not load Avatar ID ' + id);
-					return;
-				}
-			}
-			
-			// @todo error check for parsing JSON
-				
-			self.loadAvatarFromMetadata(data);
-			self.recalculateAvatarRow();
-			
-			this.fire('avatar');
-		},
-		error: function() {
-			// @todo ??? Just probably kill loader anim and keep w/e the current avatar is
-		}
-	});
-	
+	// Delegate to plugins
+	this.fire('avatar.set', id);
 }
 
 Map_Actor.prototype.render = function() {

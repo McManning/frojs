@@ -1,67 +1,6 @@
 
 "use strict";
 
-var DEFAULT_AVATAR = {
-    "id": "default_avatar",
-    "url": "default_avatar",
-    "metadata": {
-		"version": 1,
-		"format": "MG-PNG",
-		"tags": "",
-		"shared": false,
-		"name": "",
-		"width": 32,
-		"height": 64,
-		"keyframes": {
-			"move_2": {
-				"loop": false,
-				"frames": [
-					0,
-					1000,
-					1,
-					1000
-				]
-			},
-			"move_8": {
-				"loop": false,
-				"frames": [
-					2,
-					1000,
-					3,
-					1000
-				]
-			},
-			"move_4": {
-				"loop": false,
-				"frames": [
-					4,
-					1000,
-					5,
-					1000
-				]
-			},
-			"move_6": {
-				"loop": false,
-				"frames": [
-					6,
-					1000,
-					7,
-					1000
-				]
-			},
-			"act_2": {
-				"loop": false,
-				"frames": [
-					8,
-					1000,
-					9,
-					1000
-				]
-			}
-		}
-	}
-};
-
 /** 
  * Definition of an avatar/sprite object a particular actor can wear.
  * Handles animation, frameset changes, loading, etc.
@@ -74,16 +13,23 @@ function Avatar() {
 	$.extend(this, EventHooks);
 }
 
-Avatar.prototype.loadDefault = function() {
-	
-	this.load(DEFAULT_AVATAR);
-}
-
 Avatar.prototype.load = function(settings) {
 	
+	// Perform metadata validation
+	var requiredKeys = [
+		'id', 'width', 'height', 'url', 'keyframes'
+	];
+	
+	for (var i in requiredKeys) {
+		if ( !settings[requiredKeys[i]] ) {
+			self.fire('error', 'Metadata missing required key ' + requiredKeys[i]);
+			return;
+		}
+	}
+	
 	this.renderable = new RenderableImage(
-							settings.metadata.width, 
-							settings.metadata.height
+							settings.width,
+							settings.height
 						);
 					
 	this.renderable.useAlphaKey = true;
@@ -96,7 +42,6 @@ Avatar.prototype.load = function(settings) {
 	this.currentIndex = 0;
 	this.currentDelay = 0;
 	
-	// @todo some magic here for the URL 
 	this.url = settings.url;
 
 	var resource = fro.resources.load(settings.url);
@@ -105,7 +50,6 @@ Avatar.prototype.load = function(settings) {
 	
 		// If it's already cached, load immediately
 		this.renderable.setTexture(resource.getTexture());
-		this.onImageLoad();
 		this.fire('ready'); 
 	
 	} else {
@@ -115,14 +59,11 @@ Avatar.prototype.load = function(settings) {
 		resource.bind('onload', function() {
 
 			self.renderable.setTexture(this.getTexture());
-			//self.onImageLoad();
-			self.fire('ready'); // @todo get rid of this, used for row recalc on the Actor level
+			self.fire('ready');
 		})
 		.bind('onerror', function() {
 		
-			// @todo do something, revert, load default, etc.
-			fro.log.error('Avatar Image Load Error');
-			fro.log.error(this);
+			self.fire('error', 'Failed to load ' + self.url);
 		});
 	}
 }
@@ -134,8 +75,8 @@ Avatar.prototype.load = function(settings) {
 Avatar.prototype.nextFrame = function(forceLoop) {
 
 	// if we hit the end of the animation, loop (if desired)
-	if (this.settings.metadata.keyframes[this.currentKeyframe].frames.length <= this.currentIndex + 1) {
-		if (this.settings.metadata.keyframes[this.currentKeyframe].loop || forceLoop) {
+	if (this.settings.keyframes[this.currentKeyframe].frames.length <= this.currentIndex + 1) {
+		if (this.settings.keyframes[this.currentKeyframe].loop || forceLoop) {
 			this.currentIndex = 0;
 		} else {
 			this.currentIndex -= 2;
@@ -143,12 +84,12 @@ Avatar.prototype.nextFrame = function(forceLoop) {
 	}
 	
 	// Get the frame index (of the source image) to render
-	this.currentFrame = this.settings.metadata
+	this.currentFrame = this.settings
 			.keyframes[this.currentKeyframe]
 			.frames[this.currentIndex];
 	
 	// pull out the delay for the next frame
-	this.currentDelay = this.settings.metadata
+	this.currentDelay = this.settings
 			.keyframes[this.currentKeyframe]
 			.frames[this.currentIndex+1];
 	
@@ -171,7 +112,7 @@ Avatar.prototype.setKeyframe = function(key) {
 }
 
 Avatar.prototype.hasKeyframe = function(key) {
-	return (key in this.settings.metadata.keyframes);
+	return (key in this.settings.keyframes);
 }
 
 Avatar.prototype.reset = function() {
