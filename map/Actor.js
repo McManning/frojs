@@ -26,20 +26,7 @@ var Action = {
 }
 
 var DEFAULT_ACTOR_ZORDER = 1;
-
-var DEFAULT_AVATAR_ID = 'default_avatar'; // ID of the avatar image resource
-var DEFAULT_AVATAR_W = 32;
-var DEFAULT_AVATAR_H = 64;
-var DEFAULT_AVATAR_DELAY = 1000;
-
-var CHAT_BUBBLE_MIN_TTL = 3000;
-
 var MOVEMENT_DISTANCE = 16;
-
-var WALK_STEP_DISTANCE = 4;
-var RUN_STEP_DISTANCE = 8;
-
-var DISTANCE_THRESHOLD = 6;
 
 /** Base class for actors on the map */
 function Map_Actor() {}
