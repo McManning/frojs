@@ -173,7 +173,9 @@
 			
 			// Play bleep clip (@todo probably move this)
 			var sound = fro.world.find('chat_audio_node');
-			sound.play();
+			if (sound) {
+				sound.play();
+			}
 		}
 	};
 	

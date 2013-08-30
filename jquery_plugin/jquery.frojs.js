@@ -190,25 +190,6 @@ we can completely stop referencing the world as an entity, or something.
 		
 		// Override standard page change events to only change the
 		// content of our navigation via AJAX
-		
-		nav.find('form').submit(function(e) {
-			
-			var url = $(this).attr('action');
-			
-			// Ajax post this form instead
-			$.ajax({
-				type: 'POST',
-				url: url,
-				data: $(this).serialize(),
-				success: function(html) {
-					$.fn.frojs._setNavigationContent(url, html);
-				}
-			});
-			
-			e.preventDefault();
-			return false;
-		});
-		
 		nav.find('a').click(function(e) {
 
 			if ($(this).attr('target') == undefined)
