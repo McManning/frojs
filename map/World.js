@@ -153,6 +153,11 @@ fro.world = $.extend({
 	loadProp : function(id, properties) {
 
 		var prop = new Map_Prop();
+		
+		// Fire an event to let listeners know a new prop has been created, 
+		// but can be hooked before initialising
+		this.fire('new.entity', prop, id, properties);
+		
 		prop.initialise(id, properties);
 		
 		// Add it to the map
@@ -184,6 +189,8 @@ fro.world = $.extend({
 		}
 		
 		this.player = new Map_Player();
+		this.fire('new.entity', this.player, id, properties);
+		
 		this.player.initialise(id, properties);
 		
 		this.add(this.player);
@@ -191,10 +198,24 @@ fro.world = $.extend({
 		fro.camera.followEntity(this.player);
 	},
 	
+	/** Add a RemotePlayer entity to the map (triggered by network events only) */
+	loadRemotePlayer : function(id, properties) {
+		
+		var entity = new Map_RemotePlayer();
+		this.fire('new.entity', entity, id, properties);
+		
+		entity.initialise(id, properties);
+		
+		// Add it to the map
+		this.add(entity);
+	},
+	
 	/** Add an audio object to the map */
 	loadSound : function(id, properties) {
 		
 		var sound = new Map_Sound();
+		this.fire('new.entity', sound, id, properties);
+		
 		sound.initialise(id, properties);
 		
 		this.add(sound);
@@ -225,7 +246,8 @@ fro.world = $.extend({
 			
 			// Send a follow up message with our avatar data
 			// @todo maybe send this in auth response instead, just in case of bad auth?
-			this.player.sendAvatar();
+			//this.player.sendAvatar();
+			// @todo fix, or add avatar ID to auth.
 			
 		}).bind('auth', this, function(evt) {
 			
@@ -238,11 +260,8 @@ fro.world = $.extend({
 		
 		}).bind('join, identity', this, function(evt) { // Sent to our client when a player is added to the map
 			
-			var actor = new Map_RemotePlayer();
-			actor.initialise(evt.eid, evt);
+			this.loadRemotePlayer(evt.eid, evt);
 			
-			this.add(actor);
-		
 		}).bind('say', this, function(evt) { // Chat message { msg: 'message' }
 			
 			var ent = this.find(evt.eid);
@@ -297,16 +316,16 @@ fro.world = $.extend({
 
 	},
 
-	add : function(obj) {
+	add : function(entity) {
 		
-		if (obj.isRenderable) {
-			this._renderableEntities.push(obj);
+		if (entity.isRenderable) {
+			this._renderableEntities.push(entity);
 			this.resort();
 		} else {
-			this._otherEntities.push(obj);
+			this._otherEntities.push(entity);
 		}
 		
-		this.fire('add', obj);
+		this.fire('add.entity', entity);
 	},
 
 	/** 
@@ -316,10 +335,11 @@ fro.world = $.extend({
 	 * @param entity Entity to remove
 	 */
 	remove : function(entity) {
-		
+
 		for (var index in this._renderableEntities) {
 			if (this._renderableEntities[index] == entity) {
 
+				this.fire('remove.entity', entity);
 				delete this._renderableEntities[index];
 
 				// @todo array cleanup somewhere after all iterations are complete, since delete just nullfies
@@ -331,6 +351,7 @@ fro.world = $.extend({
 		for (var index in this._otherEntities) {
 			if (this._otherEntities[index] == entity) {
 
+				this.fire('remove.entity', entity);
 				delete this._otherEntities[index];
 				
 				// @todo array cleanup somewhere after all iterations are complete, since delete just nullfies

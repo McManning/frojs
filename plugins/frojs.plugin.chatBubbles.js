@@ -28,7 +28,7 @@
 				zorder: 9999
 			}, options);
 		
-			fro.world.bind('add', function(entity) {
+			fro.world.bind('add.entity', function(entity) {
 				
 				// Spawn and attach a bubble entity for each actor spawned
 				if (entity instanceof Map_Actor) {

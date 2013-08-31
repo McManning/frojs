@@ -117,7 +117,7 @@ we can completely stop referencing the world as an entity, or something.
 		
 		// Populate our nav
 		$('#frojs-nickname').val(fro.world.player.nick);
-		$('#frojs-avatar').val(fro.world.player.avatar.url);
+		//$('#frojs-avatar').val(fro.world.player.avatar.url);
 		
 		// If we have a chatbox, display it
 		$('.frojs-chatbox').css('display', 'block');

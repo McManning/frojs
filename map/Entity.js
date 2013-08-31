@@ -2,7 +2,9 @@
 "use strict";
 
 /** Base class for all objects on a map */
-function Map_Entity() {}
+function Map_Entity() {
+	$.extend(this, EventHooks);
+}
 
 Map_Entity.prototype.initialise = function(eid, properties) {
 	
@@ -11,8 +13,6 @@ Map_Entity.prototype.initialise = function(eid, properties) {
 	this.properties = properties;
 	
 	this.position = vec3.create();
-	
-	$.extend(this, EventHooks);
 }
 
 Map_Entity.prototype.destroy = function() {

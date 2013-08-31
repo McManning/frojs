@@ -50,7 +50,7 @@ Map_Actor.prototype.initialise = function(eid, properties) {
 	
 	this.setPosition(properties.x, properties.y);
 	
-	this.loadAvatarFromMetadata(DEFAULT_AVATAR);
+	this.setAvatar('default');
 	
 	this.setAvatar(properties.avatar);
 	
@@ -61,7 +61,7 @@ Map_Actor.prototype.destroy = function() {
 	Map_RenderableEntity.prototype.destroy.call(this);
 }
 
-Map_Actor-.prototype.setNick = function(nick) {
+Map_Actor.prototype.setNick = function(nick) {
 	
 	this.nick = nick;
 	this.fire('nick', nick);
@@ -185,7 +185,7 @@ Map_Actor.prototype.setPosition = function(x, y) {
 	pos[1] = Math.floor(y);
 	vec3.set(pos, this.destination);
 
-	this.fire('move');
+	this.fire('move', pos);
 }
 
 /** Sets our current action (idle, sit, etc) and updates the avatar */
@@ -259,7 +259,7 @@ Map_Actor.prototype.processMovement = function() {
 		this.setDirection(d);
 	}
 
-	this.fire('move');
+	this.fire('move', this.position);
 }
 
 /** 
