@@ -116,9 +116,12 @@ fro.camera = {
 			if (!vec3.equals(this._lastFollowedPosition, epos)) {
 				
 				vec3.set(epos, this._lastFollowedPosition);
-				
+		
 				// Update camera position
 				vec3.set(epos, this._position);
+				
+				//vec3.scale(this._position, this.zoom);
+				
 				this.applyBounds();
 				
 				this.updateTranslation();
