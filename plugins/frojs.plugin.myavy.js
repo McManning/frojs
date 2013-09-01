@@ -100,32 +100,34 @@
 		avatar.load(metadata);
 	}
 	
-	function _setAvatar(entity, id) {
-		if (id.indexOf('myavy://') === 0) {
+	function _setAvatar(entity, url) {
+		if (url.toString().indexOf('myavy.net') >= 0 
+			|| url.toString().indexOf('localhost') >= 0) {
 			
 			// @todo attach a loader entity
 			
 			// Retrieve metadata from our source URL
 			$.ajax({
-				url: _getUrl(id),
+				url: url, //_getUrl(id),
 				dataType: 'jsonp',
+				timeout: 5000,
 				success: function(data) {
-					_onMetadata(entity, id, data);
+					_onMetadata(entity, url, data);
 				},
 				error: function(xhr, status, error) {
 					// Either json parsing failed, or the server
 					// refused to respond to the request
-					_onError(entity, id, error);
+					_onError(entity, url, error);
 				}
 			});
 
-		} else if (id == 'default') {
+		} else if (url == 'default') {
 			// Also handle requests for the default avatar
 			// (@todo this should actually be an internal
 			// plugin that deals with "unknown" urls)
 			
 			// Skip metadata load process and use the embedded object
-			_onMetadata(entity, id, DEFAULT_AVATAR);
+			_onMetadata(entity, url, DEFAULT_AVATAR);
 		}
 	}
 	
