@@ -298,6 +298,12 @@ Map_Actor.prototype.recalculateAvatarRow = function() {
 			frame = 'move_';
 		}
 	}
+	
+	// Still doesn't exist, default to move_2
+	if (!this.avatar.hasKeyframe(frame + row)) {
+		frame = 'move_';
+		row = '2';
+	}
 
 	this.avatar.setKeyframe(frame + row);
 }

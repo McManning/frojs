@@ -74,30 +74,35 @@ Avatar.prototype.load = function(id, settings) {
  * @param boolean loop If true, and we're already on the last frame, will reset() itself
  */
 Avatar.prototype.nextFrame = function(forceLoop) {
-
-	// if we hit the end of the animation, loop (if desired)
-	if (this.settings.keyframes[this.currentKeyframe].frames.length <= this.currentIndex + 1) {
-		if (this.settings.keyframes[this.currentKeyframe].loop || forceLoop) {
-			this.currentIndex = 0;
-		} else {
-			this.currentIndex -= 2;
+	
+	if (this.currentKeyframe in this.settings.keyframes) {
+		// if we hit the end of the animation, loop (if desired)
+		if (this.settings.keyframes[this.currentKeyframe].frames.length <= this.currentIndex + 1) {
+			if (this.settings.keyframes[this.currentKeyframe].loop || forceLoop) {
+				this.currentIndex = 0;
+			} else {
+				this.currentIndex -= 2;
+			}
 		}
+		
+		// Get the frame index (of the source image) to render
+		this.currentFrame = this.settings
+				.keyframes[this.currentKeyframe]
+				.frames[this.currentIndex];
+		
+		// pull out the delay for the next frame
+		this.currentDelay = this.settings
+				.keyframes[this.currentKeyframe]
+				.frames[this.currentIndex+1];
+		
+		// pull out the frame number for the next frame
+		this.currentIndex += 2;
+		
+		this.updateTextureClip();
+		
+	} else {
+		fro.log.warning('[Avatar.nextFrame] no key ' + this.currentKeyframe);
 	}
-	
-	// Get the frame index (of the source image) to render
-	this.currentFrame = this.settings
-			.keyframes[this.currentKeyframe]
-			.frames[this.currentIndex];
-	
-	// pull out the delay for the next frame
-	this.currentDelay = this.settings
-			.keyframes[this.currentKeyframe]
-			.frames[this.currentIndex+1];
-	
-	// pull out the frame number for the next frame
-	this.currentIndex += 2;
-	
-	this.updateTextureClip();
 }
 
 Avatar.prototype.setKeyframe = function(key) {
