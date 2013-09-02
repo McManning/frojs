@@ -39,5 +39,5 @@ Map_Entity.prototype.collides = function(r) {
  * @param rect r
  */
 Map_Entity.prototype.getBoundingBox = function(r) {
-	
+	return rect.create(0,0,0,0);
 }

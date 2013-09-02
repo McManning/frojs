@@ -25,7 +25,6 @@ var Action = {
 	JUMP : 2
 }
 
-var DEFAULT_ACTOR_ZORDER = 1;
 var MOVEMENT_DISTANCE = 16;
 
 /** Base class for actors on the map */
@@ -39,7 +38,7 @@ Map_Actor.prototype.initialise = function(eid, properties) {
 	this.action = properties.action;
 	this.speed = Speed.WALK;
 	this.direction = properties.direction;
-	this.zorder = DEFAULT_ACTOR_ZORDER;
+	this.zorder = properties.z;
 	
 	// @todo Are these two required/used?
 	this.width = 0;
@@ -52,7 +51,9 @@ Map_Actor.prototype.initialise = function(eid, properties) {
 	
 	this.setAvatar('default');
 	
-	this.setAvatar(properties.avatar);
+	if (properties.avatar) {
+		this.setAvatar(properties.avatar);
+	}
 	
 	this.setNick(properties.nick);
 }

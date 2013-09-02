@@ -38,7 +38,7 @@
 	Map_ActorNickname.prototype.initialise = function(eid, properties) {
 		Map_RenderableEntity.prototype.initialise.call(this, eid, properties);
 
-		this.zorder = NICKNAME_ZORDER;
+		this.zorder = properties.entity.zorder + 1;
 		
 		this.trackedEntity = properties.entity;
 		
@@ -47,7 +47,7 @@
 			
 			this.change(nick);
 		
-		}).bind('move.nickname, avatar.nickname', this, function() {
+		}).bind('move.nickname, avatar.nickname', this, function() { // @todo fix the avatar.nickname bind
 			
 			this._updatePosition();
 			

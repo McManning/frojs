@@ -130,10 +130,12 @@
 			.bind('leave', function(evt) { // Leave world { reason: 'Why I left' }
 		
 				var ent = fro.world.find(evt.eid);
-				$.fn.frojsChatbox.append(ele, 
-					escapeHtml(ent.nick) + ' disconnected (' + escapeHtml(evt.reason) + ')',
-					true
-				);
+				if (ent) {
+					$.fn.frojsChatbox.append(ele, 
+						escapeHtml(ent.nick) + ' disconnected (' + escapeHtml(evt.reason) + ')',
+						true
+					);
+				}
 			})
 			.bind('join', function(evt) {
 				

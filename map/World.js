@@ -94,7 +94,7 @@ fro.world = $.extend({
 		try {
 			// Call a loader based on entity type
 			if (this._entityLoaders[type]) {
-				this._entityLoaders[type].apply(this, [id, entity]);
+				return this._entityLoaders[type].apply(this, [id, entity]);
 			} else {
 				throw 'Unknown entity type "' + type + '" for ' + id;
 			}
@@ -107,6 +107,8 @@ fro.world = $.extend({
 				fro.log.error('Exception while loading entity ' + id + ': ' + e);
 			}
 		}
+		
+		return null;
 	},
 
 	parseEntities : function(entities) {
@@ -162,6 +164,8 @@ fro.world = $.extend({
 		
 		// Add it to the map
 		this.add(prop);
+		
+		return prop;
 	},
 	
 	loadActor : function(id, properties) {
@@ -196,6 +200,8 @@ fro.world = $.extend({
 		this.add(this.player);
 		
 		fro.camera.followEntity(this.player);
+		
+		return this.player;
 	},
 	
 	/** Add a RemotePlayer entity to the map (triggered by network events only) */
@@ -208,6 +214,8 @@ fro.world = $.extend({
 		
 		// Add it to the map
 		this.add(entity);
+		
+		return entity;
 	},
 	
 	/** Add an audio object to the map */
@@ -219,6 +227,8 @@ fro.world = $.extend({
 		sound.initialise(id, properties);
 		
 		this.add(sound);
+		
+		return sound;
 	},
 
 	/** 
@@ -240,6 +250,7 @@ fro.world = $.extend({
 				user: 'Lab Rat', // @todo resolve
 				nick: this.player.nick,
 				world: props.network.channel,
+				avatar: 'default', //props.entities.player.avatar, // @todo resolve better
 				x: pos[0],
 				y: pos[1]
 			});
@@ -282,7 +293,7 @@ fro.world = $.extend({
 				fro.log.error('[net.nick] EID ' + evt.eid + ' does not exist');
 			}
 			
-		}).bind('avatar', this, function(evt) { // Change avatar { url: 'http', w: 0, h: 0, delay: 0 }
+		}).bind('avatar', this, function(evt) { // Change avatar { src: 'http', w: 0, h: 0, delay: 0 }
 			
 			var ent = this.find(evt.eid);
 			

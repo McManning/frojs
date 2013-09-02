@@ -13,7 +13,7 @@ function Avatar() {
 	$.extend(this, EventHooks);
 }
 
-Avatar.prototype.load = function(settings) {
+Avatar.prototype.load = function(id, settings) {
 	
 	// Perform metadata validation
 	var requiredKeys = [
@@ -42,6 +42,7 @@ Avatar.prototype.load = function(settings) {
 	this.currentIndex = 0;
 	this.currentDelay = 0;
 	
+	this.id = id;
 	this.url = settings.url;
 
 	var resource = fro.resources.load(settings.url);

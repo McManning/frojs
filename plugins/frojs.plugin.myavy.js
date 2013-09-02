@@ -70,13 +70,20 @@
 	function _onError(entity, id, error) {
 		
 		// kill loader entity
-		// notify system (if local, or debugging)
+		if (entity.avatarLoader) {
+			entity.avatarLoader.destroy();
+		}
 		
+		// notify system (if local, or debugging)
+		fro.log.warning('Avatar load error: ' + error + ' for ' + id);
 	}
 	
 	function _onReady(entity, id, avatar) {
 		
 		// kill loader entity
+		if (entity.avatarLoader) {
+			entity.avatarLoader.destroy();
+		}
 		
 		// Finally set as our entity's avatar
 		entity.applyAvatar(avatar);
@@ -97,14 +104,53 @@
 		});
 		
 		// Load the metadata into the avatar and let it take over
-		avatar.load(metadata);
+		avatar.load(id, metadata);
+	}
+	
+	function _attachLoader(entity) {
+		
+		var pos = entity.getPosition();
+		
+		var props = {
+			"texture":"avatar_loader",
+			"vs":"main_vs",
+			"fs":"main_fs",
+			"delay":150,
+			"offset_y":5,
+			"w":46,
+			"h":40,
+			"x":pos[0],
+			"y":pos[1],
+			"z":1
+		};
+		
+		var loader = fro.world.loadProp(entity.eid + '_loader', props);
+		entity.avatarLoader = loader;
+		
+		// bind loader to move with our entity
+		entity.bind('move.avatarLoader', function() {
+			
+			// @todo there is (definitely) a chance for multiple binds to be
+			// attached to this entity, as we never unbind (since, it's broken...)
+			if (this.avatarLoader) {
+				vec3.set(this.getPosition(), this.avatarLoader.getPosition());
+			}
+		})
+		.bind('destroy.avatarLoader', function() {
+			if (this.avatarLoader) {
+				this.avatarLoader.destroy();
+				delete this.avatarLoader;
+			}
+		});
+
 	}
 	
 	function _setAvatar(entity, url) {
 		if (url.toString().indexOf('myavy.net') >= 0 
 			|| url.toString().indexOf('localhost') >= 0) {
 			
-			// @todo attach a loader entity
+			// attach a loader entity
+			_attachLoader(entity);
 			
 			// Retrieve metadata from our source URL
 			$.ajax({
@@ -148,7 +194,7 @@
 						_setAvatar(this, id);
 					});
 				}
-			});
+			})
 		},
 		
 		preload : function() {
