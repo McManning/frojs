@@ -179,24 +179,11 @@ Map_Actor.prototype.getBoundingBox = function(r) {
  *   automatic walking to a destination 
  */
 Map_Actor.prototype.setPosition = function(x, y) {
-	
-	var pos = this.getPosition();
-	
-	// if it's in the form of setPosition(vec3) 
-	if (y == undefined) {
-		
-		pos[0] = Math.floor(x[0]);
-		pos[1] = Math.floor(x[1]);
-		
-	} else {
-	
-		pos[0] = Math.floor(x);
-		pos[1] = Math.floor(y);
-	}
+	Map_RenderableEntity.prototype.setPosition.call(this, x, y);
 
-	vec3.set(pos, this.destination);
+	vec3.set(this.getPosition(), this.destination);
 
-	this.fire('move', pos);
+	this.fire('move', this.getPosition());
 }
 
 /** Sets our current action (idle, sit, etc) and updates the avatar */
