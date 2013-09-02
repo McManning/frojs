@@ -40,8 +40,11 @@ BufferedActionController.prototype.processInput = function(direction, speed, act
 		// If we're changing sit direction or going into a sit, write
 		if (this.actor.direction != direction || this.actor.action != Action.SIT) {
 		
-			if (direction != Direction.NONE)
-				this.write('s' + dirChar);
+			if (direction == Direction.NONE) {
+				dirChar = this.directionToChar(this.actor.direction);
+			}
+			
+			this.write('s' + dirChar);
 		}
 		
 	} else if (action == Action.JUMP) {
