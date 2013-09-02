@@ -133,7 +133,7 @@
 			// @todo there is (definitely) a chance for multiple binds to be
 			// attached to this entity, as we never unbind (since, it's broken...)
 			if (this.avatarLoader) {
-				vec3.set(this.getPosition(), this.avatarLoader.getPosition());
+				this.avatarLoader.setPosition(this.getPosition());
 			}
 		})
 		.bind('destroy.avatarLoader', function() {

@@ -28,6 +28,23 @@ Map_Entity.prototype.getPosition = function() {
 	return this.position;
 }
 
+Map_Entity.prototype.setPosition = function(x, y) {
+
+	var pos = this.getPosition();
+	
+	// if it's in the form of setPosition(vec3) 
+	if (y == undefined) {
+		
+		pos[0] = Math.floor(x[0]);
+		pos[1] = Math.floor(x[1]);
+		
+	} else {
+	
+		pos[0] = Math.floor(x);
+		pos[1] = Math.floor(y);
+	}
+}
+
 /**
  * @return bool 
  */
