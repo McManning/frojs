@@ -271,6 +271,7 @@ fro.world = $.extend({
 		
 		}).bind('join, identity', this, function(evt) { // Sent to our client when a player is added to the map
 			
+			evt.z = this.player.zorder; // @todo fix this fucking hack
 			this.loadRemotePlayer(evt.eid, evt);
 			
 		}).bind('say', this, function(evt) { // Chat message { msg: 'message' }

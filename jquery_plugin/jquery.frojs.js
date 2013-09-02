@@ -224,8 +224,9 @@ we can completely stop referencing the world as an entity, or something.
 		// Generate a navigation bar
 		contentDiv.after(
 			'<div id="frojs-navigation"></div>'
-			
 		);
+		
+		ele.before('<div id="frojs-notices"></div>');
 		
 		// Nav icon in content bar
 		ele.after(

@@ -471,7 +471,7 @@
             border-radius: 4px 0 0 4px;  
 }
 
-#frojs-navigation .alert {
+.alert {
     position: relative;
 	background-color: #fc5b5e;
 	text-shadow: 0 1px 0 rgba(0, 0, 0, 0.25);
@@ -486,8 +486,8 @@
     line-height: 18px;
 }
 
-#frojs-navigation .alert.arrow:after, 
-#frojs-navigation .alert.arrow:before {
+.alert.arrow:after, 
+.alert.arrow:before {
 	bottom: 100%;
 	border: solid transparent;
 	content: " ";
@@ -497,14 +497,14 @@
 	pointer-events: none;
 }
 
-#frojs-navigation .alert.arrow:after {
+.alert.arrow:after {
 	border-color: transparent;
 	border-bottom-color: #fc5b5e;
 	border-width: 5px;
 	left: 20%;
 	margin-left: -5px;
 }
-#frojs-navigation .alert.arrow:before {
+.alert.arrow:before {
 	border-color: transparent;
 	border-bottom-color: rgb(194, 54, 56);
 	border-width: 7px;
@@ -512,21 +512,21 @@
 	margin-left: -7px;
 }
 
-#frojs-navigation .alert > .icon-remove {
+.alert > .icon-remove {
 	float: right;
 	color: rgb(255, 192, 193);
 }
 
-#frojs-navigation .alert.success {
+.alert.success {
 	background-color: rgb(130, 168, 88);
 	border-color: #668346;
 }
 
-#frojs-navigation .alert.success.arrow:after {
+.alert.success.arrow:after {
     border-bottom-color: rgb(130, 168, 88);
 }
 
-#frojs-navigation .alert.success.arrow:before {
+.alert.success.arrow:before {
 
 	border-bottom-color: #668346;
 }
@@ -828,4 +828,9 @@
    width: 176px !important;   
 }
 
+#frojs-notices {
+	position: absolute !important;
+	right: 0 !important;
+	display: none;
+}
 

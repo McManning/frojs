@@ -78,14 +78,19 @@ Map_Player.prototype.handlePlayerInput = function() {
 		if (cam.zoom > 0.2)
 			cam.zoom -= 0.1;
 			
+		cam.updateTranslation();
+			
 	} else if (input.isKeyDown(34)) { // pgdown: zoom out
 	
 		if (cam.zoom < 2.0)
 			cam.zoom += 0.1;
+		
+		cam.updateTranslation();
 			
 	} else if (input.isKeyDown(36)) { // home: reset zoom
 	
 		cam.zoom = 1.0;
+		cam.updateTranslation();
 	}
 	
 	var dir = Direction.NONE;

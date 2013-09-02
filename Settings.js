@@ -3,15 +3,15 @@
  * Manager for all persistent settings
  *
  * Usage: 
- * In modules, call fro.settings.register('my_module', 'setting_id', 'default value');
- * Then for retrieval, fro.settings.get('my_module', 'setting_id')
- * And for setting, fro.settings.set('my_module', 'setting_id')
+ * In modules, call fro.settings.register('module.key', 'default value');
+ * Then for retrieval, fro.settings.get('module.key')
+ * And for setting, fro.settings.set('module.key', newValue)
  *     Both methods will throw exceptions if the setting has not previously been registered.
  *
- * Additionally, every time set() is called, fro.settings fires a set event, 
- * namespaced for the target module and key.
+ * Additionally, every time set() is called, fro.settings fires an event, named after the key
+ * 
  * Example:
- *    fro.settings.bind('set.input.move_up', function(oldValue, newValue) {
+ *    fro.settings.bind('keymap.move_up', function(oldValue, newValue) {
  *        // Do 
  *    }
  */
@@ -64,7 +64,7 @@ var fro.settings = {
 		// make sure the storage method is supported
 		if (!(options.settingsStorage in this.getSupportedMethods())) {
 			fro.log.error('[fro.settings] Storage method ' + options.settingsStorage 
-							+ ' not supported. Settings will most likely not be saved'
+							+ ' not supported. Settings will not be saved'
 						);
 			
 			this.canSave = false;
@@ -75,35 +75,35 @@ var fro.settings = {
 		this.load();
 	},
 	
-	register : function(prefix, id, defaultValue) {
+	register : function(id, defaultValue) {
 	
-		if (typeof this.persistentSettings[prefix + id] == 'undefined') {
-			this.persistentSettings[prefix + id] = defaultValue;
+		if (typeof this.persistentSettings[id] == 'undefined') {
+			this.persistentSettings[id] = defaultValue;
 		}
 	},
 	
-	get : function(prefix, id) {
+	get : function(id) {
 		
-		if (typeof this.persistentSettings[prefix + id] != 'undefined') {
-			throw '[fro.setting] ' + prefix + '.' + id + ' does not exist';
+		if (typeof this.persistentSettings[id] == 'undefined') {
+			throw '[fro.setting] ' + id + ' does not exist';
 		}
 		
-		return this.persistentSettings[prefix + id];
+		return this.persistentSettings[id];
 	},
 	
-	set : function(prefix, id, newValue) {
+	set : function(id, newValue) {
 
-		if (typeof this.persistentSettings[prefix + id] != 'undefined') {
-			throw '[fro.setting] ' + prefix + '.' + id + ' does not exist';
+		if (typeof this.persistentSettings[id] == 'undefined') {
+			throw '[fro.setting] ' + id + ' does not exist';
 		}
 		
-		var oldValue = this.persistentSettings[prefix + id];
-		this.persistentSettings[prefix + id] = newValue;
+		var oldValue = this.persistentSettings[id];
+		this.persistentSettings[id] = newValue;
 		
 		this.dirty = true;
 		
-		// Fire set.prefix.id with parameters: oldValue, newValue
-		this.fire('set.' + prefix + '.' + id, oldValue, newValue);
+		// Fire set event with parameters: oldValue, newValue
+		this.fire(id, oldValue, newValue);
 	},
 	
 	/** 
@@ -178,6 +178,8 @@ var fro.settings = {
 			throw '[fro.settings] Failed to parse JSON from storage method "' 
 					+ this.storageMethod + '" - ' + e;
 		}
+		
+		this.fire('loaded');
 	}
 	
 	/** 
@@ -212,12 +214,17 @@ var fro.settings = {
 				dataType: 'json',
 				success: function() {
 					// @todo something?
+					this.fire('saved');
 				},
 				error: function() {
 					// @todo something?
 				},
 			});
+			
+			return;
 		}
+		
+		this.fire('saved');
 	}
 	
 }
