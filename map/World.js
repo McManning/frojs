@@ -56,10 +56,10 @@ fro.world = $.extend({
 		if ('bounds_x1' in properties) {
 			var bounds = rect.create();
 			
-			bounds[0] = properties.bounds_x1;
-			bounds[1] = properties.bounds_y1;
-			bounds[2] = properties.bounds_x2;
-			bounds[3] = properties.bounds_y2;
+			bounds[0] = properties.bounds[0];
+			bounds[1] = properties.bounds[1];
+			bounds[2] = properties.bounds[2];
+			bounds[3] = properties.bounds[3];
 			
 			fro.camera.setBounds(bounds);
 		}

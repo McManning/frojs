@@ -51,72 +51,70 @@ fro.resources = $.extend({
 		this.totalPreload = 0;
 		this.completedPreload = 0;
 		
-		for (var id in json) {
-			
-			++this.totalPreload;
-			
-			this.load(id, json[id])
-				.bind('onload', function() {
-				
-					++fro.resources.completedPreload;
-					fro.resources.fire('preload.status', this);
-					
-					// If this was the last resource to download, fire a complete event
-					if (fro.resources.completedPreload == fro.resources.totalPreload) {
-						fro.resources.fire('preload.complete');
-					}
-				})
-				.bind('onerror', function() {
-					fro.resources.failedResources[id] = json[id];
-					fro.resources.fire('preload.error', this);
-				});
+		for (var i in json.required) {
+			this._preloadResource(json.required[i]);
 		}
+		// @todo optional preload logic?
+		
 		
 		return this;
 	},
 	
-	load : function(id, url, type) {
+	_preloadResource : function(url) {
+		++this.totalPreload;
 		
-		if (id in this.loadedResources) {
-			console.log('Loading from cache ' + id);
-			return this.loadedResources[id];
-		}
-		
-		if (url == undefined) { // .load(id|url)
+		this.load(url)
+			.bind('onload', function() {
 			
-			if (id.indexOf('http') == 0 || id.indexOf('/') >= 0) { // .load(url), let id = url
-			
-				url = id;
+				++fro.resources.completedPreload;
+				fro.resources.fire('preload.status', this);
 				
-			} else { // .load(id), invalid if it's not already loaded
-			
-				throw 'Cannot load ' + id + '. No supplied url, and not in cache';
-			}
+				// If this was the last resource to download, fire a complete event
+				if (fro.resources.completedPreload == fro.resources.totalPreload) {
+					fro.resources.fire('preload.complete');
+				}
+			})
+			.bind('onerror', function() {
+				fro.resources.failedResources[i] = json[i];
+				fro.resources.fire('preload.error', this);
+			});
+	}
+	
+	load : function(url, type) {
+		
+		// Expand relative URLs
+		if (url.indexOf('http') != 0) {
+			url = location.protocol + '//' + location.host + url;
 		}
 		
-		console.log('Loading new resource ' + id);
+		if (url in this.loadedResources) {
+			console.log('Loading from cache ' + url);
+			return this.loadedResources[url];
+		}
+		
+		console.log('Loading new resource ' + url);
 		
 		// Determine which loader to use based on the filetype, if we didn't specify one
 		if (type == undefined) { // .load(id, url)
 		
 			var index = url.lastIndexOf('.');
 			if (index < 0) {
-				this.failedResources[id] = url;
-				throw 'Cannot determine resource type for ' + id;
+				this.failedResources[url] = url;
+				throw 'Cannot determine resource type for ' + url;
 			}
 			
 			type = url.substr( url.lastIndexOf('.') + 1 );
 		}
 
 		if (!(type in this.resourceLoaders)) {
-			this.failedResources[id] = url;
-			throw 'Cannot load ' + id + '. No loader for type ' + type;
+			this.failedResources[url] = url;
+			throw 'Cannot load ' + url + '. No loader for type ' + type;
 		}
 
 		var resource = this.resourceLoaders[type]();
-		this.loadedResources[id] = resource;
+		this.loadedResources[url] = resource;
 		
-		resource.load(id, url);
+		resource.load(url, url);
 		// @todo catch and log onerror/onsuccess
 
 		return resource;
