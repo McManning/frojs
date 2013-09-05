@@ -42,7 +42,7 @@ we can completely stop referencing the world as an entity, or something.
 			$.fn.frojs._updatePreloaderStatus(ele, 'Retrieving World JSON', 0, 1);
 			
 			// Load our world data from Sybolt
-			fro.resources.load('world_json', options.server, 'json')
+			fro.resources.load(options.server, 'json')
 				.bind('onload', function() {
 
 					console.log(this.json);

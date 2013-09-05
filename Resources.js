@@ -84,7 +84,7 @@ fro.resources = $.extend({
 		
 		if (url == undefined) { // .load(id|url)
 			
-			if (id.indexOf('http') == 0) { // .load(url), let id = url
+			if (id.indexOf('http') == 0 || id.indexOf('/') >= 0) { // .load(url), let id = url
 			
 				url = id;
 				

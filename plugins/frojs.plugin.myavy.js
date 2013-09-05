@@ -5,7 +5,7 @@
 	// or the user has no avatar to load
 	var DEFAULT_AVATAR = {
 		"id": "default_avatar",
-		"url": "default_avatar",
+		"url": "/frojs/resources/img/default_avatar.png",
 		
 		"version": 1,
 		"format": "MG-PNG",
@@ -112,9 +112,7 @@
 		var pos = entity.getPosition();
 		
 		var props = {
-			"texture":"avatar_loader",
-			"vs":"main_vs",
-			"fs":"main_fs",
+			"texture":"/frojs/resources/img/avatar_load.png",
 			"delay":150,
 			"offset_y":5,
 			"w":46,
