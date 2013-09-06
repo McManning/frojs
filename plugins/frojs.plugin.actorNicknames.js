@@ -2,9 +2,9 @@
 ;(function(fro, undefined) {
 	
 	"use strict";
-	
-	var NICKNAME_ZORDER = 9990; // Above everything else
 
+	var NICKNAME_ZORDER = 9998; // @todo global UI_ZORDER
+	
 	fro.plugins.actorNicknames = {
 		
 		initialise : function(options) {
@@ -38,7 +38,9 @@
 	Map_ActorNickname.prototype.initialise = function(eid, properties) {
 		Map_RenderableEntity.prototype.initialise.call(this, eid, properties);
 
-		this.zorder = properties.entity.zorder + 1;
+		var pos = this.getPosition();
+
+		pos[2] = NICKNAME_ZORDER;
 		
 		this.trackedEntity = properties.entity;
 		

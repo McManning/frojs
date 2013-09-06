@@ -28,7 +28,7 @@ Map_Entity.prototype.getPosition = function() {
 	return this.position;
 }
 
-Map_Entity.prototype.setPosition = function(x, y) {
+Map_Entity.prototype.setPosition = function(x, y, z) {
 
 	var pos = this.getPosition();
 	
@@ -37,11 +37,18 @@ Map_Entity.prototype.setPosition = function(x, y) {
 		
 		pos[0] = Math.floor(x[0]);
 		pos[1] = Math.floor(x[1]);
+		pos[2] = Math.floor(x[2]);
 		
 	} else {
 	
+		// Form setPosition(x, y)
 		pos[0] = Math.floor(x);
 		pos[1] = Math.floor(y);
+		
+		// If it's in the form setPosition(x, y, z)
+		if (z != undefined) {
+			pos[2] = Math.floor(z);
+		}
 	}
 }
 

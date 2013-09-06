@@ -252,14 +252,15 @@ fro.world = $.extend({
 				world: props.network.channel,
 				avatar: 'default', //props.entities.player.avatar, // @todo resolve better
 				x: pos[0],
-				y: pos[1]
+				y: pos[1],
+				z: pos[2]
 			});
 			
 			// Send a follow up message with our avatar data
 			// @todo maybe send this in auth response instead, just in case of bad auth?
 			//this.player.sendAvatar();
 			// @todo fix, or add avatar ID to auth.
-			
+			 
 		}).bind('auth', this, function(evt) {
 			
 			// After we've been authenticated, join the world channel
@@ -270,8 +271,7 @@ fro.world = $.extend({
 			//fro.world.join(fro.world.config.spawn_x, fro.world.config.spawn_y);
 		
 		}).bind('join, identity', this, function(evt) { // Sent to our client when a player is added to the map
-			
-			evt.z = this.player.zorder; // @todo fix this fucking hack
+
 			this.loadRemotePlayer(evt.eid, evt);
 			
 		}).bind('say', this, function(evt) { // Chat message { msg: 'message' }
@@ -390,17 +390,18 @@ fro.world = $.extend({
 		*/
 		this._renderableEntities.sort(function(left, right) {
 
-			// left lower
-			if (left.zorder < right.zorder)
+			var pl = left.getPosition();
+			var pr = right.getPosition();
+			
+			// left lower z order
+			if (pl[2] < pr[2])
 				return -1;
 			
-			// right lower
-			if (left.zorder > right.zorder)
+			// right lower z order
+			if (pl[2] > pr[2])
 				return 1;
 				
 			// Else, order depends on Y position
-			var pl = left.getPosition();
-			var pr = right.getPosition();
 			
 			// left is lower (therefore in front of right & higher indexed)
 			if (pl[1] < pr[1])

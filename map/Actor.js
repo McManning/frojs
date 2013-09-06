@@ -38,8 +38,7 @@ Map_Actor.prototype.initialise = function(eid, properties) {
 	this.action = properties.action;
 	this.speed = Speed.WALK;
 	this.direction = properties.direction;
-	this.zorder = properties.z;
-	
+
 	// @todo Are these two required/used?
 	this.width = 0;
 	this.height = 0;
@@ -47,7 +46,7 @@ Map_Actor.prototype.initialise = function(eid, properties) {
 	this.destination = vec3.create();
 	this.directionNormal = vec3.create();
 	
-	this.setPosition(properties.x, properties.y);
+	this.setPosition(properties.x, properties.y, properties.z);
 	
 	this.setAvatar('default');
 	
@@ -178,8 +177,8 @@ Map_Actor.prototype.getBoundingBox = function(r) {
  * Wrapper to set the position of this actor on the map. Will prevent 
  *   automatic walking to a destination 
  */
-Map_Actor.prototype.setPosition = function(x, y) {
-	Map_RenderableEntity.prototype.setPosition.call(this, x, y);
+Map_Actor.prototype.setPosition = function(x, y, z) {
+	Map_RenderableEntity.prototype.setPosition.call(this, x, y, z);
 
 	vec3.set(this.getPosition(), this.destination);
 

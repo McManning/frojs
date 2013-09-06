@@ -3,7 +3,8 @@
 	
 	"use strict";
 	
-	var BUBBLE_ZORDER = 9999; // Above everything else
+	var BUBBLE_ZORDER = 9999; // @todo global UI_ZORDER
+	
 	//var BUBBLE_UPDATE_INTERVAL = 100; // for tracking a followed entity
 	var CHAT_BUBBLE_MIN_TTL = 3000;
 	
@@ -24,8 +25,6 @@
 				st_color1: '#000',
 				st_color2: '#000',
 				
-				min_ttl: 3000,
-				zorder: 9999
 			}, options);
 		
 			fro.world.bind('add.entity', function(entity) {
@@ -51,9 +50,8 @@
 	Map_ChatBubble.prototype.initialise = function(eid, properties) {
 		Map_RenderableEntity.prototype.initialise.call(this, eid, properties);
 
-		// Initially hide this bubble and only display when the entity speaks
-		this.visible = false;
-		this.zorder = BUBBLE_ZORDER;
+		var pos = this.getPosition();
+		pos[2] = BUBBLE_ZORDER;
 		
 		this.trackedEntity = properties.entity;
 
@@ -70,6 +68,9 @@
 			
 			this.destroy();
 		});
+		
+		// Initially hide this bubble and only display when the entity speaks
+		this.visible = false;
 	}
 
 	Map_ChatBubble.prototype.display = function(text) {

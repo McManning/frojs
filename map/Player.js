@@ -54,11 +54,11 @@ Map_Player.prototype.think = function() {
 }
 
 /** Overrides Map_Actor.setPosition */
-Map_Player.prototype.setPosition = function(x, y) {
+Map_Player.prototype.setPosition = function(x, y, z) {
 
 	// @todo net send? Map sort? Following-entities correction?
 
-	Map_Actor.prototype.setPosition.call(this, x, y);
+	Map_Actor.prototype.setPosition.call(this, x, y, z);
 }
 
 /**

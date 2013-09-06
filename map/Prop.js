@@ -16,13 +16,11 @@ Map_Prop.prototype.initialise = function(eid, properties) {
 	this.renderable.textureStretching = false;
 	this.renderable.useAlphaKey = (properties.alphakey == 1);
 
-	this.position[0] = properties.x;
-	this.position[1] = properties.y;
+	this.setPosition(properties.x, properties.y, properties.z);
 	
 	this.width = properties.w;
 	this.height = properties.h;
-	this.zorder = properties.z;
-	
+
 	this.HSVShift = vec3.create();
 	this.clip = rect.create();
 
