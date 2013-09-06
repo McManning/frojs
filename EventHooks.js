@@ -135,7 +135,12 @@ var EventHooks = {
 					var fn = this._events[evt][e];
 					
 					if (!namespaces_re || namespaces_re.test( fn.namespaces )) {
-						fn.callback.apply( fn.obj, [data] );
+						try {
+							fn.callback.apply( fn.obj, [data] );
+						} catch (e) {
+							fro.log.error('Exception during event ' + evt);
+							fro.log.error(e.stack);
+						}
 					}
 				}
 			}
