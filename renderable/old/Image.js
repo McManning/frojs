@@ -143,7 +143,7 @@ RenderableImage.prototype.buildTextureBuffer = function() {
 	}
 	
 	if (this.flipped) {
-		throw '@todo implement in the shader';
+		throw new Error('@todo implement in the shader');
 		
 	} else {
 

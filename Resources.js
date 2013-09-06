@@ -78,7 +78,7 @@ fro.resources = $.extend({
 				fro.resources.failedResources[i] = json[i];
 				fro.resources.fire('preload.error', this);
 			});
-	}
+	},
 	
 	load : function(url, type) {
 		
@@ -100,7 +100,7 @@ fro.resources = $.extend({
 			var index = url.lastIndexOf('.');
 			if (index < 0) {
 				this.failedResources[url] = url;
-				throw 'Cannot determine resource type for ' + url;
+				throw new Error('Cannot determine resource type for ' + url);
 			}
 			
 			type = url.substr( url.lastIndexOf('.') + 1 );
@@ -108,7 +108,7 @@ fro.resources = $.extend({
 
 		if (!(type in this.resourceLoaders)) {
 			this.failedResources[url] = url;
-			throw 'Cannot load ' + url + '. No loader for type ' + type;
+			throw new Error('Cannot load ' + url + '. No loader for type ' + type);
 		}
 
 		var resource = this.resourceLoaders[type]();
@@ -177,7 +177,7 @@ fro.resources = $.extend({
 				
 					// Make sure our image is actually loaded
 					if (!this.isLoaded()) {
-						throw 'Cannot get texture, image not yet loaded for ' + this.id;
+						throw new Error('Cannot get texture, image not yet loaded for ' + this.id);
 					}
 
 					this.texture = fro.renderer.createTexture(this.img);
@@ -321,7 +321,7 @@ fro.resources = $.extend({
 	 * @return new resource object
 	 */
 	_loadJS : function() {
-		throw 'Not implemented';
+		throw new Error('Not implemented');
 	},
 	
 	/**
@@ -381,8 +381,12 @@ fro.resources = $.extend({
 	getFontTexture : function(text, options) {
 		
 		if (!this.scratchCanvas) {
-			fro.log.error('No fro.resources.scratchCanvas defined');
+			throw new Error('No fro.resources.scratchCanvas defined');
 			return null;
+		}
+		
+		if (text.length < 1) {
+			throw new Error('No text');
 		}
 		
 		var canvas = this.scratchCanvas;
@@ -419,6 +423,10 @@ fro.resources = $.extend({
 
 		h = options.height * (textLines.length + 1);
 
+		if (w < 1 || h < 1) {
+			throw new Error('Invalid canvas dimensions ' + w + 'x' + h);
+		}
+		
 		canvas.width = w;
 		canvas.height = h;
 

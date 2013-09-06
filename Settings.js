@@ -85,7 +85,7 @@ var fro.settings = {
 	get : function(id) {
 		
 		if (typeof this.persistentSettings[id] == 'undefined') {
-			throw '[fro.setting] ' + id + ' does not exist';
+			throw new Error('[fro.setting] ' + id + ' does not exist');
 		}
 		
 		return this.persistentSettings[id];
@@ -94,7 +94,7 @@ var fro.settings = {
 	set : function(id, newValue) {
 
 		if (typeof this.persistentSettings[id] == 'undefined') {
-			throw '[fro.setting] ' + id + ' does not exist';
+			throw new Error('[fro.setting] ' + id + ' does not exist');
 		}
 		
 		var oldValue = this.persistentSettings[id];
@@ -154,7 +154,7 @@ var fro.settings = {
 				},
 				error: function() {
 					// @todo verbosity
-					throw '[fro.settings] Error while contacting ' + this.storageMethod;
+					throw new Error('[fro.settings] Error while contacting ' + this.storageMethod);
 				},
 			});
 			
@@ -175,8 +175,8 @@ var fro.settings = {
 				this.persistentSettings = json;
 			}
 		} catch (e) {
-			throw '[fro.settings] Failed to parse JSON from storage method "' 
-					+ this.storageMethod + '" - ' + e;
+			throw new Error('[fro.settings] Failed to parse JSON from storage method "' 
+					+ this.storageMethod + '" - ' + e.toString());
 		}
 		
 		this.fire('loaded');

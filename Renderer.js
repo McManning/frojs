@@ -33,7 +33,7 @@ fro.renderer = {
 		
 		// No WebGL or canvas support, they can't play!
 		if (!gl) {
-			throw 'No WebGL support!';
+			throw new Error('No WebGL support!');
 		}
 	
 		gl.viewportWidth = canvas.width;
@@ -47,7 +47,7 @@ fro.renderer = {
 		
 		gl.mvPopMatrix = function() {
 			if (gl.mvMatrixStack.length == 0) {
-				throw 'Invalid popMatrix!';
+				throw new Error('Invalid popMatrix!');
 			}
 			gl.mvMatrix = gl.mvMatrixStack.pop();
 		}
@@ -145,7 +145,7 @@ fro.renderer = {
 	loadShaders : function(vs_resource, fs_resource) {
 		
 		if (!this.isWebGL())
-			throw 'Cannot load shaders in a non WebGL runtime';
+			throw new Error('Cannot load shaders in a non WebGL runtime');
 		
 		// @todo, eventually context switching
 		if (fro.shaderProgram != null) {
@@ -163,7 +163,7 @@ fro.renderer = {
 		this.vs = vs;
 		
 		if (!gl.getShaderParameter(vs, gl.COMPILE_STATUS)) {
-			throw 'Vertex Shader Error: ' + gl.getShaderInfoLog(vs);
+			throw new Error('Vertex Shader Error: ' + gl.getShaderInfoLog(vs));
 		} else {
 			gl.attachShader(sp, vs);
 		}
@@ -176,7 +176,7 @@ fro.renderer = {
 		this.fs = fs;
 		
 		if (!gl.getShaderParameter(fs, gl.COMPILE_STATUS)) {
-			throw 'Fragment Shader Error: ' + gl.getShaderInfoLog(fs);
+			throw new Error('Fragment Shader Error: ' + gl.getShaderInfoLog(fs));
 		} else {
 			gl.attachShader(sp, fs);
 		}
@@ -185,7 +185,7 @@ fro.renderer = {
 		gl.linkProgram(sp);
 		
 		if (!gl.getProgramParameter(sp, gl.LINK_STATUS)) {
-			throw 'Could not initialize shaders';
+			throw new Error('Could not initialize shaders');
 		}
 
 		gl.useProgram(sp);

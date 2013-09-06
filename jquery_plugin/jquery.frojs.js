@@ -134,7 +134,7 @@ we can completely stop referencing the world as an entity, or something.
 					fro.plugins[p].initialise(options.plugins[p]);
 				} else {
 					// Plugin does not exist, throw an error
-					throw 'Plugin "' + p + '" failed to load!';
+					throw new Error('Plugin "' + p + '" failed to load!');
 				}
 			}
 		}

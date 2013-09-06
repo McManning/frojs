@@ -30,7 +30,7 @@ fro.world = $.extend({
 		// Make sure we have a player entity
 		// @todo maybe this check BEFORE network initialisation? (To avoid false starts)
 		if (!this.player) {
-			throw('Did not load a player entity with world json');
+			throw new Error('Did not load a player entity with world json');
 		}
 		
 		// Enable event binding
@@ -96,7 +96,7 @@ fro.world = $.extend({
 			if (this._entityLoaders[type]) {
 				return this._entityLoaders[type].apply(this, [id, entity]);
 			} else {
-				throw 'Unknown entity type "' + type + '" for ' + id;
+				throw new Error('Unknown entity type "' + type + '" for ' + id)
 			}
 		} catch (e) {
 			
@@ -189,7 +189,7 @@ fro.world = $.extend({
 	loadPlayer : function(id, properties) {
 
 		if ('player' in this) {
-			throw 'fro.world.player has already been loaded';
+			throw new Error('fro.world.player has already been loaded');
 		}
 		
 		this.player = new Map_Player();

@@ -44,7 +44,7 @@ fro.timers = {
         if (delay == undefined) {
             delay = 1000;
 		} else if (delay < 30) {
-            throw 'Minimum for addInterval: 30ms. Requested ' + delay;
+            throw new Error('Minimum for addInterval: 30ms. Requested ' + delay);
 		}
 		
         var now = Date.now();

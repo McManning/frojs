@@ -49,7 +49,7 @@ RenderableLineList.prototype.setWidth = function(width) {
 RenderableLineList.prototype.setLines = function(list, closed) {
 	
 	if (list.length < 4)
-		throw 'Invalid number of points';
+		throw new Error('Invalid number of points');
 
 	// start point
 	var x = list[0];
