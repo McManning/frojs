@@ -16,8 +16,10 @@ fro.log = {
 	 */
 	initialise : function(options) {
 	
-		this.logToConsole = options.logToConsole;
-	
+		if ('logToConsole' in options) {
+			this.logToConsole = options.logToConsole;
+		}
+		
 		if ('logServer' in options) {
 			this.logServer = options.logServer;
 			this.upstreamBuffer = '';

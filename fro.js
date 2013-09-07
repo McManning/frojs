@@ -13,7 +13,7 @@ var fro = {
 		this.options = options;
 		this.shaderProgram = null;
 	
-		this.log.initialise();
+		this.log.initialise(options);
 		this.timers.initialise();
 		this.resources.initialise();
 		this.audio.initialise(options);
