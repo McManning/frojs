@@ -14,13 +14,22 @@ function RenderableImage(width, height) {
 	this.buildTextureBuffer();
 }
 
-RenderableImage.prototype.render = function(position, rotation, clip, HSVShift) {
+RenderableImage.prototype.render = function(position, offset, rotation, clip, depth, HSVShift) {
+
+	if (depth == undefined) {
+		depth = 0;
+	}
 
 	if (fro.renderer.isWebGL()) {
 	
 		// Begin draw, setup
 		gl.mvPushMatrix();
 		mat4.translate(gl.mvMatrix, position);
+		
+		// @todo merge both via a quicker addition
+		if (offset) {
+			mat4.translate(gl.mvMatrix, offset); 
+		}
 		
 		if (rotation) {
 			mat4.rotateZ(gl.mvMatrix, rotation);
@@ -60,6 +69,17 @@ RenderableImage.prototype.render = function(position, rotation, clip, HSVShift) 
 		gl.activeTexture(gl.TEXTURE0);
 		gl.bindTexture(gl.TEXTURE_2D, texture);
 		gl.uniform1i(fro.shaderProgram.samplerUniform, 0);
+	
+		// @todo move to entities
+		gl.uniform3f(fro.shaderProgram.entityPositionUniform, 
+						position[0], position[1], position[2]); 
+		
+		gl.uniform3f(fro.shaderProgram.entityOffsetUniform,
+						offset[0], offset[1], offset[2]);
+
+		gl.uniform3f(fro.shaderProgram.entityDimensionsUniform,
+						this.width, this.height, depth
+					);
 		
 		// @todo does the default texture also perform clipping? 
 		// I wanted it to be scaled, but rendered fully.

@@ -203,10 +203,16 @@ fro.renderer = {
 		sp.pMatrixUniform = gl.getUniformLocation(sp, 'uPMatrix');
 		sp.mvMatrixUniform = gl.getUniformLocation(sp, 'uMVMatrix');
 		sp.samplerUniform = gl.getUniformLocation(sp, 'uSampler');
+		sp.entityPositionUniform = gl.getUniformLocation(sp, 'uEntityPosition');
 		sp.HSVShiftUniform = gl.getUniformLocation(sp, 'uHSVShift');
 		sp.alphaKeyUniform = gl.getUniformLocation(sp, 'uUseAlphaKey');
 		sp.timeUniform = gl.getUniformLocation(sp, 'uTime');
 		sp.cameraPositionUniform = gl.getUniformLocation(sp, 'uCamera');
+		
+		
+		sp.entityOffsetUniform = gl.getUniformLocation(sp, 'uEntityOffset');
+		sp.entityDimensionsUniform = gl.getUniformLocation(sp, 'uEntityDimensions');
+
 		
 		fro.shaderProgram = sp;
 	},

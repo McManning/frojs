@@ -166,11 +166,11 @@ Avatar.prototype.onImageLoad = function() {
 */
 }
 
-Avatar.prototype.render = function(position) {
+Avatar.prototype.render = function(position, offset) {
 
 	// @todo fancy additional stuff
 	
-	this.renderable.render(position, 0.0, this.clip, this.HSVShift);
+	this.renderable.render(position, offset, 0.0, this.clip, 0, this.HSVShift);
 }
 
 

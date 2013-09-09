@@ -33,8 +33,8 @@ var fro = {
 			this.numFramerates = 10;
 			this.renderTime = -1;
 			
-			this.background = new RenderableImage(400, 300);
-			this.background.setTexture(this.resources.getDefaultTexture(), false);
+			//this.background = new RenderableImage(400, 300);
+			//this.background.setTexture(this.resources.getDefaultTexture(), false);
 		}
 	},
 	
@@ -77,12 +77,12 @@ var fro = {
 		gl.uniform1f(fro.shaderProgram.timeUniform, (time - this.startTime) / 1000.0);
 
 		gl.uniform3f(fro.shaderProgram.cameraPositionUniform, 
-					this.camera._translation[0], 
-					this.camera._translation[1], 
-					this.camera._translation[2]);
+					this.camera._position[0], 
+					this.camera._position[1], 
+					this.camera._position[2]);
 		
-		if (this.background)
-			this.background.render(0, 0);
+		//if (this.background)
+		//	this.background.render(0, 0);
 			
 		if (this.world) {
 			this.world.render();

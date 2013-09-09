@@ -77,6 +77,8 @@ Map_Actor.prototype.applyAvatar = function(avatar) {
 	this.width = avatar.getWidth();
 	this.height = avatar.getHeight();
 	
+	this.offset[1] = this.height * 0.5;
+	
 	this.recalculateAvatarRow();
 }
 
@@ -89,12 +91,7 @@ Map_Actor.prototype.setAvatar = function(id) {
 Map_Actor.prototype.render = function() {
 
 	if (this.avatar) {
-		
-		var p = vec3.create(); // @todo stop allocating
-		p[0] = this.position[0];
-		p[1] = this.position[1] + this.height * 0.5;
-		
-		this.avatar.render(p);
+		this.avatar.render(this.position, this.offset);
 	}
 }
 

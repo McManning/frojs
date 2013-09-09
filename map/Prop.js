@@ -15,7 +15,9 @@ Map_Prop.prototype.initialise = function(eid, properties) {
 	this.renderable.useSrcAlpha = true;
 	this.renderable.textureStretching = false;
 	this.renderable.useAlphaKey = (properties.alphakey == 1);
-
+	
+	this.depth = properties.d;
+	
 	this.setPosition(properties.x, properties.y, properties.z);
 	
 	this.width = properties.w;
@@ -138,11 +140,10 @@ Map_Prop.prototype.failedToLoad = function() {
 
 Map_Prop.prototype.render = function() {
 
-	var p = vec3.create(); // @todo stop allocating
-	p[0] = this.position[0] + this.offset[0];
-	p[1] = this.position[1] + this.offset[1];
-
-	this.renderable.render(p, 0, this.clip, this.HSVShift);
+	this.renderable.render(
+		this.position, this.offset, 0, 
+		this.clip, this.depth, this.HSVShift
+	);
 }
 
 Map_Prop.prototype.think = function() {
