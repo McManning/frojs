@@ -53,7 +53,7 @@ fro.world = $.extend({
 			);
 		}
 		
-		if ('bounds_x1' in properties) {
+		if ('bounds' in properties) {
 			var bounds = rect.create();
 			
 			bounds[0] = properties.bounds[0];
