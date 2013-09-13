@@ -3,7 +3,7 @@
 	
 	"use strict";
 	
-	var BUBBLE_ZORDER = 9999; // @todo global UI_ZORDER
+	var BUBBLE_ZORDER = 999; // @todo global UI_ZORDER
 	
 	//var BUBBLE_UPDATE_INTERVAL = 100; // for tracking a followed entity
 	var CHAT_BUBBLE_MIN_TTL = 3000;

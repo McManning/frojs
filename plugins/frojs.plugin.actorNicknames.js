@@ -3,7 +3,7 @@
 	
 	"use strict";
 
-	var NICKNAME_ZORDER = 9998; // @todo global UI_ZORDER
+	var NICKNAME_ZORDER = 998; // @todo global UI_ZORDER
 	
 	fro.plugins.actorNicknames = {
 		

@@ -26,7 +26,7 @@ fro.camera = {
 			
 			// set up projection matrix
 			// @todo don't I only have to do this once? Or only when zoom changes?
-			mat4.ortho(0, gl.viewportWidth * this.zoom, 0, gl.viewportHeight * this.zoom, 0.0, -100.0, gl.pMatrix);
+			mat4.ortho(0, gl.viewportWidth * this.zoom, 0, gl.viewportHeight * this.zoom, 0.0, -1000.0, gl.pMatrix);
 			
 			// set up model view matrix
 			mat4.identity(gl.mvMatrix);
