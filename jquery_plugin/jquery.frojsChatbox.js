@@ -66,6 +66,7 @@
 			
 			ele.resizable({
 				helper: "ui-resizable-helper", // @todo custom helper instead of override
+				handles: "all",
 				minHeight: options.minHeight,
 				minWidth: options.minWidth,
 				stop: function(event, ui) {
@@ -73,6 +74,7 @@
 				}
 			}).draggable({
 				containment : options.containment,
+				handle: ".header"
 			});
 			
 			// Dock for a default state
@@ -82,8 +84,8 @@
 			// Reroute focus events
 			ele.find('.output-container').click(function(e) {
 			
-				ele.find('input').focus();
-				return false;
+				//ele.find('input').focus();
+				//return false;
 			});
 
 			ele.find('.scroll-pane').jScrollPane({
@@ -146,8 +148,16 @@
 				);
 			});
 			
+			$.fn.frojsChatbox.setDefaultMenuItems(ele);
+			
 		});
 	};
+	
+	$.fn.frojsChatbox.setDefaultMenuItems = function(ele) {
+	
+		ele.find('.menu').append('<a href="#">Save Chat</a>');
+		
+	}
 	
 	$.fn.frojsChatbox.append = function(ele, message, timestamped) {
 	
@@ -207,7 +217,7 @@
 				+ '<div class="header"><div class="controls">'
 				//+ '  <a class="dock" title="Undock" href="#"><i class="icon-lock icon-white"></i></a>'
 				+ '</div></div>'
-				+ '<div class="output-container"><div class="scroll-pane"></div></div>'
+				+ '<div class="output-container"><div class="scroll-pane"></div><div class="menu"></div></div>'
 				+ '<div class="input-container-wrap"><div class="input-container">'
 				+ '  <table><tr>'
 				+ '    <td class="controls-left"><i class="icon-comments"></i></td>'
