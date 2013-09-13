@@ -72,6 +72,15 @@ fro.log = {
 	
 	_write : function(message, level) {
 
+		// if it's an object without a custom toString(), lazily print fields instead
+		if (typeof message == 'object' && message.toString() == '[object Object]') {
+			var output = 'Object Properties\n';
+			for (var property in message) {
+				output += '    ' + property + ': ' + message[property] + '\n';
+			}
+			message = output;
+		}
+	
 		var msg = '[' + this.getLevelString(level) + '] ' + message.toString();
 		
 		// If we send important logs to the server, queue them up
@@ -80,7 +89,7 @@ fro.log = {
 		}
 		
 		if (this.logToConsole) {
-			console.log(message);
+			console.log(msg);
 		}
 	}
 }
