@@ -101,7 +101,7 @@
 							$(this).val('');
 						} else {
 							
-							$.fn.frojsChatbox.append('Not connected!');
+							$.fn.frojsChatbox.append(ele, 'Not connected!', true);
 						}
 					}
 				}
@@ -223,7 +223,7 @@
 	// via $.fn.frojs.someKey = 'value';
 	$.fn.frojsChatbox.options = {
 	
-		placeholder: 'Faceroll Enter to send',
+		placeholder: 'Tab to start typing ...',
 		containment: false,
 		minWidth: 200,
 		minHeight: 100

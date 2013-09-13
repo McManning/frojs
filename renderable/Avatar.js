@@ -108,7 +108,6 @@ Avatar.prototype.nextFrame = function(forceLoop) {
 Avatar.prototype.setKeyframe = function(key) {
 
 	if (this.currentKeyframe != key && this.hasKeyframe(key)) {
-		console.log(key);
 		// @todo check if it exists first! If not, default to w/e the first keyframes set is
 		this.currentKeyframe = key;
 		

@@ -45,7 +45,7 @@ we can completely stop referencing the world as an entity, or something.
 			fro.resources.load(options.server, 'json')
 				.bind('onload', function() {
 
-					console.log(this.json);
+					fro.log.debug(this.json);
 				
 					// Load the JSON 
 					options.world = this.json;

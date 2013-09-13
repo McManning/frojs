@@ -88,11 +88,11 @@ fro.resources = $.extend({
 		}
 		
 		if (url in this.loadedResources) {
-			console.log('Loading from cache ' + url);
+			fro.log.debug('Loading from cache ' + url);
 			return this.loadedResources[url];
 		}
 		
-		console.log('Loading new resource ' + url);
+		fro.log.debug('Loading new resource ' + url);
 		
 		// Determine which loader to use based on the filetype, if we didn't specify one
 		if (type == undefined) { // .load(id, url)
@@ -288,9 +288,7 @@ fro.resources = $.extend({
 							try {
 								res.json = JSON.parse(data);
 							} catch (e) {
-								console.log(e);
-								console.log(data);
-								res.fire('onerror', this);
+								res.fire('onerror', this, e);
 								return;
 							}
 							
@@ -301,8 +299,7 @@ fro.resources = $.extend({
 						res.fire('onload', this);
 					},
 					error: function(request, status, error) {
-						console.log(error);
-						res.fire('onerror', this);
+						res.fire('onerror', this, error);
 					}
 				});
 			},
