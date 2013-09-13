@@ -13,6 +13,7 @@ Map_Entity.prototype.initialise = function(eid, properties) {
 	this.properties = properties;
 	
 	this.position = vec3.create();
+	this._translation = vec3.create();
 }
 
 Map_Entity.prototype.destroy = function() {
@@ -50,6 +51,10 @@ Map_Entity.prototype.setPosition = function(x, y, z) {
 			pos[2] = Math.floor(z);
 		}
 	}
+	
+	// update render translation appropriately
+	this._translation[0] = pos[0];
+	this._translation[1] = pos[1] + pos[2]; // y + z for offsetting according to z-height
 }
 
 /**

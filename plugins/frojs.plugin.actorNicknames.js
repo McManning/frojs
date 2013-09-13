@@ -90,11 +90,14 @@
 		
 		pos[0] = epos[0];
 		pos[1] = epos[1] + r[3] + 5; // Above the tracked entity's head
+		
+		this._translation[0] = pos[0];
+		this._translation[1] = pos[1] + epos[2];
 	}
 
 	Map_ActorNickname.prototype.render = function() {
 
-		this.renderable.render(this.position, 0);
+		this.renderable.render(this._translation, 0);
 	}
 
 	/**

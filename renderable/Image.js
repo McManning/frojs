@@ -24,6 +24,7 @@ RenderableImage.prototype.render = function(position, offset, rotation, clip, de
 	
 		// Begin draw, setup
 		gl.mvPushMatrix();
+		
 		mat4.translate(gl.mvMatrix, position);
 		
 		// @todo merge both via a quicker addition

@@ -91,7 +91,7 @@ Map_Actor.prototype.setAvatar = function(id) {
 Map_Actor.prototype.render = function() {
 
 	if (this.avatar) {
-		this.avatar.render(this.position, this.offset);
+		this.avatar.render(this._translation, this.offset);
 	}
 }
 
@@ -230,8 +230,12 @@ Map_Actor.prototype.processMovement = function() {
 		direction[1] = Math.ceil(direction[1]);
 	
 		vec3.add(position, direction);
+		Map_RenderableEntity.prototype.setPosition.call(this, position);
+		
 	} else { // close enough, just set
+		
 		vec3.set(this.destination, position);
+		Map_RenderableEntity.prototype.setPosition.call(this, position);
 	}
 	
 	// Animate the step

@@ -120,6 +120,9 @@ fro.camera = {
 				// Update camera position
 				vec3.set(epos, this._position);
 				
+				// @todo maybe clean this up a little better?
+				this._position[1] += epos[2]; // Factor in entity Z-order
+				
 				//vec3.scale(this._position, this.zoom);
 				
 				this.applyBounds();

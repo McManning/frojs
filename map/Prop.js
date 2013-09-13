@@ -141,7 +141,7 @@ Map_Prop.prototype.failedToLoad = function() {
 Map_Prop.prototype.render = function() {
 
 	this.renderable.render(
-		this.position, this.offset, 0, 
+		this._translation, this.offset, 0, 
 		this.clip, this.depth, this.HSVShift
 	);
 }
@@ -158,6 +158,8 @@ Map_Prop.prototype.getBoundingBox = function(r) {
 	
 	// @todo factor in rotations and scaling
 	// and utilize this.renderable.getTopLeft(), getBottomRight(), etc
+	
+	// @todo z-axis cube?
 	
 	r[0] = this.position[0] + this.offset[0];
 	r[1] = this.position[1] + this.offset[1];
@@ -176,6 +178,8 @@ Map_Prop.prototype.collides = function(r) {
 	
 	// offset r based on our map position, since each collision rectangle
 	// is relative to this entity instance's location
+	
+	// @todo factor in z-axis
 	
 	var nr = rect.create(r);
 	var pos = this.getPosition();
