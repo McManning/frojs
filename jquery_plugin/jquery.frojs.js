@@ -104,7 +104,10 @@ we can completely stop referencing the world as an entity, or something.
 		try {
 			fro.world.initialise(options.world);
 		} catch (e) {
-			$.fn.frojs._setPreloaderError(ele, e);
+			// log the stack, just in case it wasn't earlier
+			fro.log.error(e.stack);
+			
+			$.fn.frojs._setPreloaderError(ele, 'Exception while loading world: ' + e.message);
 			return;
 		}
 		

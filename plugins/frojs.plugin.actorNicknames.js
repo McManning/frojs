@@ -65,19 +65,24 @@
 
 	Map_ActorNickname.prototype.change = function(nick) {
 		
-		// Regenerate our name texture 
-		var texture = fro.resources.getFontTexture(nick, fro.plugins.actorNicknames.options);
-		
-		if (!this.renderable) {
-			this.renderable = new RenderableImage();
-		}
+		if (nick.length < 1) { // No nickname, hide this entity
+			this.visible = false;
+			
+		} else {
+			// Regenerate our name texture 
+			var texture = fro.resources.getFontTexture(nick, fro.plugins.actorNicknames.options);
+			
+			if (!this.renderable) {
+				this.renderable = new RenderableImage();
+			}
 
-		this.renderable.setTexture(texture, true);
-		
-		this.width = this.renderable.width;
-		this.height = this.renderable.height;
-		
-		this._updatePosition();
+			this.renderable.setTexture(texture, true);
+			
+			this.width = this.renderable.width;
+			this.height = this.renderable.height;
+			
+			this._updatePosition();
+		}
 	}
 
 	Map_ActorNickname.prototype._updatePosition = function() {

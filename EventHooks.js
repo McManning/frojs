@@ -138,8 +138,7 @@ var EventHooks = {
 						try {
 							fn.callback.apply( fn.obj, [data] );
 						} catch (e) {
-							fro.log.error('Exception during event ' + evt);
-							fro.log.error(e.stack);
+							fro.log.error('Exception during event ' + evt + ': ' + e.stack);
 						}
 					}
 				}

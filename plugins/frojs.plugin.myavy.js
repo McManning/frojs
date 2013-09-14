@@ -144,34 +144,42 @@
 	}
 	
 	function _setAvatar(entity, url) {
-		if (url.toString().indexOf('myavy.net') >= 0 
-			|| url.toString().indexOf('localhost') >= 0) {
+	
+		if (typeof url == 'object') {
 			
-			// attach a loader entity
-			_attachLoader(entity);
+			// assume this is a passed in metadata object, skip the download process
+			_onMetadata(entity, url, url);
 			
-			// Retrieve metadata from our source URL
-			$.ajax({
-				url: url, //_getUrl(id),
-				dataType: 'jsonp',
-				timeout: 5000,
-				success: function(data) {
-					_onMetadata(entity, url, data);
-				},
-				error: function(xhr, status, error) {
-					// Either json parsing failed, or the server
-					// refused to respond to the request
-					_onError(entity, url, error);
-				}
-			});
+		} else {
+			if (url.toString().indexOf('myavy.net') >= 0 
+				|| url.toString().indexOf('localhost') >= 0) {
+				
+				// attach a loader entity
+				_attachLoader(entity);
+				
+				// Retrieve metadata from our source URL
+				$.ajax({
+					url: url, //_getUrl(id),
+					dataType: 'jsonp',
+					timeout: 5000,
+					success: function(data) {
+						_onMetadata(entity, url, data);
+					},
+					error: function(xhr, status, error) {
+						// Either json parsing failed, or the server
+						// refused to respond to the request
+						_onError(entity, url, error);
+					}
+				});
 
-		} else if (url == 'default') {
-			// Also handle requests for the default avatar
-			// (@todo this should actually be an internal
-			// plugin that deals with "unknown" urls)
-			
-			// Skip metadata load process and use the embedded object
-			_onMetadata(entity, url, DEFAULT_AVATAR);
+			} else if (url == 'default') {
+				// Also handle requests for the default avatar
+				// (@todo this should actually be an internal
+				// plugin that deals with "unknown" urls)
+				
+				// Skip metadata load process and use the embedded object
+				_onMetadata(entity, url, DEFAULT_AVATAR);
+			}
 		}
 	}
 	
