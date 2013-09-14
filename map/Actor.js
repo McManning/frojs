@@ -54,6 +54,10 @@ Map_Actor.prototype.initialise = function(eid, properties) {
 		this.setAvatar(properties.avatar);
 	}
 	
+	if (!properties.nick) {
+		properties.nick = '';
+	}
+	
 	this.setNick(properties.nick);
 }
 

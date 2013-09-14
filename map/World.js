@@ -17,11 +17,11 @@ fro.world = $.extend({
 		
 		this._entityLoaders = {
 			prop : this.loadProp,
-			actor : this.loadActor,
 			light : this.loadLight,
 			event : this.loadEvent,
 			player : this.loadPlayer,
 			sound : this.loadSound,
+			npc : this.loadNpc,
 		};
 		
 		this.parseProperties(json);
@@ -96,15 +96,17 @@ fro.world = $.extend({
 			if (this._entityLoaders[type]) {
 				return this._entityLoaders[type].apply(this, [id, entity]);
 			} else {
-				throw new Error('Unknown entity type "' + type + '" for ' + id)
+				fro.log.error('Unknown entity type "' + type + '" for ' + id);
+				throw new Error('Unknown entity type "' + type + '" for ' + id);
 			}
 		} catch (e) {
 			
 			// If this entity was required, fail the load entirely
 			if (entity.required == true) {
+				fro.log.error(e.stack);
 				throw e;
 			} else { // just log the error
-				fro.log.error('Exception while loading entity ' + id + ': ' + e);
+				fro.log.warning('Exception while loading entity ' + id + ': ' + e.stack);
 			}
 		}
 		
@@ -168,11 +170,17 @@ fro.world = $.extend({
 		return prop;
 	},
 	
-	loadActor : function(id, properties) {
+	loadNpc : function(id, properties) {
 		
-		//var actor = new Map_Actor(id, properties);
+		var npc = new Map_Npc();
+		this.fire('new.entity', npc, id, properties);
 		
-		//this.add(actor);
+		npc.initialise(id, properties);
+		
+		// Add it to the map
+		this.add(npc);
+		
+		return npc;
 	},
 
 	/** Loader callback for entities with type = 'light' */
