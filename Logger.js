@@ -24,24 +24,27 @@ fro.log = {
 			this.logServer = options.logServer;
 			this.upstreamBuffer = '';
 			
-			this.interval = fro.timers.addInterval(this, function() {
-			
-				if (this.upstreamBuffer.length > 0) {
-					// We don't care what comes back, just send it up
-					$.ajax({
-						url: this.logServer,
-						type: 'POST',
-						data: { logs : this.upstreamBuffer }
-					});
-					
-					this.upstreamBuffer = '';
-				}
-				
+			this.interval = window.setInterval(function() {
+				fro.log.pushToServer();
 			}, 5000, false);
 		}
 		
 	},
 
+	pushToServer : function() {
+
+		if (this.upstreamBuffer.length > 0) {
+			// We don't care what comes back, just send it up
+			$.ajax({
+				url: this.logServer,
+				type: 'POST',
+				data: { logs : this.upstreamBuffer }
+			});
+			
+			this.upstreamBuffer = '';
+		}
+	},
+	
 	debug : function(message) {
 		this._write(message, this.DEBUG);
 	},
