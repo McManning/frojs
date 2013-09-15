@@ -13,8 +13,6 @@ Map_Prop.prototype.initialise = function(eid, properties) {
 	
 	this.depth = properties.d;
 	
-	this.setPosition(properties.x, properties.y, properties.z);
-	
 	this.width = properties.w;
 	this.height = properties.h;
 
@@ -31,6 +29,8 @@ Map_Prop.prototype.initialise = function(eid, properties) {
 	
 	if (properties.offset_y != undefined)
 		this.offset[1] = properties.offset_y;
+	
+	this.setPosition(properties.x, properties.y, properties.z);
 	
 	/* 	If there's a delay key, this prop is animated.
 		Our dimensions will define a clip of the image, rather than the whole thing

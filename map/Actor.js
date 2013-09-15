@@ -82,6 +82,7 @@ Map_Actor.prototype.applyAvatar = function(avatar) {
 	this.height = avatar.getHeight();
 	
 	this.offset[1] = this.height * 0.5;
+	this._updateTranslation();
 	
 	this.recalculateAvatarRow();
 }
@@ -95,7 +96,7 @@ Map_Actor.prototype.setAvatar = function(id) {
 Map_Actor.prototype.render = function() {
 
 	if (this.avatar) {
-		this.avatar.render(this._translation, this.offset);
+		this.avatar.render(this._translation);
 	}
 }
 

@@ -11,7 +11,10 @@ FontImageResource.prototype.load = function(json) {
 	this.text = json.text;
 	this.options = json;
 	
-	this.texture = this.generateFontTexture(json);
+	this.generateFontTexture(json);
+	
+	this.buildVertexBuffer();
+	this.buildTextureBuffer();
 }
 
 FontImageResource.prototype.generateFontTexture = function(options) {
@@ -88,7 +91,15 @@ FontImageResource.prototype.generateFontTexture = function(options) {
 	}
 
 	// Convert canvas context to a texture
-	var texture = fro.renderer.createTexture(canvas);
-	
-	return texture;
+	this.texture = fro.renderer.createTexture(canvas);
+	this.width = w;
+	this.height = h;
+}
+
+FontImageResource.prototype.getTextureWidth = function() {
+	return this.width;
+}
+
+FontImageResource.prototype.getTextureHeight = function() {
+	return this.height;
 }

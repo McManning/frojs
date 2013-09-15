@@ -27,15 +27,17 @@ Avatar.prototype.load = function(id, settings) {
 		}
 	}
 	
-	this.settings = settings;
-	
 	this.currentKeyframe = '';
 	this.currentFrame = 0;
 	this.currentIndex = 0;
 	this.currentDelay = 0;
 	
+	this.keyframes = settings.keyframes;
+
 	this.id = id;
 	this.url = settings.url;
+	this.width = settings.width;
+	this.height = settings.height;
 
 	var renderable = fro.resources.load({
 		type: 'image',
@@ -76,10 +78,10 @@ Avatar.prototype.load = function(id, settings) {
  */
 Avatar.prototype.nextFrame = function(forceLoop) {
 	
-	if (this.currentKeyframe in this.settings.keyframes) {
+	if (this.currentKeyframe in this.keyframes) {
 		// if we hit the end of the animation, loop (if desired)
-		if (this.settings.keyframes[this.currentKeyframe].frames.length <= this.currentIndex + 1) {
-			if (this.settings.keyframes[this.currentKeyframe].loop || forceLoop) {
+		if (this.keyframes[this.currentKeyframe].frames.length <= this.currentIndex + 1) {
+			if (this.keyframes[this.currentKeyframe].loop || forceLoop) {
 				this.currentIndex = 0;
 			} else {
 				this.currentIndex -= 2;
@@ -87,13 +89,11 @@ Avatar.prototype.nextFrame = function(forceLoop) {
 		}
 		
 		// Get the frame index (of the source image) to render
-		this.currentFrame = this.settings
-				.keyframes[this.currentKeyframe]
+		this.currentFrame = this.keyframes[this.currentKeyframe]
 				.frames[this.currentIndex];
 		
 		// pull out the delay for the next frame
-		this.currentDelay = this.settings
-				.keyframes[this.currentKeyframe]
+		this.currentDelay = this.keyframes[this.currentKeyframe]
 				.frames[this.currentIndex+1];
 		
 		// pull out the frame number for the next frame
@@ -118,7 +118,7 @@ Avatar.prototype.setKeyframe = function(key) {
 }
 
 Avatar.prototype.hasKeyframe = function(key) {
-	return (key in this.settings.keyframes);
+	return (key in this.keyframes);
 }
 
 Avatar.prototype.reset = function() {
@@ -132,27 +132,29 @@ Avatar.prototype.reset = function() {
 }
 
 Avatar.prototype.getWidth = function() { 
-	return this.renderable.width;
+	return this.width;
 }
 
 Avatar.prototype.getHeight = function() { 
-	return this.renderable.height;
+	return this.height;
 }
 
 /** Recalculate the source rect of our texture based on the current row/frame */
 Avatar.prototype.updateTextureClip = function() {
 
-	var framesPerRow = Math.floor(this.renderable.getTextureWidth() / this.getWidth());
-	
-	var x = this.currentFrame % framesPerRow;
-	var y = (this.currentFrame - x) / framesPerRow;
+	if (this.renderable) {
+		var framesPerRow = Math.floor(this.renderable.getTextureWidth() / this.getWidth());
+		
+		var x = this.currentFrame % framesPerRow;
+		var y = (this.currentFrame - x) / framesPerRow;
 
-	//var x = this.getWidth() * this.currentFrame;
-	//var y = this.getHeight() * this.currentRow;
-	
-	// Update texture clip
-	this.clip[0] = x * this.getWidth();
-	this.clip[1] = y * this.getHeight();
+		//var x = this.getWidth() * this.currentFrame;
+		//var y = this.getHeight() * this.currentRow;
+		
+		// Update texture clip
+		this.clip[0] = x * this.getWidth();
+		this.clip[1] = y * this.getHeight();
+	}
 }
 
 /** Callback for when RenderableImage finally receives a texture */
@@ -166,7 +168,7 @@ Avatar.prototype.onImageLoad = function() {
 */
 }
 
-Avatar.prototype.render = function(position, offset) {
+Avatar.prototype.render = function(position) {
 
 	// @todo fancy additional stuff
 	

@@ -55,12 +55,10 @@ fro.log = {
 	
 	warning : function(message) {
 		this._write(message, this.WARNING);
-		//throw message;
 	},
 	
 	error : function(message) {
 		this._write(message, this.ERROR);
-		//throw message;
 	},
 
 	getLevelString : function(level) {

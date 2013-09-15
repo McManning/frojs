@@ -13,6 +13,7 @@ Map_Entity.prototype.initialise = function(eid, properties) {
 	this.properties = properties;
 	
 	this.position = vec3.create();
+	this.offset = vec3.create();
 	this._translation = vec3.create();
 }
 
@@ -52,9 +53,14 @@ Map_Entity.prototype.setPosition = function(x, y, z) {
 		}
 	}
 	
+	this._updateTranslation();
+}
+
+Map_Entity.prototype._updateTranslation = function() {
+	
 	// update render translation appropriately
-	this._translation[0] = pos[0];
-	this._translation[1] = pos[1] + pos[2]; // y + z for offsetting according to z-height
+	this._translation[0] = this.position[0] + this.offset[0];
+	this._translation[1] = this.position[1] + this.position[2] + this.offset[1]; // y + z for offsetting according to z-height
 }
 
 /**

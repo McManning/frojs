@@ -69,15 +69,15 @@
 			this.visible = false;
 			
 		} else {
-			// Regenerate our name texture 
-			var texture = fro.resources.getFontTexture(nick, fro.plugins.actorNicknames.options);
-			
-			if (!this.renderable) {
-				this.renderable = new RenderableImage();
-			}
-
-			this.renderable.setTexture(texture, true);
-			
+			// regenerate a name texture, unmanaged by resources (@todo manage?)
+			this.renderable = new FontImageResource();
+			this.renderable.load(
+				$.extend({
+					text: nick,
+					shader: 'default_shader',
+				}, fro.plugins.actorNicknames.options)
+			);
+		
 			this.width = this.renderable.width;
 			this.height = this.renderable.height;
 			

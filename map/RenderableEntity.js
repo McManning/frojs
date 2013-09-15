@@ -10,8 +10,6 @@ Map_RenderableEntity.prototype.initialise = function(eid, properties) {
 
 	this.visible = true; // Whether or not we should draw this entity this frame
 	this.isRenderable = true; // Entities inherited from this type will be added to the render queue
-
-	this.offset = vec3.create();
 }
 
 Map_RenderableEntity.prototype.destroy = function() {

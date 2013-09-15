@@ -103,7 +103,7 @@ fro.resources = $.extend({
 		
 		// We can't re-define a resource that exists already
 		if (id in this.loadedResources) {
-			throw new Error('Resource ' + id + ' already exists');
+			throw new Error('Trying to redefine resource ' + id + ' with new JSON data');
 		}
 		
 		console.log('Loading new resource ' + id);
