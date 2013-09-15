@@ -4,14 +4,14 @@
 function JsonResource() {}
 JsonResource.prototype = new Resource();
 
-JsonResource.prototype.load = function(id, url) {
+JsonResource.prototype.load = function(json) {
 
-	this.id = id;
-	this.url = url;
+	this.id = json.id;
+	this.url = json.url;
 	
 	var self = this;
 	$.ajax({
-		url: url,
+		url: json.url,
 		success: function(data) {
 
 			if (typeof data == 'string') {

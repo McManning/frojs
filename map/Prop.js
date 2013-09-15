@@ -135,14 +135,15 @@ Map_Prop.prototype.render = function() {
 	
 	// Bind additional shader uniforms for this specific entity
 
+/*
 	gl.uniform3f(shader.getUniform('uEntityPosition'), 
 					position[0], position[1], position[2]
 				); 
 	
-	gl.uniform3f(shader.getUniform('uEntityDimensions')
+	gl.uniform3f(shader.getUniform('uEntityDimensions'),
 					this.width, this.height, this.depth
 				);
-	
+*/
 	
 	this.renderable.render(this._translation, 0, this.clip);
 }

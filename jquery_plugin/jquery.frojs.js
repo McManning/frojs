@@ -42,23 +42,27 @@ we can completely stop referencing the world as an entity, or something.
 			$.fn.frojs._updatePreloaderStatus(ele, 'Retrieving World JSON', 0, 1);
 			
 			// Load our world data from Sybolt
-			fro.resources.load(options.server, 'json')
-				.bind('onload', function() {
+			fro.resources.load({
+				id: 'server_config',
+				type: 'json',
+				url: '/frojs/render_play_api.php'
+			})
+			.bind('onload', function() {
 
-					fro.log.debug(this.json);
+				fro.log.debug(this.getJson());
+			
+				// Load the JSON 
+				options.world = this.getJson();
 				
-					// Load the JSON 
-					options.world = this.json;
-					
-					$.fn.frojs._preload(ele, options);
-				})
-				.bind('onerror', function() {
-					
-					// Loader error
-					$.fn.frojs._setPreloaderError(ele,
-						'Error retrieving world JSON'
-					);
-				});
+				$.fn.frojs._preload(ele, options);
+			})
+			.bind('onerror', function() {
+				
+				// Loader error
+				$.fn.frojs._setPreloaderError(ele,
+					'Error retrieving world JSON'
+				);
+			});
 
 		});
 	};
@@ -71,7 +75,7 @@ we can completely stop referencing the world as an entity, or something.
 			$.fn.frojs._updatePreloaderStatus(ele, 'Preloading', '--', '--');
 			
 			// Preload required resources for this instance
-			fro.resources.preload(options.world.preload)
+			fro.resources
 				.bind('preload.status', function(resource) {
 
 					$.fn.frojs._updatePreloaderStatus(ele, 
@@ -90,6 +94,8 @@ we can completely stop referencing the world as an entity, or something.
 				
 					$.fn.frojs._run(ele, options);
 				});
+				
+			fro.resources.preload(options.world.preload);
 				
 		} else { // Just run
 			

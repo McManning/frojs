@@ -9,7 +9,7 @@ fro.resources = $.extend({
 
 	// Mapping type strings to class names
 	resourceTypes : {
-		"texture" : "TextureResource",
+		"image" : "ImageResource",
 		"sound" : "SoundResource",
 		"json" : "JsonResource",
 		"shader" : "ShaderResource",
@@ -29,33 +29,54 @@ fro.resources = $.extend({
 		this.totalPreload = 0;
 		this.completedPreload = 0;
 		
-		for (var i in json) {
-			this._preloadResource(json[i]);
+		this.totalPreload += json.required.length;
+		
+		for (var i in json.required) {
+			this._preloadResource(json.required[i]);
 		}
 		// @todo optional preload logic?
 		
 		return this;
 	},
 	
+	isPreloadComplete : function() {
+		return this.totalPreload == this.completedPreload;
+	},
+	
 	_preloadResource : function(json) {
-		this.totalPreload++;
-		
+
 		var self = this;
-		this.load(json)
-			.bind('onload', function preloadLoad() {
+		
+		var resource = this.load(json);
+		
+		if (resource.isLoaded()) { // already done
 			
-				self.completedPreload++;
-				self.fire('preload.status', this);
+			this.completedPreload++;
+			this.fire('preload.status', resource);
+			
+			// If this was the last resource to download, fire a complete event
+			if (this.completedPreload == this.totalPreload) {
+				this.fire('preload.complete');
+			}
+		
+		} else { // wait for it to finish
+					
+			resource.bind('onload', function preloadLoad() {
 				
-				// If this was the last resource to download, fire a complete event
-				if (self.completedPreload == fro.resources.totalPreload) {
-					self.fire('preload.complete');
-				}
-			})
-			.bind('onerror', function preloadError() {
-				self.failedResources[i] = json[i];
-				self.fire('preload.error', this);
-			});
+					self.completedPreload++;
+					self.fire('preload.status', this);
+					
+					// If this was the last resource to download, fire a complete event
+					if (self.completedPreload == self.totalPreload) {
+						self.fire('preload.complete');
+					}
+				})
+				.bind('onerror', function preloadError() {
+					self.failedResources[i] = json[i];
+					self.fire('preload.error', this);
+				});
+		}
+
 	},
 
 	load : function(jsonOrID) {
@@ -65,6 +86,8 @@ fro.resources = $.extend({
 			if (jsonOrID in this.loadedResources) {
 				console.log('Loading from cache ' + jsonOrID);
 				return this.loadedResources[jsonOrID];
+			} else {
+				throw new Error('Resource ' + jsonOrID + ' not loaded');
 			}
 		}
 		
@@ -72,7 +95,7 @@ fro.resources = $.extend({
 		
 		// Validate JSON properties
 		if (!('id' in jsonOrID) || !('type' in jsonOrID)) {
-			throw new Error('Invalid resource JSON');
+			throw new Error('Invalid resource JSON: ' + JSON.stringify(jsonOrID));
 		}
 		
 		var id = jsonOrID.id;
@@ -85,12 +108,12 @@ fro.resources = $.extend({
 		
 		console.log('Loading new resource ' + id);
 
-		if (!(type in this.resourceLoader)) {
+		if (!(type in this.resourceTypes)) {
 			this.failedResources[id] = jsonOrID;
 			throw new Error('Cannot load ' + id + '. No loader for type ' + type);
 		}
 
-		var resourceClass = this.resourceLoader[type];
+		var resourceClass = this.resourceTypes[type];
 		var resource = new window[resourceClass]();
 		
 		this.loadedResources[id] = resource;

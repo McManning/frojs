@@ -74,7 +74,8 @@ var fro = {
 		var time = Date.now();
 
 		// set default shader
-		this.renderer.useShader('default_shader');
+		var shader = this.renderer.getShader('default_shader');
+		this.renderer.useShader(shader);
 		
 		var shader = this.renderer.getCurrentShader();
 

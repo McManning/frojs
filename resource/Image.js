@@ -64,6 +64,8 @@ ImageResource.prototype.setupTexture = function() {
 	}
 
 	this.texture = fro.renderer.createTexture(this.img);
+	this.buildVertexBuffer();
+	this.buildTextureBuffer();
 }
 
 ImageResource.prototype.isLoaded = function() {
@@ -105,11 +107,11 @@ ImageResource.prototype.render = function(position, rotation, clip) {
 
 	// Set up buffers to use
 	gl.bindBuffer(gl.ARRAY_BUFFER, this.vbuf);
-	gl.vertexAttribPointer(shader.getAttrib('vertexPositionAttribute'), 
+	gl.vertexAttribPointer(shader.getAttrib('aVertexPosition'), 
 							this.vbuf.itemSize, gl.FLOAT, false, 0, 0);
 	
 	gl.bindBuffer(gl.ARRAY_BUFFER, this.tbuf);
-	gl.vertexAttribPointer(shader.getAttrib('textureCoordAttribute'), 
+	gl.vertexAttribPointer(shader.getAttrib('aTextureCoord'), 
 							this.tbuf.itemSize, gl.FLOAT, false, 0, 0);
 	var texture;
 	if (this.texture) {
@@ -128,13 +130,13 @@ ImageResource.prototype.render = function(position, rotation, clip) {
 			throw new Error('Texture ' + this.id + ' has no image source to clip');
 		}
 
-		var h = (this.height == 0) ? 1.0 : this.height / this.img.height;
-		var x = clip[0] / this.img.width;
-		var y = 1.0 - h - clip[1] / this.img.height;
+		var h = (this.height == 0) ? 1.0 : this.height / this.getTextureHeight();
+		var x = clip[0] / this.getTextureWidth();
+		var y = 1.0 - h - clip[1] / this.getTextureHeight();
 
-		gl.uniform2f(shader.getUniform('clipUniform'), x, y);
+		gl.uniform2f(shader.getUniform('uClip'), x, y);
 	} else {
-		gl.uniform2f(shader.getUniform('clipUniform'), 0, 0);
+		gl.uniform2f(shader.getUniform('uClip'), 0, 0);
 	}
 	
 	gl.setMatrixUniforms();
@@ -180,13 +182,9 @@ ImageResource.prototype.buildTextureBuffer = function() {
 	gl.bindBuffer(gl.ARRAY_BUFFER, this.tbuf);
 
 	var x = 0.0, y = 0.0, w = 1.0, h = 1.0;
-	
-	// @todo not 100% on these calculations
-	if (this.texture && this.fitToTexture)
-	{
-		w = this.width / this.img.width;
-		h = this.height / this.img.height;
-	}
+
+	w = this.width / this.getTextureWidth();
+	h = this.height / this.getTextureHeight();
 
 	gl.bufferData(gl.ARRAY_BUFFER, 
 			new glMatrixArrayType([
@@ -201,10 +199,10 @@ ImageResource.prototype.buildTextureBuffer = function() {
 	this.tbuf.itemCount = 4;
 }
 
-RenderableImage.prototype.getTextureWidth = function() {
+ImageResource.prototype.getTextureWidth = function() {
 	return this.img.width;
 }
 
-RenderableImage.prototype.getTextureHeight = function() {
+ImageResource.prototype.getTextureHeight = function() {
 	return this.img.height;
 }

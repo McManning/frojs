@@ -3,9 +3,6 @@
 
 var gl = null;
 
-var DEFAULT_VS = 'attribute vec3 aVertexPosition;attribute vec2 aTextureCoord;uniform mat4 uMVMatrix;uniform mat4 uPMatrix;uniform vec4 uColor;varying vec2 vTextureCoord;varying vec4 vWorldCoord;void main(void){vWorldCoord=uMVMatrix*vec4(aVertexPosition,1.0);vTextureCoord=aTextureCoord;gl_Position=uPMatrix*vWorldCoord;}';
-var DEFAULT_FS = 'precision mediump float;varying vec2 vTextureCoord;varying vec4 vWorldCoord;uniform sampler2D uSampler;uniform vec4 uColor;uniform vec2 uClip;uniform bool uUseAlphaKey;uniform float uTime;uniform vec3 uCamera;uniform vec3 uHSVShift;vec3 rgb_to_hsv(vec3 RGB){float r=RGB.x;float g=RGB.y;float b=RGB.z;float minChannel=min(r,min(g,b));float maxChannel=max(r,max(g,b));float h=0.0;float s=0.0;float v=maxChannel;float delta=maxChannel-minChannel;if(delta!=0.0){s=delta/v;if(r==v)h=(g-b)/delta;else if(g==v)h=2.0+(b-r)/delta;else h=4.0+(r-g)/delta;}return vec3(h,s,v);}vec3 hsv_to_rgb(vec3 HSV){vec3 RGB;float h=HSV.x;float s=HSV.y;float v=HSV.z;float i=floor(h);float f=h-i;float p=(1.0-s);float q=(1.0-s*f);float t=(1.0-s*(1.0-f));if(i==0.0){RGB=vec3(1.0,t,p);}else if(i==1.0){RGB=vec3(q,1.0,p);}else if(i==2.0){RGB=vec3(p,1.0,t);}else if(i==3.0){RGB=vec3(p,q,1.0);}else if(i==4.0){RGB=vec3(t,p,1.0);}else{RGB=vec3(1.0,p,q);}RGB*=v;return RGB;}void main(void){gl_FragColor=texture2D(uSampler,vTextureCoord+uClip);if(uUseAlphaKey){if(gl_FragColor==texture2D(uSampler,vec2(0,0))) discard;}if(uHSVShift.x!=0.0||uHSVShift.y!=0.0||uHSVShift.z!=0.0){vec3 hsv=rgb_to_hsv(gl_FragColor.xyz);hsv+=uHSVShift;if(hsv.x>5.0) hsv.x-=6.0;gl_FragColor=vec4(hsv_to_rgb(hsv),gl_FragColor.a);}}';
-
 fro.renderer = {
 	
 	initialise : function(options) {
@@ -137,15 +134,10 @@ fro.renderer = {
 	/** 
 	 * Set the current shader used by the renderer. 
 	 * 
-	 * @param string id Resource ID of the shader to use
+	 * @param ShaderResource shader
 	 */
-	useShader : function(id) {
+	useShader : function(shader) {
 
-		if (!(id in this.shaders)) {
-			throw new Error('Shader ' + id + ' is not loaded');
-		}
-		
-		var shader = this.shaders[id];
 		this.currentShader = shader;
 		
 		gl.useProgram(shader.getProgram());
@@ -162,6 +154,15 @@ fro.renderer = {
 	
 	getCurrentShader : function() {
 		return this.currentShader;
+	},
+	
+	getShader : function(id) {
+		
+		if (!(id in this.shaders)) {
+			throw new Error('Shader ' + id + ' is not loaded');
+		}
+		
+		return this.shaders[id];
 	}
 	
 	// @todo the functionality of changing active shaders.

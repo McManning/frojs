@@ -19,8 +19,7 @@ ShaderResource.prototype.load = function(json) {
 		]
 	*/
 	
-	var id;
-	
+	this.id = json.id;
 	this.uniforms = new Array();
 	this.attributes = new Array();
 	
@@ -34,12 +33,14 @@ ShaderResource.prototype.load = function(json) {
 	this.uniforms['uPMatrix'] = false;
 	this.uniforms['uMVMatrix'] = false;
 	
+	var id;
+	
 	for (id in json.uniforms) {
-		this.uniforms[id] = false;
+		this.uniforms[json.uniforms[id]] = false;
 	}
 	
 	for (id in json.attributes) {
-		this.attributes[id] = false;
+		this.attributes[json.attributes[id]] = false;
 	}
 	
 	// for now, only support strings in shader sources
@@ -57,13 +58,16 @@ ShaderResource.prototype.load = function(json) {
 		this.vertexShaderSource = '';
 		
 		for (var line in json.vertex) {
-			this.vertexShaderSource += trim(json.vertex[line]) + "\n";
+			this.vertexShaderSource += json.vertex[line].trim() + "\n";
 		}
 	} else {
 		throw new Error('Only supporting strings for vertex shaders for now');
 	}
 	
 	this.compileProgram();
+	
+	// @todo move this?
+	fro.renderer.attachShader(this);
 }
 
 /**
@@ -121,11 +125,13 @@ ShaderResource.prototype.compileProgram = function() {
 	// Link and use
 	gl.linkProgram(program);
 
-	if (!gl.getProgramParameter(sp, gl.LINK_STATUS)) {
+	if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
 		throw new Error('Could not initialize shaders');
 	}
-
+	
 	this.program = program;
+	
+	this.bindParameters();
 }
 
 ShaderResource.prototype.isLoaded = function() {
