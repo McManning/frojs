@@ -92,7 +92,8 @@ ImageResource.prototype.getTexture = function() {
 ImageResource.prototype.render = function(position, rotation, clip) {
 
 	var shader = fro.renderer.getShader(this.shader);
-
+	fro.renderer.useShader(shader);
+	
 	// Begin draw, setup
 	gl.mvPushMatrix();
 	
@@ -117,7 +118,7 @@ ImageResource.prototype.render = function(position, rotation, clip) {
 		texture = fro.resources.defaultTexture;
 	}
 	
-	shader.bindTexture('samplerUniform', texture);
+	shader.bindTexture('uSampler', texture);
 	
 	// @todo does the default texture also perform clipping? 
 	// I wanted it to be scaled, but rendered fully.
@@ -198,4 +199,12 @@ ImageResource.prototype.buildTextureBuffer = function() {
 
 	this.tbuf.itemSize = 2;
 	this.tbuf.itemCount = 4;
+}
+
+RenderableImage.prototype.getTextureWidth = function() {
+	return this.img.width;
+}
+
+RenderableImage.prototype.getTextureHeight = function() {
+	return this.img.height;
 }

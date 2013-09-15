@@ -8,7 +8,7 @@
 function Avatar() {
 	// stuff
 	this.clip = rect.create();
-	this.HSVShift = vec3.create();
+	//this.HSVShift = vec3.create();
 	
 	$.extend(this, EventHooks);
 }
@@ -27,14 +27,6 @@ Avatar.prototype.load = function(id, settings) {
 		}
 	}
 	
-	this.renderable = new RenderableImage(
-							settings.width,
-							settings.height
-						);
-					
-	this.renderable.useAlphaKey = true;
-	this.renderable.textureStretching = false;
-
 	this.settings = settings;
 	
 	this.currentKeyframe = '';
@@ -45,28 +37,37 @@ Avatar.prototype.load = function(id, settings) {
 	this.id = id;
 	this.url = settings.url;
 
-	var resource = fro.resources.load(settings.url);
+	var renderable = fro.resources.load({
+		type: 'image',
+		id: settings.url,
+		url: settings.url,
+		width: settings.width,
+		height: settings.height,
+		//useAlphaKey: true,
+		fitToTexture: false,
+		shader: 'default_shader'
+	});
 	
-	if (resource.isLoaded()) { 
-	
-		// If it's already cached, load immediately
-		this.renderable.setTexture(resource.getTexture());
-		this.fire('ready'); 
-	
-	} else {
+	// If it needs to load external resources, hook for errors
+	if (!renderable.isLoaded()) {
 	
 		// Bind and wait for the image to be loaded
 		var self = this;
-		resource.bind('onload', function() {
+		renderable.bind('onload', function() {
 
-			self.renderable.setTexture(this.getTexture());
 			self.fire('ready');
-		})
-		.bind('onerror', function() {
+			
+		}).bind('onerror', function() {
 		
 			self.fire('error', 'Failed to load ' + self.url);
 		});
+		
+	} else {
+		this.fire('ready'); 
 	}
+	
+	this.renderable = renderable;
+	
 }
 
 /** 
@@ -141,7 +142,7 @@ Avatar.prototype.getHeight = function() {
 /** Recalculate the source rect of our texture based on the current row/frame */
 Avatar.prototype.updateTextureClip = function() {
 
-	var framesPerRow = Math.floor(this.renderable.texture.image.width / this.getWidth());
+	var framesPerRow = Math.floor(this.renderable.getTextureWidth() / this.getWidth());
 	
 	var x = this.currentFrame % framesPerRow;
 	var y = (this.currentFrame - x) / framesPerRow;
@@ -169,7 +170,7 @@ Avatar.prototype.render = function(position, offset) {
 
 	// @todo fancy additional stuff
 	
-	this.renderable.render(position, offset, 0.0, this.clip, 0, this.HSVShift);
+	this.renderable.render(position, 0.0, this.clip);
 }
 
 

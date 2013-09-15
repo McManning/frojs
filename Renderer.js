@@ -13,6 +13,8 @@ fro.renderer = {
 		var canvas = options.canvas;
 		
 		this.usesWebGL = options.webGL;
+		this.currentShader = null;
+		this.shaders = new Array();
 		
 		try {
 			
@@ -21,14 +23,7 @@ fro.renderer = {
 		
 			this.usesWebGL = true;
 		} catch (e) {
-			fro.log.warning('Using canvas fallback');
-		
-			// No WebGL support, fallback to Canvas
-			//gl = canvas.getContext('2d');
-			// @todo implement!
-			
-			// @todo double buffering offscreen canvas
-			
+			gl = false;
 		}
 		
 		// No WebGL or canvas support, they can't play!
@@ -58,38 +53,30 @@ fro.renderer = {
 			gl.mvMatrixStack.push(copy);
 		}
 		
-		this.setClearColor(38, 38, 38);
-
-		if (this.isWebGL()) {
-		
-			// upload matrix changes to the graphics card, since GL doesn't track local changes
-			gl.setMatrixUniforms = function() {
-				gl.uniformMatrix4fv(fro.shaderProgram.pMatrixUniform, false, gl.pMatrix);
-				gl.uniformMatrix4fv(fro.shaderProgram.mvMatrixUniform, false, gl.mvMatrix);
-			}
+		// upload matrix changes to the graphics card, since GL doesn't track local changes
+		gl.setMatrixUniforms = function() {
 			
-			/*
-				From http://en.wikipedia.org/wiki/Alpha_compositing#Alpha_blending
-				outA = srcA + dstA(1 - srcA)
-				outRGB = srcRGB(srcA) + dstRGB*dstA(1 - srcA)
-				
-				Orgb = srgb * Srgb + drgb * Drgb
-				Oa = sa * Sa + da * Da
-				glBlendFuncSeparate(srgb, drgb, sa, da)
-			*/
-			gl.enable(gl.BLEND);
-			gl.blendFuncSeparate(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA, gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
-			
-			// Load default shaders
-			this.loadShaders(DEFAULT_VS, DEFAULT_FS);
-			
-		} else { // Canvas API
+			var shader = fro.renderer.getCurrentShader();
 		
-			// @todo just don't even call this method if using Canvas API
-			gl.setMatrixUniforms = function() {}
-		
+			gl.uniformMatrix4fv(shader.getUniform('uPMatrix'), false, gl.pMatrix);
+			gl.uniformMatrix4fv(shader.getUniform('uMVMatrix'), false, gl.mvMatrix);
 		}
 		
+		/*
+			From http://en.wikipedia.org/wiki/Alpha_compositing#Alpha_blending
+			outA = srcA + dstA(1 - srcA)
+			outRGB = srcRGB(srcA) + dstRGB*dstA(1 - srcA)
+			
+			Orgb = srgb * Srgb + drgb * Drgb
+			Oa = sa * Sa + da * Da
+			glBlendFuncSeparate(srgb, drgb, sa, da)
+			
+			@todo eventually phase this out, since blending will work differently within the shader.
+		*/
+		gl.enable(gl.BLEND);
+		gl.blendFuncSeparate(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA, gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
+	
+		this.setClearColor(38, 38, 38);
 	},
 	
 	isWebGL : function() {
@@ -110,11 +97,10 @@ fro.renderer = {
 		
 		if (this.isWebGL()) {
 			var texture = gl.createTexture();
-			texture.image = image;
-		
+
 			gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
 			gl.bindTexture(gl.TEXTURE_2D, texture);
-			gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, texture.image);
+			gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image);
 			//gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
 			//gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
 
@@ -132,89 +118,11 @@ fro.renderer = {
 
 			gl.bindTexture(gl.TEXTURE_2D, null);
 			
-		} else { // Canvas API
-			
-			// Use a wrapper object still, in case we want to generate metadata later
-			var texture = {};
-			texture.image = image;
+		} else {
+			throw new Error('Canvas API is not supported (nor will be...)');
 		}
 		
 		return texture;
-	},
-	
-	loadShaders : function(vs_resource, fs_resource) {
-		
-		if (!this.isWebGL())
-			throw new Error('Cannot load shaders in a non WebGL runtime');
-		
-		// @todo, eventually context switching
-		if (fro.shaderProgram != null) {
-			gl.deleteProgram(fro.shaderProgram);
-			fro.shaderProgram = null;
-		}
-	
-		var sp = gl.createProgram();
-		
-		// Compile Vertex Shader
-		var vs = gl.createShader(gl.VERTEX_SHADER);
-		gl.shaderSource(vs, vs_resource);
-		gl.compileShader(vs);
-		
-		this.vs = vs;
-		
-		if (!gl.getShaderParameter(vs, gl.COMPILE_STATUS)) {
-			throw new Error('Vertex Shader Error: ' + gl.getShaderInfoLog(vs));
-		} else {
-			gl.attachShader(sp, vs);
-		}
-			
-		// Compile Fragment Shader
-		var fs = gl.createShader(gl.FRAGMENT_SHADER);
-		gl.shaderSource(fs, fs_resource);
-		gl.compileShader(fs);
-		
-		this.fs = fs;
-		
-		if (!gl.getShaderParameter(fs, gl.COMPILE_STATUS)) {
-			throw new Error('Fragment Shader Error: ' + gl.getShaderInfoLog(fs));
-		} else {
-			gl.attachShader(sp, fs);
-		}
-		
-		// Link and use
-		gl.linkProgram(sp);
-		
-		if (!gl.getProgramParameter(sp, gl.LINK_STATUS)) {
-			throw new Error('Could not initialize shaders');
-		}
-
-		gl.useProgram(sp);
-
-		// Hook variables
-		// @todo dynamic logic
-		sp.vertexPositionAttribute = gl.getAttribLocation(sp, 'aVertexPosition');
-		gl.enableVertexAttribArray(sp.vertexPositionAttribute);
-		
-		sp.textureCoordAttribute = gl.getAttribLocation(sp, 'aTextureCoord');
-		gl.enableVertexAttribArray(sp.textureCoordAttribute);
-
-		sp.colorUniform = gl.getUniformLocation(sp, 'uColor');
-		sp.clipUniform = gl.getUniformLocation(sp, 'uClip');
-		sp.pMatrixUniform = gl.getUniformLocation(sp, 'uPMatrix');
-		sp.mvMatrixUniform = gl.getUniformLocation(sp, 'uMVMatrix');
-		sp.samplerUniform = gl.getUniformLocation(sp, 'uSampler');
-		sp.entityPositionUniform = gl.getUniformLocation(sp, 'uEntityPosition');
-		sp.HSVShiftUniform = gl.getUniformLocation(sp, 'uHSVShift');
-		sp.alphaKeyUniform = gl.getUniformLocation(sp, 'uUseAlphaKey');
-		sp.timeUniform = gl.getUniformLocation(sp, 'uTime');
-		sp.cameraPositionUniform = gl.getUniformLocation(sp, 'uCamera');
-		
-		
-		sp.entityOffsetUniform = gl.getUniformLocation(sp, 'uEntityOffset');
-		sp.entityDimensionsUniform = gl.getUniformLocation(sp, 'uEntityDimensions');
-
-		
-		fro.shaderProgram = sp;
 	},
 	
 	setClearColor : function(r, g, b) {
@@ -224,6 +132,36 @@ fro.renderer = {
 		} else {
 			this.clearStyle = 'rgb(' + r + ',' + g + ',' + b + ')';
 		}
+	},
+	
+	/** 
+	 * Set the current shader used by the renderer. 
+	 * 
+	 * @param string id Resource ID of the shader to use
+	 */
+	useShader : function(id) {
+
+		if (!(id in this.shaders)) {
+			throw new Error('Shader ' + id + ' is not loaded');
+		}
+		
+		var shader = this.shaders[id];
+		this.currentShader = shader;
+		
+		gl.useProgram(shader.getProgram());
+	},
+
+	/**
+	 * Add a new shader to our list of available shaders
+	 * 
+	 * @param ShaderResource shader The shader to add
+	 */
+	attachShader : function(shader) {
+		this.shaders[shader.id] = shader;
+	},
+	
+	getCurrentShader : function() {
+		return this.currentShader;
 	}
 	
 	// @todo the functionality of changing active shaders.

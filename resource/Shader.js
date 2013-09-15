@@ -43,14 +43,22 @@ ShaderResource.prototype.load = function(json) {
 	}
 	
 	// for now, only support strings in shader sources
-	if (typeof json.fragment == 'string') {
-		this.fragmentShaderSource = json.fragment;
+	if (typeof json.fragment == 'object') {
+		this.fragmentShaderSource = '';
+		
+		for (var line in json.fragment) {
+			this.fragmentShaderSource += json.fragment[line] + "\n";
+		}
 	} else {
 		throw new Error('Only supporting strings for fragment shaders for now');
 	}
 	
-	if (typeof json.vertex == 'string') {
-		this.vertexShaderSource = json.vertex;
+	if (typeof json.vertex == 'object') {
+		this.vertexShaderSource = '';
+		
+		for (var line in json.vertex) {
+			this.vertexShaderSource += trim(json.vertex[line]) + "\n";
+		}
 	} else {
 		throw new Error('Only supporting strings for vertex shaders for now');
 	}
@@ -142,4 +150,14 @@ ShaderResource.prototype.getUniform = function(name) {
 
 ShaderResource.prototype.getProgram = function() {
 	return this.program;
+}
+
+ShaderResource.prototype.bindTexture = function(uniform, texture) {
+	
+	// @todo the ability to bind multiple textures at once, and assign each
+	// to a different texture index based on the uniform selected
+	
+	gl.activeTexture(gl.TEXTURE0);
+	gl.bindTexture(gl.TEXTURE_2D, texture);
+	gl.uniform1i(this.getUniform(uniform), 0);
 }

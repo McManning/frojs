@@ -11,8 +11,7 @@ var fro = {
 	initialise : function(options) {
 	
 		this.options = options;
-		this.shaderProgram = null;
-	
+
 		this.log.initialise(options);
 		this.timers.initialise();
 		this.resources.initialise();
@@ -74,9 +73,14 @@ var fro = {
 		// Set some GL globals	@todo alternate method for shader animations
 		var time = Date.now();
 
-		gl.uniform1f(fro.shaderProgram.timeUniform, (time - this.startTime) / 1000.0);
+		// set default shader
+		this.renderer.useShader('default_shader');
+		
+		var shader = this.renderer.getCurrentShader();
 
-		gl.uniform3f(fro.shaderProgram.cameraPositionUniform, 
+		gl.uniform1f(shader.getUniform('uTime'), (time - this.startTime) / 1000.0);
+
+		gl.uniform3f(shader.getUniform('uCamera'), 
 					this.camera._position[0], 
 					this.camera._position[1], 
 					this.camera._position[2]);

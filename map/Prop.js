@@ -10,11 +10,6 @@ Map_Prop.prototype = new Map_RenderableEntity();
 
 Map_Prop.prototype.initialise = function(eid, properties) {
 	Map_RenderableEntity.prototype.initialise.call(this, eid, properties);
-
-	this.renderable = new RenderableImage(properties.w, properties.h);
-	this.renderable.useSrcAlpha = true;
-	this.renderable.textureStretching = false;
-	this.renderable.useAlphaKey = (properties.alphakey == 1);
 	
 	this.depth = properties.d;
 	
@@ -50,31 +45,23 @@ Map_Prop.prototype.initialise = function(eid, properties) {
 	} else {
 		this.delay = 0;
 	}
-		
-	// @todo not even have position info for a renderable
-
-	var resource = fro.resources.load(properties.texture);
 	
-	if (resource.isLoaded()) { 
+	var renderable = fro.resources.load(properties.image);
 	
-		// If it's already cached, load immediately
-		this.renderable.setTexture(resource.getTexture());
-	
-	} else {
+	// If it needs to load external resources, hook for errors
+	if (!renderable.isLoaded()) {
 	
 		// Bind and wait for the image to be loaded
 		var self = this;
-		resource.bind('onload', function() {
-
-			self.renderable.setTexture(this.getTexture());
-		})
-		.bind('onerror', function() {
+		renderable.bind('onerror', function() {
 		
 			// @todo do something, revert, load default, etc.
 			fro.log.error('Prop Image Load Error');
-			fro.log.error(this);
+			fro.log.error(self);
 		});
 	}
+	
+	this.renderable = renderable;
 
 	fro.log.debug('New prop "' + eid + '" at ' + vec3.str(this.position));
 }
@@ -88,7 +75,7 @@ Map_Prop.prototype.destroy = function() {
  * @return boolean
  */
 Map_Prop.prototype.isLoaded = function() {
-	return (this.renderable.texture != undefined);
+	return (this.renderable.isLoaded());
 }
 
 Map_Prop.prototype.loadCollisions = function(collisions) {
@@ -111,7 +98,7 @@ Map_Prop.prototype.loadCollisions = function(collisions) {
 
 Map_Prop.prototype.animate = function() {
 	
-	if (this.delay > 0 && this.renderable.texture) {
+	if (this.delay > 0 && this.renderable.getTexture()) {
 	
 		this.frame = this.frame + 1;
 
@@ -140,10 +127,24 @@ Map_Prop.prototype.failedToLoad = function() {
 
 Map_Prop.prototype.render = function() {
 
-	this.renderable.render(
-		this._translation, this.offset, 0, 
-		this.clip, this.depth, this.HSVShift
-	);
+	// Get whatever shader is being used for this prop
+	var shader = fro.renderer.getShader(this.renderable.shader);
+	fro.renderer.useShader(shader);
+	
+	// @todo we get/set shader twice for each prop (one here, one in the renderable)
+	
+	// Bind additional shader uniforms for this specific entity
+
+	gl.uniform3f(shader.getUniform('uEntityPosition'), 
+					position[0], position[1], position[2]
+				); 
+	
+	gl.uniform3f(shader.getUniform('uEntityDimensions')
+					this.width, this.height, this.depth
+				);
+	
+	
+	this.renderable.render(this._translation, 0, this.clip);
 }
 
 Map_Prop.prototype.think = function() {
