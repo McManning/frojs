@@ -214,30 +214,6 @@ we can completely stop referencing the world as an entity, or something.
 		
 		nav.html(html);
 		nav.trigger('pagechange', url);
-		
-		// Override standard page change events to only change the
-		// content of our navigation via AJAX
-		nav.find('a').click(function(e) {
-
-			if ($(this).attr('target') == undefined)
-			{
-				var url = $(this).attr('href');
-			
-				if (url != '#') {
-					// Ajax post this form instead
-					$.ajax({
-						url: url,
-						success: function(html) {
-							$.fn.frojs._setNavigationContent(url, html);
-						}
-					});
-				}
-				
-				e.preventDefault();
-				return false;
-			}
-		});
-		
 	};
 	
 	$.fn.frojs._wrapCanvas = function(ele, options) {
@@ -295,6 +271,32 @@ we can completely stop referencing the world as an entity, or something.
 			$(this).find('a').css('display', 'none');
 		});
 	*/	
+	
+		// Bind some futures to navigation
+		$('#frojs-navigation').on('click', 'a', function(e) {
+			
+			// Override standard page change events to only change the
+			// content of our navigation via AJAX
+			var anchor = $(e.currentTarget);
+		
+			if (anchor.attr('target') == undefined)
+			{
+				var url = anchor.attr('href');
+			
+				if (url != '#') {
+					// Ajax post this form instead
+					$.ajax({
+						url: url,
+						success: function(html) {
+							$.fn.frojs._setNavigationContent(url, html);
+						}
+					});
+				}
+				
+				e.preventDefault();
+				return false;
+			}
+		});
 	
 	};
 	
