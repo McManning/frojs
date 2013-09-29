@@ -45,7 +45,7 @@ we can completely stop referencing the world as an entity, or something.
 			fro.resources.load({
 				id: 'server_config',
 				type: 'json',
-				url: '/frojs/render_play_api.php'
+				url: options.server
 			})
 			.bind('onload', function() {
 
@@ -68,40 +68,58 @@ we can completely stop referencing the world as an entity, or something.
 	};
 	
 	$.fn.frojs._preload = function(ele, options) {
-		
-		// If we defined a list of resources to preload, initialize a loader
-		if ('preload' in options.world) {
-			
-			$.fn.frojs._updatePreloaderStatus(ele, 'Preloading', '--', '--');
-			
-			// Preload required resources for this instance
-			fro.resources
-				.bind('preload.status', function(resource) {
 
-					$.fn.frojs._updatePreloaderStatus(ele, 
-						'Preloading', 
-						fro.resources.completedPreload, 
-						fro.resources.totalPreload
-					);
-				})
-				.bind('preload.error', function(resource) {
-				
-					$.fn.frojs._setPreloaderError(ele,
-						'Error on ' + resource.id + '(' + resource.url + ')'
-					);
-				})
-				.bind('preload.complete', function() {
-				
-					$.fn.frojs._run(ele, options);
-				});
-				
-			fro.resources.preload(options.world.preload);
-				
-		} else { // Just run
+		$.fn.frojs._updatePreloaderStatus(ele, 'Preloading', '--', '--');
+		
+		// Preload required resources for this instance
+		fro.resources
+			.bind('preload.status', function(resource) {
+
+				$.fn.frojs._updatePreloaderStatus(ele, 
+					'Preloading', 
+					fro.resources.completedPreload, 
+					fro.resources.totalPreload
+				);
+			})
+			.bind('preload.error', function(resource) {
 			
-			$.fn.frojs._updatePreloaderStatus(ele, 'Generating World', 1, 1);
-			$.fn.frojs._run(ele, options);
+				$.fn.frojs._setPreloaderError(ele,
+					'Error on ' + resource.id + '(' + resource.url + ')'
+				);
+			})
+			.bind('preload.complete', function() {
+			
+				$.fn.frojs._run(ele, options);
+			});
+		
+		// if we have plugins that also wish to preload, merge them into the world preload
+		
+		// @todo MOVE ALL OF THIS. OH MY GOD WHY IS THIS SO HACKED TOGETHER.
+		
+		var plugin;
+		if ('plugins' in options) {
+			for (var p in options.plugins) {
+				if (p in fro.plugins) {
+				
+					plugin = fro.plugins[p];
+				
+					if (typeof plugin.preload == 'object') {
+						if ('required' in plugin.preload) {
+							options.world.preload.required = 
+								options.world.preload.required.concat(plugin.preload.required);
+						}
+						
+						if ('optional' in plugin.preload) {
+							options.world.preload.optional =
+								options.world.preload.optional.concat(plugin.preload.optional);
+						}
+					}
+				}
+			}
 		}
+
+		// If we defined a list of resources to preload, initialize a loader
+		fro.resources.preload(options.world.preload);
 	};
 	
 	$.fn.frojs._run = function(ele, options) {
@@ -147,7 +165,7 @@ we can completely stop referencing the world as an entity, or something.
 				}
 			}
 		}
-	}
+	};
 	
 	$.fn.frojs._updatePreloaderStatus = function(ele, message, current, total) {
 		
