@@ -9,6 +9,9 @@ Map_RemotePlayer.prototype = new Map_Actor();
 Map_RemotePlayer.prototype.initialise = function(eid, properties) {
 	Map_Actor.prototype.initialise.call(this, eid, properties);
 	
+	// Is our identity authentic with the service
+	this.authenticated = properties.hastoken;
+	
 	this.thinkInterval = fro.timers.addInterval(
 		this, this.think, 
 		REMOTE_PLAYER_THINK_INTERVAL

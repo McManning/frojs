@@ -254,8 +254,8 @@ fro.world = $.extend({
 			// On opening the socket, send authentication
 			fro.network.send({
 				id: 'auth',
-				token: props.network.auth, 
-				user: 'Lab Rat', // @todo resolve
+				token: props.network.token, 
+				user: props.network.username,
 				nick: this.player.nick,
 				world: props.network.channel,
 				avatar: 'default', //props.entities.player.avatar, // @todo resolve better
@@ -276,6 +276,7 @@ fro.world = $.extend({
 			// @todo rewrite this handshake!
 			
 			this.player.eid = evt.eid;
+			this.player.authenticated = evt.hastoken;
 			//fro.world.join(fro.world.config.spawn_x, fro.world.config.spawn_y);
 		
 		}).bind('join, identity', this, function(evt) { // Sent to our client when a player is added to the map

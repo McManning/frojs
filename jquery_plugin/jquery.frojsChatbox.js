@@ -189,7 +189,15 @@
 		var entity = fro.world.find(eid);
 		if (entity) {
 		
-			var output = '<span class="nickname"><a href="#">' 
+			classes = new Array();
+			classes.push('nickname');
+			
+			// If they're authenticated, make note of it for their messages 
+			if (entity.authenticated === true) {
+				classes.push('auth');
+			}
+			
+			var output = '<span class="' + classes.join(' ') + '"><a href="#">' 
 						+ escapeHtml(entity.nick) + '</a></span>: '
 						+ replaceURLWithHTMLLinks(escapeHtml(message));
 			

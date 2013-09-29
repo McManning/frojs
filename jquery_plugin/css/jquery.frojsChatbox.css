@@ -41,6 +41,10 @@
     text-decoration: none;
 }
 
+.frojs-chatbox .nickname.auth a{
+	color: #F3D14A;
+}
+
 .frojs-chatbox a:hover, .frojs-chatbox a:active {
     text-decoration: none;
 }

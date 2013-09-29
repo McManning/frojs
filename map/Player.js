@@ -9,6 +9,9 @@ Map_Player.prototype = new Map_Actor();
 Map_Player.prototype.initialise = function(eid, properties) {
 	Map_Actor.prototype.initialise.call(this, eid, properties);
 	
+	// Is our identity authentic with the service
+	this.authenticated = false;
+	
 	this.thinkInterval = fro.timers.addInterval(
 		this, this.think, 
 		PLAYER_THINK_INTERVAL
