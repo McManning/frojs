@@ -29,11 +29,14 @@ fro.resources = $.extend({
 		this.totalPreload = 0;
 		this.completedPreload = 0;
 		
-		this.totalPreload += json.required.length;
-		
-		for (var i in json.required) {
-			this._preloadResource(json.required[i]);
+		if ('required' in json) {
+			this.totalPreload += json.required.length;
+
+			for (var i in json.required) {
+				this._preloadResource(json.required[i]);
+			}
 		}
+		
 		// @todo optional preload logic?
 		
 		return this;
@@ -60,7 +63,7 @@ fro.resources = $.extend({
 			}
 		
 		} else { // wait for it to finish
-					
+		
 			resource.bind('onload', function preloadLoad() {
 				
 					self.completedPreload++;
@@ -77,6 +80,10 @@ fro.resources = $.extend({
 				});
 		}
 
+	},
+	
+	isLoaded : function(id) {
+		return (id in this.loadedResources);
 	},
 
 	load : function(jsonOrID) {
