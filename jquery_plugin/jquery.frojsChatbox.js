@@ -233,7 +233,7 @@
 				+ '<div class="input-container-wrap"><div class="input-container">'
 				+ '  <table><tr>'
 				+ '    <td class="controls-left"><i class="icon-comments"></i></td>'
-				+ '    <td class="input-td"><input type="text" placeholder="' + options.placeholder + '" maxlength="300" /></td>'
+				+ '    <td class="input-td"><input type="text" placeholder="' + options.placeholder + '" maxlength="180" /></td>'
 				+ '    <td class="controls-right"><i class="icon-list"></i></td>'
 				+ '  </tr></table>'
 				+ '</div></div>'
