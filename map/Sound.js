@@ -27,7 +27,7 @@ Map_Sound.prototype.initialise = function(eid, properties) {
 		this.audioGainNode = fro.audio.getAudioContext().createGain();
 		this.setVolume(properties.volume);
 		
-		var resource = fro.resources.load(properties.url);
+		var resource = fro.resources.load(properties.sound);
 		
 		if (resource.isLoaded()) {
 		

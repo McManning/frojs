@@ -39,16 +39,26 @@ Avatar.prototype.load = function(id, settings) {
 	this.width = settings.width;
 	this.height = settings.height;
 
-	var renderable = fro.resources.load({
-		type: 'image',
-		id: settings.url,
-		url: settings.url,
-		width: settings.width,
-		height: settings.height,
-		//useAlphaKey: true,
-		fitToTexture: false,
-		shader: 'default_shader'
-	});
+	var renderable;
+	
+	// Check if the url was provided as a resource ID, or something already loaded
+	if (fro.resources.isLoaded(settings.url)) {
+	
+		renderable = fro.resources.load(settings.url);
+		
+	} else { // Need to load a new resource
+	
+		renderable = fro.resources.load({
+			type: 'image',
+			id: settings.url,
+			url: settings.url,
+			width: settings.width,
+			height: settings.height,
+			//useAlphaKey: true,
+			fitToTexture: false,
+			shader: 'default_shader'
+		});
+	}
 	
 	// If it needs to load external resources, hook for errors
 	if (!renderable.isLoaded()) {

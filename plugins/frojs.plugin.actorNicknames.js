@@ -43,6 +43,7 @@
 		pos[2] = NICKNAME_ZORDER;
 		
 		this.trackedEntity = properties.entity;
+		this.trackedEntity.nicknameAttachment = this; // @todo rename/refactor
 		
 		// bind events to our tracked entity (talking, moving, deleting)
 		this.trackedEntity.bind('nick.nickname', this, function(nick) {
@@ -94,7 +95,7 @@
 		this.trackedEntity.getBoundingBox(r);
 		
 		pos[0] = epos[0];
-		pos[1] = epos[1] + r[3] + 5; // Above the tracked entity's head
+		pos[1] = epos[1] + r[3] + 10; // Above the tracked entity's head
 		
 		this._translation[0] = pos[0];
 		this._translation[1] = pos[1] + epos[2];

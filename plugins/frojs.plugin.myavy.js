@@ -4,69 +4,35 @@
 	// Specify default metadata to load in case of error,
 	// or the user has no avatar to load
 	var DEFAULT_AVATAR = {
-		"id": "default_avatar",
-		"url": "/frojs/resources/img/default_avatar.png",
+		"id": "myavy.default",
+		"url": "myavy.default",
 		
-		"version": 1,
-		"format": "MG-PNG",
-		"tags": "",
-		"shared": false,
-		"name": "",
 		"width": 32,
 		"height": 64,
 		"keyframes": {
 			"move_2": {
 				"loop": false,
-				"frames": [
-					0,
-					1000,
-					1,
-					1000
-				]
+				"frames": [0, 1000, 1, 1000]
 			},
 			"move_8": {
 				"loop": false,
-				"frames": [
-					2,
-					1000,
-					3,
-					1000
-				]
+				"frames": [2, 1000, 3, 1000]
 			},
 			"move_4": {
 				"loop": false,
-				"frames": [
-					4,
-					1000,
-					5,
-					1000
-				]
+				"frames": [4, 1000, 5, 1000]
 			},
 			"move_6": {
 				"loop": false,
-				"frames": [
-					6,
-					1000,
-					7,
-					1000
-				]
+				"frames": [6, 1000, 7, 1000]
 			},
 			"act_2": {
 				"loop": false,
-				"frames": [
-					8,
-					1000,
-					9,
-					1000
-				]
+				"frames": [8, 1000, 9, 1000]
 			}
 		}
 	};
 
-	function _getUrl(id) {
-		return 'http://myavy.net/' + id.substr(8);
-	}
-	
 	function _onError(entity, id, error) {
 		
 		// kill loader entity
@@ -112,17 +78,20 @@
 		var pos = entity.getPosition();
 		
 		var props = {
-			"texture":"/frojs/resources/img/avatar_load.png",
+			"image":"myavy.loader",
+			
 			"delay":150,
 			"offset_y":5,
 			"w":46,
 			"h":40,
+			"d":0,
+			
 			"x":pos[0],
 			"y":pos[1],
 			"z":1
 		};
 		
-		var loader = fro.world.loadProp(entity.eid + '_loader', props);
+		var loader = fro.world.loadProp('myavy.loader.' + entity.eid, props);
 		entity.avatarLoader = loader;
 		
 		// bind loader to move with our entity
@@ -137,7 +106,6 @@
 		.bind('destroy.avatarLoader', function() {
 			if (this.avatarLoader) {
 				this.avatarLoader.destroy();
-				delete this.avatarLoader;
 			}
 		});
 
@@ -159,7 +127,7 @@
 				
 				// Retrieve metadata from our source URL
 				$.ajax({
-					url: url, //_getUrl(id),
+					url: url,
 					dataType: 'jsonp',
 					timeout: 5000,
 					success: function(data) {
@@ -203,11 +171,31 @@
 			})
 		},
 		
-		preload : function() {
-			
-			return [
-				'/frojs/resources/img/avatar_loader.png'
-			];
+		preload : {
+			"required" : [
+				{
+					"id":"myavy.loader",
+					"type":"image",
+					"url":"/frojs/resources/img/avatar_load.png",
+					"width":46,
+					"height":40,
+					"shader":"default_shader",
+					"fitToTexture":false
+				},
+				{
+					"id":"myavy.default",
+					"type":"image",
+					"url":"/frojs/resources/img/default_avatar.png",
+					"width":32,
+					"height":64,
+					"shader":"default_shader",
+					"fitToTexture":false
+				}
+			],
+			"optional" : [
+				// Resources that load during preload, but don't prevent the process
+				// from finishing would go here.
+			]
 		}
 		
 	};

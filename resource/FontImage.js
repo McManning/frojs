@@ -38,8 +38,6 @@ FontImageResource.prototype.generateFontTexture = function(options) {
 		
 	if (!options.family)
 		options.family = '"Helvetica Neue", Helvetica, Arial, sans-serif';
-		
-	//	options.family = 'monospace';
 
 	if (!options.color)
 		options.color = '#000000';
@@ -61,7 +59,7 @@ FontImageResource.prototype.generateFontTexture = function(options) {
 		w = ctx.measureText(text).width;
 	}
 
-	h = options.height * (textLines.length + 1);
+	h = options.height * textLines.length;
 
 	if (w < 1 || h < 1) {
 		throw new Error('Invalid canvas dimensions ' + w + 'x' + h);
@@ -92,8 +90,8 @@ FontImageResource.prototype.generateFontTexture = function(options) {
 
 	// Convert canvas context to a texture
 	this.texture = fro.renderer.createTexture(canvas);
-	this.width = w;
-	this.height = h;
+	this.width = canvas.width;
+	this.height = canvas.height;
 }
 
 FontImageResource.prototype.getTextureWidth = function() {

@@ -134,7 +134,7 @@ fro.world = $.extend({
 	},
 
 	/**
-	 * @return Entity object or undefined
+	 * @return Entity object or null
 	 */
 	find : function(eid) {
 		
@@ -150,7 +150,7 @@ fro.world = $.extend({
 				return ents[index];
 		}
 		
-		return undefined;
+		return null;
 	},
 
 	/** Loader callback for entities with type = 'prop' */
