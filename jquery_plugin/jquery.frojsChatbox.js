@@ -12,6 +12,8 @@
 		"'": '&#39;',
 		"/": '&#x2F;'
 	};
+	
+	var MAX_HISTORY_LINES = 300;
 
 	/**
 	 * Utility method to escape HTML content from strings (chat, nicknames, etc)
@@ -111,6 +113,7 @@
 			
 			$.fn.frojsChatbox._resize(ele);
 			
+			$.fn.frojsChatbox.totalLines = 0;
 			
 			// Set initial position
 			if (options.containment) {
@@ -165,8 +168,17 @@
 		if (timestamped === true) {
 			message = '<span class="timestamp">' + getTimestamp() + '</span> ' + message;
 		}
-	
+		
 		var api = ele.find('.scroll-pane').data('jsp');
+		
+		// Check for cap limit, and if we hit it, clear some room
+		if ($.fn.frojsChatbox.totalLines < MAX_HISTORY_LINES) {
+			$.fn.frojsChatbox.totalLines++;
+			
+		} else { // remove 300th line
+			api.getContentPane().find('p:first').remove();
+		}
+		
 		api.getContentPane().append('<p>'+message+'</p>');
 		api.reinitialise();
 		api.scrollToBottom();
@@ -221,7 +233,7 @@
 				+ '<div class="input-container-wrap"><div class="input-container">'
 				+ '  <table><tr>'
 				+ '    <td class="controls-left"><i class="icon-comments"></i></td>'
-				+ '    <td class="input-td"><input type="text" placeholder="' + options.placeholder + '" /></td>'
+				+ '    <td class="input-td"><input type="text" placeholder="' + options.placeholder + '" maxlength="300" /></td>'
 				+ '    <td class="controls-right"><i class="icon-list"></i></td>'
 				+ '  </tr></table>'
 				+ '</div></div>'
