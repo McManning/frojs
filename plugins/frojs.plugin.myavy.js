@@ -32,6 +32,8 @@
 			}
 		}
 	};
+	
+	var AVATAR_LOAD_TIMEOUT = (30*1000); // 30s timeout
 
 	function _onError(entity, id, error) {
 		
@@ -129,7 +131,7 @@
 				$.ajax({
 					url: url,
 					dataType: 'jsonp',
-					timeout: 5000,
+					timeout: AVATAR_LOAD_TIMEOUT,
 					success: function(data) {
 						_onMetadata(entity, url, data);
 					},
