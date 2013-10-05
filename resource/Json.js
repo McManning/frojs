@@ -21,8 +21,8 @@ JsonResource.prototype.load = function(json) {
 				try {
 					self.json = JSON.parse(data);
 				} catch (e) {
-					console.log(e);
-					console.log(data);
+					fro.log.error(e);
+					fro.log.error(data);
 					self.fire('onerror', this);
 					return;
 				}
@@ -34,7 +34,7 @@ JsonResource.prototype.load = function(json) {
 			self.fire('onload', this);
 		},
 		error: function(request, status, error) {
-			console.log(error);
+			fro.log.error(error);
 			self.fire('onerror', this);
 		}
 	});

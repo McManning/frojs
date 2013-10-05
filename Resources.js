@@ -91,7 +91,7 @@ fro.resources = $.extend({
 		// load("resource_id")
 		if (typeof jsonOrID == 'string') {
 			if (jsonOrID in this.loadedResources) {
-				console.log('Loading from cache ' + jsonOrID);
+				fro.log.debug('Loading from cache ' + jsonOrID);
 				return this.loadedResources[jsonOrID];
 			} else {
 				throw new Error('Resource ' + jsonOrID + ' not loaded');
@@ -113,7 +113,7 @@ fro.resources = $.extend({
 			throw new Error('Trying to redefine resource ' + id + ' with new JSON data');
 		}
 		
-		console.log('Loading new resource ' + id);
+		fro.log.debug('Loading new resource ' + id);
 
 		if (!(type in this.resourceTypes)) {
 			this.failedResources[id] = jsonOrID;
