@@ -12,6 +12,7 @@ JsonResource.prototype.load = function(json) {
 	var self = this;
 	$.ajax({
 		url: json.url,
+		dataType: 'json',
 		success: function(data) {
 
 			if (typeof data == 'string') {
