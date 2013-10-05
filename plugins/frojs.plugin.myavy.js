@@ -1,6 +1,9 @@
 
 ;(function(fro, undefined) {
 
+	// Duration before we cancel an avatar load due to network issues
+	var AVATAR_LOAD_TIMEOUT = (30*1000); // 30s timeout
+
 	// Specify default metadata to load in case of error,
 	// or the user has no avatar to load
 	var DEFAULT_AVATAR = {
@@ -33,8 +36,6 @@
 		}
 	};
 	
-	var AVATAR_LOAD_TIMEOUT = (30*1000); // 30s timeout
-
 	function _onError(entity, id, error) {
 		
 		// kill loader entity
@@ -154,11 +155,7 @@
 	}
 	
 	fro.plugins.myavy = {
-		
-		/*options : {
-			
-		},*/
-		
+
 		initialise : function(options) {
 			
 			//options = $.extend(this.options, options);
