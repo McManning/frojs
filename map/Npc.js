@@ -27,14 +27,22 @@ Map_Npc.prototype.destroy = function() {
 
 Map_Npc.prototype.think = function() {
 
-	if (!this.isMoving())
+	// Check for new actions on the buffer
+	if (!this.isMoving()) {
 		this.actionController.processActions();
-
+	}
+	
 	if (this.isMoving()) {
 	
 		this.processMovement();
 	
 	} else {
+	
+		// Go into an idle stance if not already
+		if (this.action == Action.MOVE) {
+			this.setAction(Action.IDLE);
+		}
+	
 		if (this.avatar) {
 			var time = new Date().getTime();
 			// Idle animate our avatar

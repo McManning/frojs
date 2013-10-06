@@ -21,8 +21,9 @@ var Speed = {
 
 var Action = {
 	IDLE : 0,
-	SIT : 1,
-	JUMP : 2
+	MOVE : 1,
+	SIT : 2,
+	JUMP : 3
 }
 
 var MOVEMENT_DISTANCE = 16;
@@ -149,6 +150,7 @@ Map_Actor.prototype.isMoving = function() {
 
 	var pos = this.getPosition();
 
+	// @todo referencing action buffer???
 	return (pos[0] != this.destination[0] 
 			|| pos[1] != this.destination[1]);
 }
@@ -284,19 +286,12 @@ Map_Actor.prototype.recalculateAvatarRow = function() {
 	else // default to south again, just in case
 		row = 2;
 
-	var frame = 'move_';
-		
-	// If we're not moving, use the stop animation (if we have it)
-	/* @todo isMoving isn't returning what we want, yet. 
-	if (!this.isMoving()) {
-		frame = 'stop_';
-		if (!this.avatar.hasKeyframe(frame + row)) {
-			frame = 'move_';
-		}
+	var frame = 'stop_';
+
+	if (this.action == Action.MOVE || !this.avatar.hasKeyframe(frame + row)) {
+		frame = 'move_';
 	}
-	*/
-		
-	// @todo check if the sit exists in the avatar before activating?
+	
 	if (this.action == Action.SIT) {
 		frame = 'act_';
 		if (!this.avatar.hasKeyframe(frame + row)) {

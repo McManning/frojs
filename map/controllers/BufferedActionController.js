@@ -165,7 +165,7 @@ BufferedActionController.prototype.processActions = function() {
 		
 			if (dir != Direction.NONE) { // moving in direction
 
-				this.actor.setAction(Action.IDLE);
+				this.actor.setAction(Action.MOVE);
 				this.actor.stepInDirection(dir);
 				
 			} else if (c == 'w') { // change speed to walk

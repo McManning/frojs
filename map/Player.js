@@ -35,15 +35,23 @@ Map_Player.prototype.think = function() {
 	// If we're not currently processing movement, see if the user wants to move
 	if (!this.isMoving())
 		this.handlePlayerInput();
-	
-	if (!this.isMoving())
+		
+	// Check for new actions on the buffer
+	if (!this.isMoving()) {
 		this.actionController.processActions();
-
+	}
+	
 	if (this.isMoving()) {
 	
 		this.processMovement();
 	
 	} else {
+	
+		// Go into an idle stance if not already
+		if (this.action == Action.MOVE) {
+			this.setAction(Action.IDLE);
+		}
+	
 		if (this.avatar) {
 			var time = new Date().getTime();
 			// Idle animate our avatar
@@ -54,6 +62,7 @@ Map_Player.prototype.think = function() {
 			}
 		}
 	}
+	
 }
 
 /** Overrides Map_Actor.setPosition */
@@ -76,21 +85,21 @@ Map_Player.prototype.handlePlayerInput = function() {
 		return;
 
 	// Handle zoom (@todo move, this is just for testing)
-	if (input.isKeyDown(33)) { // pgup: zoom in
+	if (input.isKeyDown(KeyEvent.DOM_VK_PAGE_UP)) { // pgup: zoom in
 	
 		if (cam.zoom > 0.2)
 			cam.zoom -= 0.1;
 			
 		cam.updateTranslation();
 			
-	} else if (input.isKeyDown(34)) { // pgdown: zoom out
+	} else if (input.isKeyDown(KeyEvent.DOM_VK_PAGE_DOWN)) { // pgdown: zoom out
 	
 		if (cam.zoom < 2.0)
 			cam.zoom += 0.1;
 		
 		cam.updateTranslation();
 			
-	} else if (input.isKeyDown(36)) { // home: reset zoom
+	} else if (input.isKeyDown(KeyEvent.DOM_VK_HOME)) { // home: reset zoom
 	
 		cam.zoom = 1.0;
 		cam.updateTranslation();
@@ -99,20 +108,20 @@ Map_Player.prototype.handlePlayerInput = function() {
 	var dir = Direction.NONE;
 	
 	// Pull desired direction of movement
-	if (input.isKeyDown(87)) { // w: north
+	if (input.isKeyDown(KeyEvent.DOM_VK_W) || input.isKeyDown(KeyEvent.DOM_VK_UP)) { // w: north
 	
 		dir |= Direction.NORTH;
 		
-	} else if (input.isKeyDown(83)) { // s: south
+	} else if (input.isKeyDown(KeyEvent.DOM_VK_S) || input.isKeyDown(KeyEvent.DOM_VK_DOWN)) { // s: south
 	
 		dir |= Direction.SOUTH;
 	}
 	
-	if (input.isKeyDown(65)) { // a: west
+	if (input.isKeyDown(KeyEvent.DOM_VK_A) || input.isKeyDown(KeyEvent.DOM_VK_LEFT)) { // a: west
 		
 		dir |= Direction.WEST;
 		
-	} else if (input.isKeyDown(68)) { // d: east
+	} else if (input.isKeyDown(KeyEvent.DOM_VK_D) || input.isKeyDown(KeyEvent.DOM_VK_RIGHT)) { // d: east
 		
 		dir |= Direction.EAST;	
 	}
@@ -126,6 +135,10 @@ Map_Player.prototype.handlePlayerInput = function() {
 	
 	// Pull desired action
 	var action = Action.IDLE;
+	
+	if (dir != Direction.NONE) {
+		action = Action.MOVE;
+	}
 	
 	if (input.isKeyDown(KeyEvent.DOM_VK_C)) {
 	
