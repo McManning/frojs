@@ -141,6 +141,7 @@ we can completely stop referencing the world as an entity, or something.
 		}
 		
 		$('.frojs-preloader').css('display', 'none');
+		$('#frojs-help-overlay').css('display', 'block');
 		
 		// Populate our nav
 		$('#frojs-nickname').val(fro.world.player.nick);
@@ -227,6 +228,7 @@ we can completely stop referencing the world as an entity, or something.
 		// Generate a navigation bar
 		contentDiv.after(
 			'<div id="frojs-navigation"></div>'
+			+ '<div id="frojs-help-overlay"><div class="exit-button"></div></div>'
 		);
 		
 		ele.before('<div id="frojs-notices"></div>');
@@ -296,6 +298,12 @@ we can completely stop referencing the world as an entity, or something.
 				e.preventDefault();
 				return false;
 			}
+		});
+	
+		$('#frojs-help-overlay > .exit-button').click(function() {
+			
+			$('#frojs-help-overlay').css('display', 'none');
+			return false;
 		});
 	
 	};

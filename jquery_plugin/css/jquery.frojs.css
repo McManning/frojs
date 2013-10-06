@@ -25,6 +25,10 @@
     background-color: black;
 }
 
+/* Disable overflow to allow arrow keys to forward to the client */
+html, body {
+	overflow: hidden;
+}
 
 #frojs-canvas {
     outline: 0;
@@ -75,7 +79,7 @@
 	margin: 0 auto;
 	padding: 0;
 	background: #272727;
-	font-family: Helvetica;
+	font-family: 'Droid Sans', sans-serif;
 	color: #BBB;
 	
 	overflow: hidden;
@@ -336,7 +340,7 @@
 
 	line-height: 9px;
 
-    font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
+    font-family: 'Droid Sans', sans-serif;
     font-weight: normal;
 	border: 0;
     
@@ -416,10 +420,7 @@
 	width: 100%;
 	padding-left: 10px;
 	
-	
-
-    font-size: 19px;
-	
+    font-size: 18px;
 
     line-height: 40px;
 }
@@ -451,7 +452,7 @@
 
 	width: 200px;
 
-	font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
+	font-family: 'Droid Sans', sans-serif;
 	font-weight: normal;
 }
 
@@ -551,7 +552,7 @@
 
 	cursor: pointer;
 	color: #c6c6c6;
-	font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
+	font-family: 'Droid Sans', sans-serif;
 	
 }
 
@@ -834,3 +835,22 @@
 	display: none;
 }
 
+#frojs-help-overlay {
+	background: url('/frojs/resources/img/ui_help.png') no-repeat;
+	width: 800px;
+	height: 600px;
+	position: absolute;
+	top: 0;
+	left: 0;
+	z-index: 9999;
+	display: none;
+}
+
+#frojs-help-overlay .exit-button {
+	width: 50px;
+	height: 50px;
+	position: absolute;
+	top: 15px;
+	left: 728px;
+	cursor: pointer;
+}
