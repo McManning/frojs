@@ -13,7 +13,7 @@
 		initialise : function(options) {
 			
 			this.options = $.extend({
-				family: 'Helvetica',
+				family: '\'Droid Sans\', sans-serif',
 				color: '#000',
 				height: 14,
 				max_width: 256,
