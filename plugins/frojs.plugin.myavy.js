@@ -12,7 +12,7 @@
 		
 		"width": 32,
 		"height": 64,
-		"keyframes": {
+		/*"keyframes": {
 			"move_2": {
 				"loop": false,
 				"frames": [0, 1000, 1, 1000, 0, 1000, 2, 1000]
@@ -45,10 +45,48 @@
 				"loop": false,
 				"frames": [9, 1]
 			},
-			/*"act_2": {
+			"act_2": {
 				"loop": false,
-				"frames": [16, 1000, 17, 1000, 18, 1000, 19, 1000]
-			}*/
+				"frames": [12, 1]
+			}
+		}*/
+		"keyframes": {
+			"move_2": {
+				"loop": false,
+				"frames": [0, 1000, 1, 1000]
+			},
+			"move_8": {
+				"loop": false,
+				"frames": [3, 1000, 4, 1000]
+			},
+			"move_4": {
+				"loop": false,
+				"frames": [6, 1000, 7, 1000]
+			},
+			"move_6": {
+				"loop": false,
+				"frames": [9, 1000, 10, 1000]
+			},
+			"stop_2": {
+				"loop": false,
+				"frames": [2, 1]
+			},
+			"stop_8": {
+				"loop": false,
+				"frames": [5, 1]
+			},
+			"stop_4": {
+				"loop": false,
+				"frames": [7, 1]
+			},
+			"stop_6": {
+				"loop": false,
+				"frames": [10, 1]
+			},
+			"act_2": {
+				"loop": false,
+				"frames": [8, 1]
+			}
 		}
 	};
 	
