@@ -77,5 +77,80 @@ function escapeHtml(string) {
 	});
 }
 
+/**
+ * Retrieve information about the browser, and webGL support.
+ */
+function getBrowserReport(showPlugins, gl) {
 
+	var report = '';
 
+	// Gather whatever useful information we can about the browser
+	report += "\nBrowser Details\n";
+	if (window.navigator)
+	{
+		report += "* appName: " + window.navigator.appName + "\n";
+		report += "* appVersion: " + window.navigator.appVersion + "\n";
+		report += "* platform: " + window.navigator.platform + "\n";
+		report += "* vendor: " + window.navigator.vendor + "\n";
+		report += "* cookieEnabled: " + window.navigator.cookieEnabled + "\n";
+
+		if (window.navigator.plugins && showPlugins) {
+			report += "* Plugins\n";
+			
+			for (var i = 0; i < window.navigator.plugins.length; i++) {
+				var name = window.navigator.plugins[i].name;
+				var file = window.navigator.plugins[i].filename;
+				report += "** *" + name + "* - " + file + "\n";
+			}
+		}
+	} else {
+		report += "* !window.navigator\n";
+	}
+
+	report += "\nWebSocket Details\n";
+	if ('WebSocket' in window) {
+		report += "* WebSocket object support\n";
+	} else if ('MozWebSocket' in window) {
+		report += "* MozWebSocket object support\n";
+	} else {
+		report += "* No WebSocket support\n";
+	}
+	
+	// Gather whatever useful information we can about WebGL support
+	report += "\nWebGL Details\n";
+	
+	if (!gl && !window.gl) {
+		// Load a temporary GL canvas
+		var canvas = document.createElement('canvas');
+		
+		if ('getContext' in canvas) {
+			gl = canvas.getContext('webgl');
+			
+			if (!gl) {
+				gl = canvas.getContext('experimental-webgl');
+			}
+		}
+	}
+
+	// If we still can't get a GL context loaded, assume 
+	// the browser doesn't support it. 
+	if (!gl) {
+
+		report += "* No support\n";
+		
+	} else {
+		
+		report += "* VERSION: " + gl.getParameter(gl.VERSION) + "\n";
+		report += "* VENDOR: " + gl.getParameter(gl.VENDOR) + "\n";
+		report += "* RENDERER: " + gl.getParameter(gl.RENDERER) + "\n";
+		report += "* SHADING_LANGUAGE_VERSION: " + gl.getParameter(gl.SHADING_LANGUAGE_VERSION) + "\n";
+		
+		// If a shader is running, record what shader (in case of rendering issues)
+		var program = gl.getParameter(gl.CURRENT_PROGRAM);
+		if (program) {
+			report += "* CURRENT_PROGRAM Log: " + gl.getProgramInfoLog(gl.getParameter(gl.CURRENT_PROGRAM)) + "\n";
+		}
+	}
+	
+	return report;
+}
