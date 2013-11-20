@@ -140,7 +140,7 @@ Map_Player.prototype.handlePlayerInput = function() {
 		action = Action.MOVE;
 	}
 	
-	if (input.isKeyDown(KeyEvent.DOM_VK_C)) {
+	if (input.isKeyDown(KeyEvent.DOM_VK_C) || input.isKeyDown(KeyEvent.DOM_VK_CONTROL)) {
 	
 		action = Action.SIT;
 
