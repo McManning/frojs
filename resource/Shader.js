@@ -107,7 +107,7 @@ ShaderResource.prototype.compileProgram = function() {
 	
 	if (!gl.getShaderParameter(vs, gl.COMPILE_STATUS)) {
 		throw new Error('Program ' + this.id + ' Vertex Shader Error: ' + gl.getShaderInfoLog(vs)
-						+ '\n' + getBrowserReport()
+						+ '\n' + getBrowserReport(true, gl)
 		);
 	} else {
 		gl.attachShader(program, vs);
@@ -120,7 +120,7 @@ ShaderResource.prototype.compileProgram = function() {
 	
 	if (!gl.getShaderParameter(fs, gl.COMPILE_STATUS)) {
 		throw new Error('Program ' + this.id + ' Fragment Shader Error: ' + gl.getShaderInfoLog(fs)
-						+ '\n' + getBrowserReport()
+						+ '\n' + getBrowserReport(true, gl)
 		);
 	} else {
 		gl.attachShader(program, fs);
@@ -131,7 +131,7 @@ ShaderResource.prototype.compileProgram = function() {
 
 	if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
 		throw new Error('Could not initialize shaders: ' + gl.getProgramInfoLog(program) 
-						+ '\n' + getBrowserReport()
+						+ '\n' + getBrowserReport(true, gl)
 		);
 	}
 	
