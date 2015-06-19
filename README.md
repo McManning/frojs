@@ -15,12 +15,13 @@ Roadmap
 - Look into completing the canvas renderer fallback, and whether or not it's even needed.
 - Standardize the library structure a little more. Maybe with RequireJS, and with a proper (read: modern) build process
 - Remove dependencies that are no longer required
+ - Particularly, remove jQuery as an internal dependency and only use it for the wrapper plugin. I believe it's only really utilized for AJAX? 
 - **DOCUMENT EVERYTHING**. Network messages, world and entity data structures, avatar data structures, etc. 
 
 License
 ======
 
-Copyright (C) 2015 Chase McManning <cmcmanning@gmail.com>
+Copyright (C) 2015 Chase McManning <<cmcmanning@gmail.com>>
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
