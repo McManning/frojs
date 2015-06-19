@@ -1,4 +1,20 @@
-@todo Readme!
+What is this?
+======
+TODO!
+
+Usage
+======
+TODO!
+
+Roadmap
+======
+- Trash the old network code and switch to Socket.IO so we're no longer reinventing the wheel
+- Add (probably as a separate project) a node.js implemention of the server. 
+ - Original server was written in Tornado (4.2). We are going to switch over to something that is more friendly for Javascript developers to get their hands into. 
+- Re-evaluate WebGL implementation. If it doesn't work on current browsers, make it work. 
+- Look into completing the canvas renderer fallback, and whether or not it's even needed.
+- Standardize the library structure a little more. Maybe with RequireJS
+- **DOCUMENT EVERYTHING**. Network messages, world and entity data structures, avatar data structures, etc. 
 
 License
 ======
