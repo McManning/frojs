@@ -17,7 +17,7 @@
 }
 
 ::-webkit-scrollbar-thumb:window-inactive {
-	background: #161616;
+    background: #161616;
     opacity: 0.4;
 }
 
@@ -27,7 +27,7 @@
 
 /* Disable overflow to allow arrow keys to forward to the client */
 html, body {
-	overflow: hidden;
+    overflow: hidden;
 }
 
 #frojs-canvas {
@@ -38,22 +38,22 @@ html, body {
 }
 
 .frojs-preloader .progress.progress-reflection > .overlay {
-	width: 100%;
+    width: 100%;
     height: 100%;
-	position: absolute;
-	
+    position: absolute;
+    
     background-image: -webkit-linear-gradient(rgba(39,39,39, 0.5), rgba(39,39,39, 0.9), rgba(39,39,39, 1));
-	background-image:    -moz-linear-gradient(rgba(39,39,39, 0.5), rgba(39,39,39, 0.9), rgba(39,39,39, 1));
-	background-image:      -o-linear-gradient(rgba(39,39,39, 0.5), rgba(39,39,39, 0.9), rgba(39,39,39, 1));
-	background-image:         linear-gradient(rgba(39,39,39, 0.5), rgba(39,39,39, 0.9), rgba(39,39,39, 1));
+    background-image:    -moz-linear-gradient(rgba(39,39,39, 0.5), rgba(39,39,39, 0.9), rgba(39,39,39, 1));
+    background-image:      -o-linear-gradient(rgba(39,39,39, 0.5), rgba(39,39,39, 0.9), rgba(39,39,39, 1));
+    background-image:         linear-gradient(rgba(39,39,39, 0.5), rgba(39,39,39, 0.9), rgba(39,39,39, 1));
 }
 
 .frojs-preloader .progress.progress-reflection {
-	position: relative;
-	border-bottom-left-radius: 0;
-	border-bottom-right-radius: 0;
-	background: none;
-	
+    position: relative;
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+    background: none;
+    
     -webkit-box-shadow: none;
        -moz-box-shadow: none;
             box-shadow: none;
@@ -62,67 +62,67 @@ html, body {
 
 .frojs-preloader .progress.progress-reflection .bar {
 
-	background-image: -webkit-linear-gradient(-45deg, rgba(255, 255, 255, 0.15) 27%, transparent 27%, transparent 52%, rgba(255, 255, 255, 0.15) 52%, rgba(255, 255, 255, 0.15) 77%, transparent 77%, transparent);
-	background-image:    -moz-linear-gradient(-45deg, rgba(255, 255, 255, 0.15) 27%, transparent 27%, transparent 52%, rgba(255, 255, 255, 0.15) 52%, rgba(255, 255, 255, 0.15) 77%, transparent 77%, transparent);
-	background-image:      -o-linear-gradient(-45deg, rgba(255, 255, 255, 0.15) 27%, transparent 27%, transparent 52%, rgba(255, 255, 255, 0.15) 52%, rgba(255, 255, 255, 0.15) 77%, transparent 77%, transparent);
-	background-image:         linear-gradient(-45deg, rgba(255, 255, 255, 0.15) 27%, transparent 27%, transparent 52%, rgba(255, 255, 255, 0.15) 52%, rgba(255, 255, 255, 0.15) 77%, transparent 77%, transparent);
+    background-image: -webkit-linear-gradient(-45deg, rgba(255, 255, 255, 0.15) 27%, transparent 27%, transparent 52%, rgba(255, 255, 255, 0.15) 52%, rgba(255, 255, 255, 0.15) 77%, transparent 77%, transparent);
+    background-image:    -moz-linear-gradient(-45deg, rgba(255, 255, 255, 0.15) 27%, transparent 27%, transparent 52%, rgba(255, 255, 255, 0.15) 52%, rgba(255, 255, 255, 0.15) 77%, transparent 77%, transparent);
+    background-image:      -o-linear-gradient(-45deg, rgba(255, 255, 255, 0.15) 27%, transparent 27%, transparent 52%, rgba(255, 255, 255, 0.15) 52%, rgba(255, 255, 255, 0.15) 77%, transparent 77%, transparent);
+    background-image:         linear-gradient(-45deg, rgba(255, 255, 255, 0.15) 27%, transparent 27%, transparent 52%, rgba(255, 255, 255, 0.15) 52%, rgba(255, 255, 255, 0.15) 77%, transparent 77%, transparent);
 
-	border-top-left-radius: 4px;
-	border-bottom-left-radius: 4px;
+    border-top-left-radius: 4px;
+    border-bottom-left-radius: 4px;
 }
 
 
 .frojs-container {
-	position: relative;
-	width: 800px; 
-	height: 600px; 
-	margin: 0 auto;
-	padding: 0;
-	background: #272727;
-	font-family: 'Droid Sans', sans-serif;
-	color: #BBB;
-	
-	overflow: hidden;
-	
+    position: relative;
+    width: 800px; 
+    height: 600px; 
+    margin: 0 auto;
+    padding: 0;
+    background: #272727;
+    font-family: 'Droid Sans', sans-serif;
+    color: #BBB;
+    
+    overflow: hidden;
+    
 }
 
 .frojs-container .preloader-logo {
-	position: absolute;
-	background-image: url('/frojs/resources/img/preloader-logo.png');
-	width: 128px;
-	height: 242px;
-	top: 180px;
-	left: 336px;
+    position: absolute;
+    background-image: url('/frojs/resources/img/preloader-logo.png');
+    width: 128px;
+    height: 242px;
+    top: 180px;
+    left: 336px;
 }
 
 .frojs-container .preloader-logo.alpha {
-	background-image: url('/frojs_resources/img/frojs_logo_alpha.png');
+    background-image: url('/frojs_resources/img/frojs_logo_alpha.png');
 }
 
 .frojs-preloader .preloader-status {
-	display: inline-block;
-	text-shadow: 0 2px 2px #000;
-	line-height: 20px;
-	padding: 5px;
-	max-width: 500px;
+    display: inline-block;
+    text-shadow: 0 2px 2px #000;
+    line-height: 20px;
+    padding: 5px;
+    max-width: 500px;
 }
 
 .frojs-preloader .preloader-progress {
-	float: right;
-	display: inline-block;
-	text-shadow: 0 2px 2px #000;
-	line-height: 20px;
-	padding: 5px;
-	position: absolute;
-	right: 0;
-	bottom: 36px;
+    float: right;
+    display: inline-block;
+    text-shadow: 0 2px 2px #000;
+    line-height: 20px;
+    padding: 5px;
+    position: absolute;
+    right: 0;
+    bottom: 36px;
 }
 
 .frojs-preloader .preloader-bar {
-	position: absolute;
-	width: 600px;
-	left: 100px;
-	bottom: 50px;
+    position: absolute;
+    width: 600px;
+    left: 100px;
+    bottom: 50px;
 }
 
 /* Progress bar styles adapted from Bootstrap */
@@ -207,7 +207,7 @@ html, body {
      -moz-background-size: 40px 40px;
        -o-background-size: 40px 40px;
           background-size: 40px 40px;
-		  
+          
   -webkit-box-shadow: inset 0 -1px 0 rgba(0, 0, 0, 0.15);
      -moz-box-shadow: inset 0 -1px 0 rgba(0, 0, 0, 0.15);
           box-shadow: inset 0 -1px 0 rgba(0, 0, 0, 0.15);
@@ -220,8 +220,8 @@ html, body {
      -moz-transition: width 0.6s ease;
        -o-transition: width 0.6s ease;
           transition: width 0.6s ease;
-	
-	-webkit-animation: progress-bar-stripes 2s linear infinite;
+    
+    -webkit-animation: progress-bar-stripes 2s linear infinite;
        -moz-animation: progress-bar-stripes 2s linear infinite;
         -ms-animation: progress-bar-stripes 2s linear infinite;
          -o-animation: progress-bar-stripes 2s linear infinite;
@@ -235,8 +235,8 @@ html, body {
 }
 
 .frojs-preloader.preload-error {
-	color: #D84B4B;
-	vertical-align: bottom;
+    color: #D84B4B;
+    vertical-align: bottom;
 }
 
 .frojs-preloader.preload-error .progress > .bar {
@@ -246,51 +246,51 @@ html, body {
 
 .frojs-container .frojs-about {
 
-	display: inline-block;
-	min-width: 20px;
-	min-height: 20px;
-	background: url('/frojs_resources/img/about.png') no-repeat right top;
-	float: right;
+    display: inline-block;
+    min-width: 20px;
+    min-height: 20px;
+    background: url('/frojs_resources/img/about.png') no-repeat right top;
+    float: right;
 }
 
 .frojs-container .frojs-about > a {
-	color: #FFF;
-	font-size: 10px;
-	text-decoration: none;
-	height: 20px;
-	
-	display: none;
+    color: #FFF;
+    font-size: 10px;
+    text-decoration: none;
+    height: 20px;
+    
+    display: none;
 }
 
 .frojs-container .frojs-about span {
-	margin-right: 25px;
-	background: #000;
+    margin-right: 25px;
+    background: #000;
 }
 
 
 #frojs-navigation {
-	display: none;
-	position: absolute;
-	
-	top: 0;
-	height: 100%;
-	width: 260px;
-	overflow-x: hidden;
-	overflow-y: auto;
-	
+    display: none;
+    position: absolute;
+    
+    top: 0;
+    height: 100%;
+    width: 260px;
+    overflow-x: hidden;
+    overflow-y: auto;
+    
 
-	left: -260px;
-	right: auto;
-	
-	/* Bootstrap style stuff */
+    left: -260px;
+    right: auto;
+    
+    /* Bootstrap style stuff */
 
-	-webkit-box-shadow: rgba(255, 255, 255, 0.1) 0 1px 0, rgba(0, 0, 0, 0.8) 0 1px 30px 0px inset;
-	   -moz-box-shadow: rgba(255, 255, 255, 0.1) 0 1px 0, rgba(0, 0, 0, 0.8) 0 1px 30px 0px inset;
-	        
-	box-shadow: rgba(255, 255, 255, 0.1) 0 1px 0, rgba(0, 0, 0, 0.8) 0 1px 15px 0px inset;
-	        
-	background: #272727;
-	border: 0;
+    -webkit-box-shadow: rgba(255, 255, 255, 0.1) 0 1px 0, rgba(0, 0, 0, 0.8) 0 1px 30px 0px inset;
+       -moz-box-shadow: rgba(255, 255, 255, 0.1) 0 1px 0, rgba(0, 0, 0, 0.8) 0 1px 30px 0px inset;
+            
+    box-shadow: rgba(255, 255, 255, 0.1) 0 1px 0, rgba(0, 0, 0, 0.8) 0 1px 15px 0px inset;
+            
+    background: #272727;
+    border: 0;
 
 }
 
@@ -314,7 +314,7 @@ html, body {
     position: absolute;
     bottom: 5px;
     left: 10px;
-	font-size: 20px;
+    font-size: 20px;
 }
 
 #frojs-keymap-link {
@@ -325,32 +325,32 @@ html, body {
 }
 
 #network-status.connected {
-	color: #82A858;
+    color: #82A858;
 }
 
 #network-status.disconnected {
-	color: #fc5b5e;
+    color: #fc5b5e;
 }
 
 #frojs-navigation button {
     
-	display: inline-block;
-	height: 30px;
-	font-size: 16px;
+    display: inline-block;
+    height: 30px;
+    font-size: 16px;
 
-	line-height: 9px;
+    line-height: 9px;
 
     font-family: 'Droid Sans', sans-serif;
     font-weight: normal;
-	border: 0;
+    border: 0;
     
     cursor: pointer;
 
-	text-align: center;
+    text-align: center;
     
     color: #fff;
     
-	background-color: rgb(130, 168, 88);
+    background-color: rgb(130, 168, 88);
     border-radius: 5px;
 
     border-bottom: 2px solid rgba(0,0,0,0.3);
@@ -390,7 +390,7 @@ html, body {
 
 #frojs-navigation button.active,
 #frojs-navigation button:active {  
-	background-image: none;
+    background-image: none;
     outline: 0;
     text-shadow: none; 
     padding-bottom: 0;
@@ -399,27 +399,27 @@ html, body {
 
 #frojs-navigation button.addon {
 
-	width: 22px;
-	height: 30px;
-	min-width: 30px;
-	font-size: 16px;
+    width: 22px;
+    height: 30px;
+    min-width: 30px;
+    font-size: 16px;
 
-	line-height: 9px;
+    line-height: 9px;
 }
 
 #frojs-navigation legend {
 
     -webkit-box-shadow: rgba(255, 255, 255, 0.07) 0 1px 0;
-	   -moz-box-shadow: rgba(255, 255, 255, 0.07) 0 1px 0;
-	        box-shadow: rgba(255, 255, 255, 0.07) 0 1px 0;
-	
-	border-bottom: 1px solid #121212;
-	color: #fff;
+       -moz-box-shadow: rgba(255, 255, 255, 0.07) 0 1px 0;
+            box-shadow: rgba(255, 255, 255, 0.07) 0 1px 0;
+    
+    border-bottom: 1px solid #121212;
+    color: #fff;
 
-	display: block;
-	width: 100%;
-	padding-left: 10px;
-	
+    display: block;
+    width: 100%;
+    padding-left: 10px;
+    
     font-size: 18px;
 
     line-height: 40px;
@@ -430,38 +430,38 @@ html, body {
     margin: 0;
     outline: none;
     
-	color: white;
-	height: 21px;
+    color: white;
+    height: 21px;
 
-	box-shadow: rgba(255, 255, 255, 0.1) 0 1px 0, rgba(0, 0, 0, 0.8) 0 1px 7px 0px inset;
-	
-	background: #202020;
-	border: 0;
+    box-shadow: rgba(255, 255, 255, 0.1) 0 1px 0, rgba(0, 0, 0, 0.8) 0 1px 7px 0px inset;
+    
+    background: #202020;
+    border: 0;
 
-	display: inline-block;
-	vertical-align: middle;
+    display: inline-block;
+    vertical-align: middle;
 
-	padding: 4px 6px;
+    padding: 4px 6px;
 
-	font-size: 14px;
-	line-height: 20px;
+    font-size: 14px;
+    line-height: 20px;
 
-	-webkit-border-radius: 4px;
-	-moz-border-radius: 4px;
-	border-radius: 4px;
+    -webkit-border-radius: 4px;
+    -moz-border-radius: 4px;
+    border-radius: 4px;
 
-	width: 200px;
+    width: 200px;
 
-	font-family: 'Droid Sans', sans-serif;
-	font-weight: normal;
+    font-family: 'Droid Sans', sans-serif;
+    font-weight: normal;
 }
 
 #frojs-navigation textarea {
-	height: 200px;
+    height: 200px;
 }
 
 #frojs-navigation input[disabled] {
-	color: #666;
+    color: #666;
 }
 
 #frojs-navigation input.hasaddon {
@@ -474,53 +474,53 @@ html, body {
 
 .alert {
     position: relative;
-	background-color: #fc5b5e;
-	text-shadow: 0 1px 0 rgba(0, 0, 0, 0.25);
-	color: rgb(255, 255, 255);
-	border-radius: 4px;
-	
+    background-color: #fc5b5e;
+    text-shadow: 0 1px 0 rgba(0, 0, 0, 0.25);
+    color: rgb(255, 255, 255);
+    border-radius: 4px;
+    
     border: 1px solid rgb(194, 54, 56);
     margin: 10px;
-	
-    font-size: 14px;	
-	padding: 4px;
+    
+    font-size: 14px;    
+    padding: 4px;
     line-height: 18px;
 }
 
 .alert.arrow:after, 
 .alert.arrow:before {
-	bottom: 100%;
-	border: solid transparent;
-	content: " ";
-	height: 0;
-	width: 0;
-	position: absolute;
-	pointer-events: none;
+    bottom: 100%;
+    border: solid transparent;
+    content: " ";
+    height: 0;
+    width: 0;
+    position: absolute;
+    pointer-events: none;
 }
 
 .alert.arrow:after {
-	border-color: transparent;
-	border-bottom-color: #fc5b5e;
-	border-width: 5px;
-	left: 20%;
-	margin-left: -5px;
+    border-color: transparent;
+    border-bottom-color: #fc5b5e;
+    border-width: 5px;
+    left: 20%;
+    margin-left: -5px;
 }
 .alert.arrow:before {
-	border-color: transparent;
-	border-bottom-color: rgb(194, 54, 56);
-	border-width: 7px;
-	left: 20%;
-	margin-left: -7px;
+    border-color: transparent;
+    border-bottom-color: rgb(194, 54, 56);
+    border-width: 7px;
+    left: 20%;
+    margin-left: -7px;
 }
 
 .alert > .icon-remove {
-	float: right;
-	color: rgb(255, 192, 193);
+    float: right;
+    color: rgb(255, 192, 193);
 }
 
 .alert.success {
-	background-color: rgb(130, 168, 88);
-	border-color: #668346;
+    background-color: rgb(130, 168, 88);
+    border-color: #668346;
 }
 
 .alert.success.arrow:after {
@@ -529,31 +529,31 @@ html, body {
 
 .alert.success.arrow:before {
 
-	border-bottom-color: #668346;
+    border-bottom-color: #668346;
 }
 
 #frojs-navigation .input-icon {
-	display: inline-block;
-	margin-left: -26px;
-	color: white;
-	font-size: 18px;
-	vertical-align: middle;
-	padding-top: 2px;
+    display: inline-block;
+    margin-left: -26px;
+    color: white;
+    font-size: 18px;
+    vertical-align: middle;
+    padding-top: 2px;
 }
 
 #frojs-navigation label {
-	
-	display: block;
-	margin-bottom: 5px;
+    
+    display: block;
+    margin-bottom: 5px;
 
-	font-size: 14px;
-	font-weight: normal;
-	line-height: 20px;
+    font-size: 14px;
+    font-weight: normal;
+    line-height: 20px;
 
-	cursor: pointer;
-	color: #c6c6c6;
-	font-family: 'Droid Sans', sans-serif;
-	
+    cursor: pointer;
+    color: #c6c6c6;
+    font-family: 'Droid Sans', sans-serif;
+    
 }
 
 #frojs-technical-details {
@@ -562,26 +562,26 @@ html, body {
 
 
 #frojs-navigation fieldset {
-	padding: 10px 23px;
-	margin: 0;
-	border: 0;
-	font-size: 14px;
+    padding: 10px 23px;
+    margin: 0;
+    border: 0;
+    font-size: 14px;
 }
 
 #frojs-content {
 
-	overflow: hidden;
+    overflow: hidden;
 }
 
 #frojs-navigation-icon {
-	position: absolute;
-	top: 0;
-	left: 0;
-	padding: 5px;
-	font-size: 36px;
-	color: white;
-	cursor: pointer;
-	text-shadow: 0 2px 0px #888; 
+    position: absolute;
+    top: 0;
+    left: 0;
+    padding: 5px;
+    font-size: 36px;
+    color: white;
+    cursor: pointer;
+    text-shadow: 0 2px 0px #888; 
 }
 
 #frojs-navigation-icon:hover {
@@ -638,169 +638,169 @@ html, body {
 
 /* Override for font-awesome */
 .icon-stack .icon-stack-base {
-	font-size: 1.5em;
+    font-size: 1.5em;
 }
 
 .icon-stack {
-	width: 1.5em;
-	height: 1.5em;
-	line-height: 1.5em;
+    width: 1.5em;
+    height: 1.5em;
+    line-height: 1.5em;
 }
 
 .share-group {
     width: 100%;
-	
+    
     text-align: center;
 }
 
 .ui-slider {
-	position: relative;
-	text-align: left;
-	
-	color: white;
-	height: 21px;
+    position: relative;
+    text-align: left;
+    
+    color: white;
+    height: 21px;
 
-	box-shadow: rgba(255, 255, 255, 0.1) 0 1px 0, rgba(0, 0, 0, 0.8) 0 1px 7px 0px inset;
-	
-	background: #202020;
-	border: 0;
+    box-shadow: rgba(255, 255, 255, 0.1) 0 1px 0, rgba(0, 0, 0, 0.8) 0 1px 7px 0px inset;
+    
+    background: #202020;
+    border: 0;
     
     border-radius: 4px;
     width: 200px;
 }
 
 .ui-slider .ui-slider-handle {
-	position: absolute;
-	z-index: 2;
-	width: 1.2em;
-	height: 1.2em;
-	cursor: default;
-	background: green;
+    position: absolute;
+    z-index: 2;
+    width: 1.2em;
+    height: 1.2em;
+    cursor: default;
+    background: green;
     
-	border: 0;
-	background-color: #82A858;
+    border: 0;
+    background-color: #82A858;
     border-radius: 5px;
 
     border-bottom: 2px solid rgba(0,0,0,0.3);
     text-shadow: 0 2px 0px rgba(0, 0, 0, 0.25); 
-	outline: none;
+    outline: none;
 }
 
 .ui-slider .ui-slider-range {
-	position: absolute;
-	z-index: 1;
-	font-size: .7em;
-	display: block;
-	border: 0;
-	background-position: 0 0;
+    position: absolute;
+    z-index: 1;
+    font-size: .7em;
+    display: block;
+    border: 0;
+    background-position: 0 0;
 }
 
 /* For IE8 - See #6727 */
 .ui-slider.ui-state-disabled .ui-slider-handle,
 .ui-slider.ui-state-disabled .ui-slider-range {
-	filter: inherit;
+    filter: inherit;
 }
 
 .ui-slider-horizontal {
-	height: .8em;
+    height: .8em;
 }
 .ui-slider-horizontal .ui-slider-handle {
-	top: -.3em;
-	margin-left: -.6em;
+    top: -.3em;
+    margin-left: -.6em;
 }
 .ui-slider-horizontal .ui-slider-range {
-	top: 0;
-	height: 100%;
+    top: 0;
+    height: 100%;
 }
 .ui-slider-horizontal .ui-slider-range-min {
-	left: 0;
+    left: 0;
 }
 .ui-slider-horizontal .ui-slider-range-max {
-	right: 0;
+    right: 0;
 }
 
 .ui-slider-vertical {
-	width: .8em;
-	height: 100px;
+    width: .8em;
+    height: 100px;
 }
 .ui-slider-vertical .ui-slider-handle {
-	left: -.3em;
-	margin-left: 0;
-	margin-bottom: -.6em;
+    left: -.3em;
+    margin-left: 0;
+    margin-bottom: -.6em;
 }
 .ui-slider-vertical .ui-slider-range {
-	left: 0;
-	width: 100%;
+    left: 0;
+    width: 100%;
 }
 .ui-slider-vertical .ui-slider-range-min {
-	bottom: 0;
+    bottom: 0;
 }
 .ui-slider-vertical .ui-slider-range-max {
-	top: 0;
+    top: 0;
 }
 
 
 .checkbox.checked, .radio.checked {
-	color: #3c3937;
+    color: #3c3937;
 }
 
 .checkbox, .radio {
-	margin-bottom: 12px;
-	padding-left: 32px;
-	position: relative;
-	-webkit-transition: color 0.25s linear;
-	-moz-transition: color 0.25s linear;
-	-o-transition: color 0.25s linear;
-	transition: color 0.25s linear;
-	-webkit-backface-visibility: hidden;
-	min-height: 20px;
+    margin-bottom: 12px;
+    padding-left: 32px;
+    position: relative;
+    -webkit-transition: color 0.25s linear;
+    -moz-transition: color 0.25s linear;
+    -o-transition: color 0.25s linear;
+    transition: color 0.25s linear;
+    -webkit-backface-visibility: hidden;
+    min-height: 20px;
 }
 
 .checkbox.checked .icons, .radio.checked .icons {
-	color: #392f40;
+    color: #392f40;
 }
 
 .checkbox .icons, .radio .icons {
-	color: #8c8681;
-	display: block;
-	height: 25px;
-	left: 0;
-	position: absolute;
-	top: 0;
-	width: 20px;
-	margin-top: -3px;
-	text-align: center;
-	line-height: 20px;
-	font-size: 25.5px;
-	-webkit-transition: color 0.25s linear;
-	-moz-transition: color 0.25s linear;
-	-o-transition: color 0.25s linear;
-	transition: color 0.25s linear;
-	-webkit-backface-visibility: hidden;
+    color: #8c8681;
+    display: block;
+    height: 25px;
+    left: 0;
+    position: absolute;
+    top: 0;
+    width: 20px;
+    margin-top: -3px;
+    text-align: center;
+    line-height: 20px;
+    font-size: 25.5px;
+    -webkit-transition: color 0.25s linear;
+    -moz-transition: color 0.25s linear;
+    -o-transition: color 0.25s linear;
+    transition: color 0.25s linear;
+    -webkit-backface-visibility: hidden;
 }
 
 .radio input[type="radio"], .checkbox input[type="checkbox"] {
-	float: left;
-	margin-left: -20px;
+    float: left;
+    margin-left: -20px;
 }
 
 .checkbox input, .radio input {
-	outline: none !important;
-	display: none;
-	width: auto;
-	margin: 4px 0 0;
-	margin-top: 1px \9;
-	line-height: normal;
+    outline: none !important;
+    display: none;
+    width: auto;
+    margin: 4px 0 0;
+    margin-top: 1px \9;
+    line-height: normal;
 }
 
 .checkbox.checked .first-icon, .radio.checked .first-icon {
-	opacity: 0;
-	filter: alpha(opacity=0);
+    opacity: 0;
+    filter: alpha(opacity=0);
 }
 
 .checkbox.checked .second-icon, .radio.checked .second-icon {
-	opacity: 1;
-	filter: alpha(opacity=100);
+    opacity: 1;
+    filter: alpha(opacity=100);
 }
 
 .volume-icon {
@@ -809,19 +809,19 @@ html, body {
 }
 
 #frojs-keymap label {
-	display: inline-block;
-	float: left;
+    display: inline-block;
+    float: left;
 }
 
 .frojs-keymap {
-	width: 60px;
+    width: 60px;
 }
 
 .input-append, .input-prepend {
-	display: inline-block;
-	font-size: 0;
-	white-space: nowrap;
-	vertical-align: middle;
+    display: inline-block;
+    font-size: 0;
+    white-space: nowrap;
+    vertical-align: middle;
 }
 
 .input-append > input {
@@ -830,27 +830,27 @@ html, body {
 }
 
 #frojs-notices {
-	position: absolute !important;
-	right: 0 !important;
-	display: none;
+    position: absolute !important;
+    right: 0 !important;
+    display: none;
 }
 
 #frojs-help-overlay {
-	background: url('/frojs/resources/img/ui_help.png') no-repeat;
-	width: 800px;
-	height: 600px;
-	position: absolute;
-	top: 0;
-	left: 0;
-	z-index: 9999;
-	display: none;
+    background: url('/frojs/resources/img/ui_help.png') no-repeat;
+    width: 800px;
+    height: 600px;
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 9999;
+    display: none;
 }
 
 #frojs-help-overlay .exit-button {
-	width: 50px;
-	height: 50px;
-	position: absolute;
-	top: 15px;
-	left: 728px;
-	cursor: pointer;
+    width: 50px;
+    height: 50px;
+    position: absolute;
+    top: 15px;
+    left: 728px;
+    cursor: pointer;
 }

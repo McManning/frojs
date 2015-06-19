@@ -23,30 +23,30 @@
  */
 function CollisionRectangle(r) {
 
-	// De-float any collision rectangles
-	for (var i in r)
-		r[i] = Math.floor(r[i]);
+    // De-float any collision rectangles
+    for (var i in r)
+        r[i] = Math.floor(r[i]);
 
-	this.box = new RenderableBox();
-	this.box.setStyle('img/line.png');
-	this.box.setLineWidth(13);
-	this.box.setRect(r);
-	
-	this.anchor = new RenderableImage(28, 28);
-	this.activeAnchor = new RenderableImage(28, 28);
-	
-	// @todo all these images could be shared, if we had a way
-	// to designate specific locations to render images and with references
-	// and whatnot. ]:<
-	this.anchor.loadTexture('img/glyphish-free/13-target.png');
-	this.activeAnchor.loadTexture('img/glyphish-free/19-gear.png');
-	
-	this.anchor.position[0] = r[0] + r[2];
-	this.anchor.position[1] = r[1] + r[3];
-	vec3.set(this.anchor.position, this.activeAnchor.position);
-	
-	this.selected = false;
-	this.resizing = false;
+    this.box = new RenderableBox();
+    this.box.setStyle('img/line.png');
+    this.box.setLineWidth(13);
+    this.box.setRect(r);
+    
+    this.anchor = new RenderableImage(28, 28);
+    this.activeAnchor = new RenderableImage(28, 28);
+    
+    // @todo all these images could be shared, if we had a way
+    // to designate specific locations to render images and with references
+    // and whatnot. ]:<
+    this.anchor.loadTexture('img/glyphish-free/13-target.png');
+    this.activeAnchor.loadTexture('img/glyphish-free/19-gear.png');
+    
+    this.anchor.position[0] = r[0] + r[2];
+    this.anchor.position[1] = r[1] + r[3];
+    vec3.set(this.anchor.position, this.activeAnchor.position);
+    
+    this.selected = false;
+    this.resizing = false;
 }
 
 /**
@@ -56,16 +56,16 @@ function CollisionRectangle(r) {
  */
 CollisionRectangle.prototype.setStart = function(pos) {
 
-	var r = rect.create(this.box.bounds);
-	r[0] = Math.floor(pos[0]);
-	r[1] = Math.floor(pos[1]);
-	
-	this.box.setRect(r);
-	
-	// Move the two anchors to the bottom right corner
-	this.anchor.position[0] = r[0] + r[2];
-	this.anchor.position[1] = r[1] + r[3];
-	vec3.set(this.anchor.position, this.activeAnchor.position);
+    var r = rect.create(this.box.bounds);
+    r[0] = Math.floor(pos[0]);
+    r[1] = Math.floor(pos[1]);
+    
+    this.box.setRect(r);
+    
+    // Move the two anchors to the bottom right corner
+    this.anchor.position[0] = r[0] + r[2];
+    this.anchor.position[1] = r[1] + r[3];
+    vec3.set(this.anchor.position, this.activeAnchor.position);
 }
 
 /**
@@ -75,51 +75,51 @@ CollisionRectangle.prototype.setStart = function(pos) {
  * @param vec3 pos
  */
 CollisionRectangle.prototype.setEnd = function(pos) {
-	
-	for (var i in pos)
-		pos[i] = Math.floor(pos[i]);
-	
-	vec3.set(pos, this.anchor.position);
-	
-	var r = rect.create(this.box.bounds);
-	
-	if (r[0] < pos[0])
-		r[2] = pos[0] - r[0];
-	else // ignore? @todo
-		r[2] = r[2];
-		
-	if (r[1] < pos[1])
-		r[3] = pos[1] - r[1];
-	else
-		r[3] = r[3]; // @todo again
-	
-	this.box.setRect(r);
-	
-	// Move the two anchors to the bottom right corner
-	this.anchor.position[0] = r[0] + r[2];
-	this.anchor.position[1] = r[1] + r[3];
-	vec3.set(this.anchor.position, this.activeAnchor.position);
+    
+    for (var i in pos)
+        pos[i] = Math.floor(pos[i]);
+    
+    vec3.set(pos, this.anchor.position);
+    
+    var r = rect.create(this.box.bounds);
+    
+    if (r[0] < pos[0])
+        r[2] = pos[0] - r[0];
+    else // ignore? @todo
+        r[2] = r[2];
+        
+    if (r[1] < pos[1])
+        r[3] = pos[1] - r[1];
+    else
+        r[3] = r[3]; // @todo again
+    
+    this.box.setRect(r);
+    
+    // Move the two anchors to the bottom right corner
+    this.anchor.position[0] = r[0] + r[2];
+    this.anchor.position[1] = r[1] + r[3];
+    vec3.set(this.anchor.position, this.activeAnchor.position);
 }
 
 /**
  * @return boolean
  */
 CollisionRectangle.prototype.anchorIntersects = function(pos) {
-	
-	// lazily do a distance check for now
-	var d = vec3.create(this.anchor.position);
-	vec3.subtract(d, pos);
-	
-	return (vec3.length(d) < 12);
+    
+    // lazily do a distance check for now
+    var d = vec3.create(this.anchor.position);
+    vec3.subtract(d, pos);
+    
+    return (vec3.length(d) < 12);
 }
 
 CollisionRectangle.prototype.render = function() {
 
-	this.box.render();
-	
-	if (this.selected)
-		this.activeAnchor.render();
-	else
-		this.anchor.render();
+    this.box.render();
+    
+    if (this.selected)
+        this.activeAnchor.render();
+    else
+        this.anchor.render();
 }
 

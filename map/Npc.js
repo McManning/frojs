@@ -25,52 +25,52 @@ function Map_Npc() {}
 Map_Npc.prototype = new Map_Actor();
 
 Map_Npc.prototype.initialise = function(eid, properties) {
-	Map_Actor.prototype.initialise.call(this, eid, properties);
-	
-	this.thinkInterval = fro.timers.addInterval(
-		this, this.think, 
-		NPC_THINK_INTERVAL
-	);
+    Map_Actor.prototype.initialise.call(this, eid, properties);
+    
+    this.thinkInterval = fro.timers.addInterval(
+        this, this.think, 
+        NPC_THINK_INTERVAL
+    );
 
-	// Register an action controller with us
-	this.actionController = new BufferedActionController(this, false);
+    // Register an action controller with us
+    this.actionController = new BufferedActionController(this, false);
 }
 
 Map_Npc.prototype.destroy = function() {
 
-	fro.timers.removeInterval(this.thinkInterval);
-	
-	Map_Actor.prototype.destroy.call(this);
+    fro.timers.removeInterval(this.thinkInterval);
+    
+    Map_Actor.prototype.destroy.call(this);
 }
 
 Map_Npc.prototype.think = function() {
 
-	// Check for new actions on the buffer
-	if (!this.isMoving()) {
-		this.actionController.processActions();
-	}
-	
-	if (this.isMoving()) {
-	
-		this.processMovement();
-	
-	} else {
-	
-		// Go into an idle stance if not already
-		if (this.action == Action.MOVE) {
-			this.setAction(Action.IDLE);
-		}
-	
-		if (this.avatar) {
-			var time = new Date().getTime();
-			// Idle animate our avatar
-			if (this.avatar.nextChange < time) {
-			
-				this.avatar.nextFrame(false);
-				this.avatar.nextChange = time + this.avatar.currentDelay;
-			}
-		}
-	}
-	
+    // Check for new actions on the buffer
+    if (!this.isMoving()) {
+        this.actionController.processActions();
+    }
+    
+    if (this.isMoving()) {
+    
+        this.processMovement();
+    
+    } else {
+    
+        // Go into an idle stance if not already
+        if (this.action == Action.MOVE) {
+            this.setAction(Action.IDLE);
+        }
+    
+        if (this.avatar) {
+            var time = new Date().getTime();
+            // Idle animate our avatar
+            if (this.avatar.nextChange < time) {
+            
+                this.avatar.nextFrame(false);
+                this.avatar.nextChange = time + this.avatar.currentDelay;
+            }
+        }
+    }
+    
 }
 

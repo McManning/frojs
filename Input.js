@@ -144,154 +144,154 @@ if (typeof KeyEvent == "undefined") {
  * to the GL canvas into hookable events 
  */
 fro.input = $.extend({
-	
-	initialise : function(options) {
-		
-		// State management for inputs
-		this.pressedKeys = new Array();
-		this.cursorPosition = vec3.create();
-		
-		// Allow the canvas to detect focus/blur events
-		$(options.canvas).attr('tabindex', -1);
-		
-		options.canvas.onmousedown = this.onMouseDown;
-		
-		options.canvas.onfocus = this.onCanvasFocus;
-		options.canvas.onblur = this.onCanvasBlur;
+    
+    initialise : function(options) {
+        
+        // State management for inputs
+        this.pressedKeys = new Array();
+        this.cursorPosition = vec3.create();
+        
+        // Allow the canvas to detect focus/blur events
+        $(options.canvas).attr('tabindex', -1);
+        
+        options.canvas.onmousedown = this.onMouseDown;
+        
+        options.canvas.onfocus = this.onCanvasFocus;
+        options.canvas.onblur = this.onCanvasBlur;
 
-		document.onmouseup = this.onMouseUp;
-		document.onmousemove = this.onMouseMove;
-		
-		// @todo window versus document?
-		window.onkeydown = this.onKeyDown;
-		window.onkeyup = this.onKeyUp;
+        document.onmouseup = this.onMouseUp;
+        document.onmousemove = this.onMouseMove;
+        
+        // @todo window versus document?
+        window.onkeydown = this.onKeyDown;
+        window.onkeyup = this.onKeyUp;
 
-		window.onfocus = this.onWindowFocus;
-		window.onblur = this.onWindowBlur;
+        window.onfocus = this.onWindowFocus;
+        window.onblur = this.onWindowBlur;
 
-		this.canvasFocus = false;
-	},
-	
-	onKeyDown : function(e) {
-		e = e || window.event;
+        this.canvasFocus = false;
+    },
+    
+    onKeyDown : function(e) {
+        e = e || window.event;
 
-		fro.input.pressedKeys[e.keyCode] = true;
-		
-		fro.input.fire('keydown', e);
-		
-		// Override pageup/pagedown events
-		if (e.keyCode == KeyEvent.DOM_VK_PAGE_UP 
-			|| e.keyCode == KeyEvent.DOM_VK_PAGE_DOWN) {
-			
-			return false;
-		}
-	},
+        fro.input.pressedKeys[e.keyCode] = true;
+        
+        fro.input.fire('keydown', e);
+        
+        // Override pageup/pagedown events
+        if (e.keyCode == KeyEvent.DOM_VK_PAGE_UP 
+            || e.keyCode == KeyEvent.DOM_VK_PAGE_DOWN) {
+            
+            return false;
+        }
+    },
 
-	onKeyUp : function(e) {
-		e = e || window.event;
+    onKeyUp : function(e) {
+        e = e || window.event;
 
-		fro.input.pressedKeys[e.keyCode] = false;
-		
-		fro.input.fire('keyup', e);
-	},
+        fro.input.pressedKeys[e.keyCode] = false;
+        
+        fro.input.fire('keyup', e);
+    },
 
-	onMouseDown : function(e) {
-		e = e || window.event;
-		fro.input.updateCursorPosition(e);
-		
-		fro.input.fire('mousedown', e);
-	},
+    onMouseDown : function(e) {
+        e = e || window.event;
+        fro.input.updateCursorPosition(e);
+        
+        fro.input.fire('mousedown', e);
+    },
 
-	onMouseUp : function(e) {
-		e = e || window.event;
-		fro.input.updateCursorPosition(e);
-		
-		fro.input.fire('mouseup', e);
-	},
-	
-	onMouseMove : function(e) {
-		e = e || window.event;
-		
-		// Since this is a frequent event, it won't be fired to listeners just yet
-		// Instead, they should set up timers and query when needed.
-		fro.input.updateCursorPosition(e);
-	},
-	
-	updateCursorPosition : function(e) {
-		var pos = this.cursorPosition;
-		
-		// Recalculate cursor position and store
-		if (e.pageX || e.pageY) {
-			pos[0] = e.pageX;
-			pos[1] = e.pageY;
-		} else {
-			pos[0] = e.clientX + document.body.scrollLeft + document.documentElement.scrollLeft; 
-			pos[1] = e.clientY + document.body.scrollTop + document.documentElement.scrollTop; 
-		}
-		
-		pos[0] -= gl.canvas.offsetLeft;
-		pos[1] -= gl.canvas.offsetTop;
-	},
-	
-	/**
-	 * Canvas loses focus, kill inputs and certain events
-	 */
-	onCanvasBlur : function() {
-		
-		// Cancel any keypresses, since we won't pick up a keyup event 
-		fro.input.pressedKeys.length = 0;
-		fro.input.canvasFocus = false;
-		
-		fro.input.fire('canvasblur');
-	},
+    onMouseUp : function(e) {
+        e = e || window.event;
+        fro.input.updateCursorPosition(e);
+        
+        fro.input.fire('mouseup', e);
+    },
+    
+    onMouseMove : function(e) {
+        e = e || window.event;
+        
+        // Since this is a frequent event, it won't be fired to listeners just yet
+        // Instead, they should set up timers and query when needed.
+        fro.input.updateCursorPosition(e);
+    },
+    
+    updateCursorPosition : function(e) {
+        var pos = this.cursorPosition;
+        
+        // Recalculate cursor position and store
+        if (e.pageX || e.pageY) {
+            pos[0] = e.pageX;
+            pos[1] = e.pageY;
+        } else {
+            pos[0] = e.clientX + document.body.scrollLeft + document.documentElement.scrollLeft; 
+            pos[1] = e.clientY + document.body.scrollTop + document.documentElement.scrollTop; 
+        }
+        
+        pos[0] -= gl.canvas.offsetLeft;
+        pos[1] -= gl.canvas.offsetTop;
+    },
+    
+    /**
+     * Canvas loses focus, kill inputs and certain events
+     */
+    onCanvasBlur : function() {
+        
+        // Cancel any keypresses, since we won't pick up a keyup event 
+        fro.input.pressedKeys.length = 0;
+        fro.input.canvasFocus = false;
+        
+        fro.input.fire('canvasblur');
+    },
 
-	/**
-	 * Canvas regained focus, reactivate inputs and certain events
-	 */
-	onCanvasFocus : function() {
-	
-		fro.input.canvasFocus = true;
-		
-		fro.input.fire('canvasfocus');
-	},
-	
-	/**
-	 * Window loses focus, kill inputs and certain events
-	 */
-	onWindowBlur : function() {
-	
-		// Cancel any keypresses, since we won't pick up a keyup event 
-		fro.input.pressedKeys.length = 0;
-		fro.input.canvasFocus = false;
-		
-		fro.input.fire('windowblur');
-	},
+    /**
+     * Canvas regained focus, reactivate inputs and certain events
+     */
+    onCanvasFocus : function() {
+    
+        fro.input.canvasFocus = true;
+        
+        fro.input.fire('canvasfocus');
+    },
+    
+    /**
+     * Window loses focus, kill inputs and certain events
+     */
+    onWindowBlur : function() {
+    
+        // Cancel any keypresses, since we won't pick up a keyup event 
+        fro.input.pressedKeys.length = 0;
+        fro.input.canvasFocus = false;
+        
+        fro.input.fire('windowblur');
+    },
 
-	/**
-	 * Window regained focus, reactivate inputs and certain events
-	 */
-	onWindowFocus : function() {
-		fro.input.fire('windowfocus');
-	},
-	
-	/** Returns true if the specified key is identified as being pressed */
-	isKeyDown : function(keycode) {
-		return (this.pressedKeys[keycode] == true);
-	},
-	
-	/** Returns true if our canvas/GL context has input focus */
-	hasFocus : function() {
-		return this.canvasFocus;
-	},
-	
-	/**
-	 * Helper function to determine where exactly in the canvas the cursor is located
-	 * @return vec3 result, from (0,0) to (gl.viewportWidth,gl.viewportHeight)
-	 * @todo may return negatives, and points outside the canvas. Need to ensure cursor is IN the canvas!
-	 */
-	getCursorPosition : function(e) {
-		return this.cursorPosition;
-	},
+    /**
+     * Window regained focus, reactivate inputs and certain events
+     */
+    onWindowFocus : function() {
+        fro.input.fire('windowfocus');
+    },
+    
+    /** Returns true if the specified key is identified as being pressed */
+    isKeyDown : function(keycode) {
+        return (this.pressedKeys[keycode] == true);
+    },
+    
+    /** Returns true if our canvas/GL context has input focus */
+    hasFocus : function() {
+        return this.canvasFocus;
+    },
+    
+    /**
+     * Helper function to determine where exactly in the canvas the cursor is located
+     * @return vec3 result, from (0,0) to (gl.viewportWidth,gl.viewportHeight)
+     * @todo may return negatives, and points outside the canvas. Need to ensure cursor is IN the canvas!
+     */
+    getCursorPosition : function(e) {
+        return this.cursorPosition;
+    },
 
 }, EventHooks);
 
