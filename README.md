@@ -13,7 +13,8 @@ Roadmap
  - Original server was written in Tornado (4.2). We are going to switch over to something that is more friendly for Javascript developers to get their hands into. 
 - Re-evaluate WebGL implementation. If it doesn't work on current browsers, make it work. 
 - Look into completing the canvas renderer fallback, and whether or not it's even needed.
-- Standardize the library structure a little more. Maybe with RequireJS
+- Standardize the library structure a little more. Maybe with RequireJS, and with a proper (read: modern) build process
+- Remove dependencies that are no longer required
 - **DOCUMENT EVERYTHING**. Network messages, world and entity data structures, avatar data structures, etc. 
 
 License
