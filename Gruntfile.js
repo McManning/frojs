@@ -8,7 +8,11 @@ module.exports = function(grunt) {
             options: {
                 globals: {
                     console: true,
-                    module: true
+                    module: true,
+                    // TODO: Build glMatrix as well
+                    vec3: true,
+                    rect: true,
+                    mat4: true,
                 }
             }
         },

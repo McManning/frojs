@@ -94,7 +94,7 @@ define([], function() {
 
                         len = this._events[evt].length;
                         while (len--) {
-                            if (this._events[evt][len] == fn) {
+                            if (this._events[evt][len] === fn) {
                                 this._events[evt].splice(len, 1);
                             }
                         }
@@ -112,7 +112,7 @@ define([], function() {
                     for (var e in this._events) {
                         len = this._events[e].length;
                         while (len--) {
-                            if (this._events[e][len] == fn) {
+                            if (this._events[e][len] === fn) {
                                 this._events[e].splice(len, 1);
                             }
                         }

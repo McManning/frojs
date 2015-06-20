@@ -20,7 +20,7 @@
 define([], function() {
 
     function Timers() {
-        
+
         var intervals = {},
             nextId = 0,
             avgDeltaTime = 0,
@@ -84,7 +84,7 @@ define([], function() {
             if (typeof id === 'function') { // (fn) 
 
                 for (var i in intervals) {
-                    if (intervals[i].callback == id) {
+                    if (intervals[i].callback === id) {
                         delete intervals[i];
                         return;
                     }
