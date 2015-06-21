@@ -29,7 +29,7 @@ define([], function() {
 
         try {
             
-            var canvasContext = canvas.getContext('experimental-webgl');
+            var canvasContext = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
             gl = canvasContext; //WebGLDebugUtils.makeDebugContext(canvasContext, undefined, validateNoneOfTheArgsAreUndefined);
         
             usesWebGL = true;
