@@ -17,210 +17,231 @@
  *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-"use strict";
+define([
+    'EventHooks',
+    'Utility'
+], function(EventHooks, Util) {
 
-function ImageResource() {}
-ImageResource.prototype = new Resource();
+    /**
+     * Built-in image resource type.
+     */
+    function Image(context) {
+        Util.extend(this, EventHooks);
 
-ImageResource.prototype.load = function(json) {
-    Resource.prototype.load.call(this, json);
-    
-    /*
-        Expected JSON parameters:
-        id - resource identifier
-        url - image url
-        width - texture dimensions
-        height - texture dimensions
-        shader - shader resource ID applied while rendering
-        fitToTexture - whether the width/height should change based on the loaded texture dimensions
-        
-    */
+        var id,
+            width,
+            height,
+            shader,
+            fitToTexture,
+            image,
+            texture,
+            vbuf, // vertex buffer for our loaded image
+            tbuf, // texture buffer for our loaded image
+            gl = context.renderer.getGLContext();
 
-    this.id = json.id;
-    
-    this.width = json.width;
-    this.height = json.height;
-    this.shader = json.shader;
-    this.fitToTexture = json.fitToTexture;
-    
-    // If this image resource uses an external url, load it as a texture
-    if ('url' in json) {
-        this.url = json.url;
-        
-        this.img = new Image(); 
-        this.img.crossOrigin = ''; // Enable CORS support (Sybolt#59)
-        this.img.src = json.url;
-        
-        var self = this;
-        this.img.onload = function() {
-            
-            /* @todo We assume all images loaded will be used as
-                textures, so here we would perform the conversion
-                and test for any errors that may occur
+
+        this.load = function(properties) {
+            /*
+                Expected JSON parameters:
+                    id - resource identifier
+                    url - image url
+                    width - texture dimensions
+                    height - texture dimensions
+                    shader - shader resource ID applied while rendering
+                    fitToTexture - whether the width/height should change based on the loaded texture dimensions
             */
-            self.setupTexture();
+
+            id = properties.id;
             
-            self.fire('onload', self);
-        }
-        
-        // hook an error handler
-        this.img.onerror = function() { 
-            self.fire('onerror', self);
-        }
-    }
-}
-
-/**
- * Construct this.texture from this.img Image resource
- * and resource properties
- */
-ImageResource.prototype.setupTexture = function() {
-
-    // Make sure our image is actually loaded
-    if (!this.isLoaded()) {
-        throw new Error('Cannot get texture, image not yet loaded for ' + this.id);
-    }
-
-    this.texture = fro.renderer.createTexture(this.img);
-    this.buildVertexBuffer();
-    this.buildTextureBuffer();
-}
-
-ImageResource.prototype.isLoaded = function() {
-
-    if (!('img' in this) || !this.img.complete) {
-        return false;
-    }
-    
-    if (typeof this.img.naturalWidth != 'undefined' 
-        && this.img.naturalWidth == 0) {
-        return false;
-    }
-    
-    return true;
-}
-
-ImageResource.prototype.getTexture = function() {
-
-    if (!('texture' in this)) {
-        this.setupTexture();
-    }
-    
-    return this.texture;
-}
-
-ImageResource.prototype.render = function(position, rotation, clip) {
-
-    var shader = fro.renderer.getShader(this.shader);
-    fro.renderer.useShader(shader);
-    
-    // Begin draw, setup
-    gl.mvPushMatrix();
-    
-    mat4.translate(gl.mvMatrix, position);
-    
-    if (rotation) {
-        mat4.rotateZ(gl.mvMatrix, rotation);
-    }
-
-    // Set up buffers to use
-    gl.bindBuffer(gl.ARRAY_BUFFER, this.vbuf);
-    gl.vertexAttribPointer(shader.getAttrib('aVertexPosition'), 
-                            this.vbuf.itemSize, gl.FLOAT, false, 0, 0);
-    
-    gl.bindBuffer(gl.ARRAY_BUFFER, this.tbuf);
-    gl.vertexAttribPointer(shader.getAttrib('aTextureCoord'), 
-                            this.tbuf.itemSize, gl.FLOAT, false, 0, 0);
-    var texture;
-    if (this.texture) {
-        texture = this.texture;
-    } else {
-        texture = fro.resources.defaultTexture;
-    }
-    
-    shader.bindTexture('uSampler', texture);
-    
-    // @todo does the default texture also perform clipping? 
-    // I wanted it to be scaled, but rendered fully.
-    if (clip) {
-    
-        if (!this.img) {
-            throw new Error('Texture ' + this.id + ' has no image source to clip');
-        }
-
-        var h = (this.height == 0) ? 1.0 : this.height / this.getTextureHeight();
-        var x = clip[0] / this.getTextureWidth();
-        var y = 1.0 - h - clip[1] / this.getTextureHeight();
-
-        gl.uniform2f(shader.getUniform('uClip'), x, y);
-    } else {
-        gl.uniform2f(shader.getUniform('uClip'), 0, 0);
-    }
-    
-    gl.setMatrixUniforms();
-    gl.drawArrays(gl.TRIANGLE_STRIP, 0, this.vbuf.itemCount);
-
-    // End draw, reset
-    gl.mvPopMatrix();
-}
-
-ImageResource.prototype.buildVertexBuffer = function() {
-
-    if (this.vbuf) {
-        gl.deleteBuffer(this.vbuf);
-    }
-    
-    var w = this.width * 0.5;
-    var h = this.height * 0.5;
-
-    this.vbuf = gl.createBuffer();
-    gl.bindBuffer(gl.ARRAY_BUFFER, this.vbuf);
-
-    // triangle strip form (since there's no GL_QUAD)
-    gl.bufferData(gl.ARRAY_BUFFER, 
-        new glMatrixArrayType([
-            w, -h, 0.0, // bottom right
-            w, h, 0.0, // top right
-            -w, -h, 0.0, // bottom left
-            -w, h, 0.0 // top left
-        ]), gl.STATIC_DRAW);
-        
-    this.vbuf.itemSize = 3;
-    this.vbuf.itemCount = 4;
-}
-
-ImageResource.prototype.buildTextureBuffer = function() {
-
-    if (this.tbuf) {
-        gl.deleteBuffer(this.tbuf);
-    }
-    
-    // Create texture mapping
-    this.tbuf = gl.createBuffer();
-    gl.bindBuffer(gl.ARRAY_BUFFER, this.tbuf);
-
-    var x = 0.0, y = 0.0, w = 1.0, h = 1.0;
-
-    w = this.width / this.getTextureWidth();
-    h = this.height / this.getTextureHeight();
-
-    gl.bufferData(gl.ARRAY_BUFFER, 
-            new glMatrixArrayType([
-                x+w, y,
-                x+w, y+h,
-                x, y,
-                x, y+h
+            width = properties.width;
+            height = properties.height;
+            shader = context.renderer.getShader(properties.shader); // TODO: handle default shader (if missing parameter)
+            fitToTexture = properties.fitToTexture;
+            
+            // If this image resource uses an external url, load it as a texture
+            if ('url' in properties) {
+                url = properties.url;
                 
-            ]), gl.STATIC_DRAW);
+                image = new window.Image();
+                image.crossOrigin = ''; // Enable CORS support (Sybolt#59)
+                image.src = properties.url;
+                
+                var self = this;
+                image.onload = function() {
+                    
+                    /* TODO: We assume all images loaded will be used as
+                        textures, so here we would perform the conversion
+                        and test for any errors that may occur
+                    */
+                    self.setupTexture();
+                    
+                    self.fire('onload', self);
+                };
+                
+                // hook an error handler
+                image.onerror = function() { 
+                    self.fire('onerror', self);
+                };
+            }
+        };
 
-    this.tbuf.itemSize = 2;
-    this.tbuf.itemCount = 4;
-}
+        this.getId = function() {
+            return id;
+        };
 
-ImageResource.prototype.getTextureWidth = function() {
-    return this.img.width;
-}
+        /**
+         * Construct this.texture from this.img Image resource
+         * and resource properties
+         */
+        this.setupTexture = function() {
 
-ImageResource.prototype.getTextureHeight = function() {
-    return this.img.height;
-}
+            // Make sure our image is actually loaded
+            if (!this.isLoaded()) {
+                throw new Error('Cannot get texture, image not yet loaded for [' + id + ']');
+            }
+
+            texture = context.renderer.createTexture(image);
+            this.buildVertexBuffer();
+            this.buildTextureBuffer();
+        };
+
+        this.isLoaded = function() {
+
+            if (!image || !image.complete) {
+                return false;
+            }
+            
+            if (typeof image.naturalWidth !== 'undefined' && 
+                image.naturalWidth === 0) {
+                return false;
+            }
+            
+            return true;
+        };
+
+        this.getTexture = function() {
+
+            if (!texture) {
+                this.setupTexture();
+            }
+            
+            return texture;
+        };
+
+        this.render = function(position, rotation, clip) {
+
+            // Switch shaders to the active one for this image
+            context.renderer.useShader(shader);
+            
+            // Begin draw, setup
+            gl.mvPushMatrix();
+            
+            mat4.translate(gl.mvMatrix, position);
+            
+            if (rotation) {
+                mat4.rotateZ(gl.mvMatrix, rotation);
+            }
+
+            // Set up buffers to use
+            gl.bindBuffer(gl.ARRAY_BUFFER, this.vbuf);
+            gl.vertexAttribPointer(shader.getAttrib('aVertexPosition'), 
+                                    vbuf.itemSize, gl.FLOAT, false, 0, 0);
+            
+            gl.bindBuffer(gl.ARRAY_BUFFER, this.tbuf);
+            gl.vertexAttribPointer(shader.getAttrib('aTextureCoord'), 
+                                    tbuf.itemSize, gl.FLOAT, false, 0, 0);
+
+            if (!texture) {
+                throw new Error('No texture loaded for image [' + id + ']');
+            }
+            
+            shader.bindTexture('uSampler', texture);
+            
+            // @todo does the default texture also perform clipping? 
+            // I wanted it to be scaled, but rendered fully.
+            if (clip) {
+            
+                if (!image) {
+                    throw new Error('Texture [' + id + '] has no image source to clip');
+                }
+
+                var h = (this.height === 0) ? 1.0 : this.height / this.getTextureHeight();
+                var x = clip[0] / this.getTextureWidth();
+                var y = 1.0 - h - clip[1] / this.getTextureHeight();
+
+                gl.uniform2f(shader.getUniform('uClip'), x, y);
+            } else {
+                gl.uniform2f(shader.getUniform('uClip'), 0, 0);
+            }
+            
+            gl.setMatrixUniforms();
+            gl.drawArrays(gl.TRIANGLE_STRIP, 0, vbuf.itemCount);
+
+            // End draw, reset
+            gl.mvPopMatrix();
+        };
+
+        this.buildVertexBuffer = function() {
+
+            if (vbuf) {
+                gl.deleteBuffer(vbuf);
+            }
+            
+            var w = this.width * 0.5;
+            var h = this.height * 0.5;
+
+            vbuf = gl.createBuffer();
+            gl.bindBuffer(gl.ARRAY_BUFFER, vbuf);
+
+            // triangle strip form (since there's no GL_QUAD)
+            gl.bufferData(gl.ARRAY_BUFFER, 
+                new glMatrixArrayType([
+                    w, -h, 0.0, // bottom right
+                    w, h, 0.0, // top right
+                    -w, -h, 0.0, // bottom left
+                    -w, h, 0.0 // top left
+                ]), gl.STATIC_DRAW);
+                
+            vbuf.itemSize = 3;
+            vbuf.itemCount = 4;
+        };
+
+        this.buildTextureBuffer = function() {
+
+            if (tbuf) {
+                gl.deleteBuffer(tbuf);
+            }
+            
+            // Create texture mapping
+            tbuf = gl.createBuffer();
+            gl.bindBuffer(gl.ARRAY_BUFFER, tbuf);
+
+            var x = 0.0, y = 0.0, w = 1.0, h = 1.0;
+
+            w = width / this.getTextureWidth();
+            h = height / this.getTextureHeight();
+
+            gl.bufferData(gl.ARRAY_BUFFER, 
+                    new glMatrixArrayType([
+                        x+w, y,
+                        x+w, y+h,
+                        x, y,
+                        x, y+h
+                        
+                    ]), gl.STATIC_DRAW);
+
+            tbuf.itemSize = 2;
+            tbuf.itemCount = 4;
+        };
+
+        this.getTextureWidth = function() {
+            return image.width;
+        };
+
+        this.getTextureHeight = function() {
+            return image.height;
+        };
+    }
+
+    return Image;
+});

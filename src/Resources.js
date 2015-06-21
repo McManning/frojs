@@ -19,18 +19,22 @@
 
 define([
     'EventHooks',
-    'Utility'
-], function(EventHooks, Util) {
+    'Utility',
+    'resource/Image',
+    'resource/Sound',
+    'resource/Json',
+    'resource/Shader'
+], function(EventHooks, Util, Image, Sound, Json, Shader) {
 
-    function Resources(options) {
+    function Resources(context, options) {
         Util.extend(this, EventHooks); // Allow events to be fired from resource manager
 
         // Mapping type strings to class names
         var resourceTypes = {
-            'image': 'ImageResource',
-            'sound': 'SoundResource',
-            'json': 'JsonResource',
-            'shader': 'ShaderResource'
+            'image': Image,
+            'sound': Sound,
+            'json': Json,
+            'shader': Shader
         };
 
         var loadedResources = [],
@@ -140,12 +144,7 @@ define([
                 throw new Error('Cannot load [' + id + ']. No loader for type [' + type + ']');
             }
 
-            var resourceClass = resourceTypes[type];
-
-            // TODO: Redefine how this resource is created. This doesn't work all too well.
-            // We need a better way to connect loaders. 
-            var resource = new window[resourceClass]();
-            
+            var resource = new resourceTypes[type](context);            
             loadedResources[id] = resource;
             resource.load(jsonOrId);
             
@@ -155,4 +154,3 @@ define([
 
     return Resources;
 });
-

@@ -151,7 +151,7 @@ define([
                     
                     this.applyBounds();
                     this.updateTranslation();
-                    
+
                     this.fire('move', position);
                 }
             }
@@ -197,5 +197,3 @@ define([
 
     return Camera;
 });
-
-

@@ -20,60 +20,85 @@
 define([
     'Timers',
     'Audio',
+    'Resources',
     'Renderer',
     'Camera',
     'Input',
-], function(Timers, Audio, Renderer, Camera, Input) {
+    'text!shaders/main.vs', // TODO: Maybe not include these shaders in the main package... 
+    'text!shaders/main.fs'
+], function(Timers, Audio, Resources, Renderer, Camera, Input, vertexShaderSource, fragmentShaderSource) {
 
     var HEARTBEAT_INTERVAL = 1000/30;
 
-    return {
+    function fro(options) {
 
-        version : '0.1.0',
-        plugins : {},
+        this.options = options;
 
-        initialise : function(options) {
+        this.timers = new Timers();
+
+        this.audio = Audio;
+        this.audio.initialise(options);
+
+        this.resources = new Resources(this, options);
+
+        this.renderer = new Renderer(this, options);
+        this.camera = new Camera(this.renderer);
+
+        this.input = Input;
+        this.input.initialise(options);
+
+        // Load our packaged default shader
+        var self = this;
+        this.resources
+            .load({
+                id: 'shader:default',
+                type: 'shader',
+                vertex: vertexShaderSource,
+                fragment: fragmentShaderSource,
+                uniforms: [
+                    'uTime',
+                    'uCamera',
+                    'uClip',
+                    'uSampler',
+                    'uMVMatrix',
+                    'uPMatrix'
+                ],
+                attributes: [
+                    'aVertexPosition',
+                    'aTextureCoord'
+                ]
+            });
+
+        // TODO: Shader resources are written a bit odd right now 
+        // and don't have event callbacks after loading. Instead, they
+        // just automatically attach themselves to the renderer.
+
+        /*this.log.initialise(options);
+        this.timers.initialise();
+        this.resources.initialise();
+        this.audio.initialise(options);
         
-            this.options = options;
+        // If the renderer submodule is included, 
+        // initialise it and related submodules
+        if ('renderer' in this) {
+            this.renderer.initialise(options);
 
-            this.timers = new Timers();
-
-            this.audio = Audio;
-            this.audio.initialise(options);
-
-            this.renderer = new Renderer(options);
-            this.camera = new Camera(this.renderer);
-
-            this.input = Input;
             this.input.initialise(options);
-
-            /*this.log.initialise(options);
-            this.timers.initialise();
-            this.resources.initialise();
-            this.audio.initialise(options);
+            this.camera.initialise();
             
-            // If the renderer submodule is included, 
-            // initialise it and related submodules
-            if ('renderer' in this) {
-                this.renderer.initialise(options);
+            this.camera.setCenter(0, 0);
+        */  
+        // Set up properties to record framerates
+        this.framerates = [];
+        this.numFramerates = 10;
+        this.renderTime = -1;
 
-                this.input.initialise(options);
-                this.camera.initialise();
-                
-                this.camera.setCenter(0, 0);
-            */  
-                // Set up properties to record framerates
-                this.framerates = [];
-                this.numFramerates = 10;
-                this.renderTime = -1;
-
-            /*
-                //this.background = new RenderableImage(400, 300);
-                //this.background.setTexture(this.resources.getDefaultTexture(), false);
-            }*/
-        },
+        /*
+            //this.background = new RenderableImage(400, 300);
+            //this.background.setTexture(this.resources.getDefaultTexture(), false);
+        }*/
         
-        run : function() {
+        this.run = function() {
         
             this.startTime = Date.now();
 
@@ -82,14 +107,14 @@ define([
 
             var self = this;
             this.interval = window.setInterval(function() { self.heartbeat(); }, HEARTBEAT_INTERVAL);
-        },
+        };
 
-        heartbeat : function() {
+        this.heartbeat = function() {
             this.render();
             this.snapshot();
-        },
+        };
 
-        render : function() {
+        this.render = function() {
             this.camera.setupViewport();
 
             /*
@@ -116,9 +141,9 @@ define([
                 this.world.render();
             }
             */
-        },
+        };
         
-        snapshot : function() {
+        this.snapshot = function() {
         
             if (this.renderTime < 0) {
                 this.renderTime = new Date().getTime();
@@ -138,9 +163,9 @@ define([
 
                 this.renderTime = newTime;
             }
-        },
+        };
         
-        getFramerate : function() {
+        this.getFramerate = function() {
             var tot = 0;
             for (var i = 0; i < this.framerates.length; ++i) {
                 tot += this.framerates[i];
@@ -150,8 +175,10 @@ define([
             framerate = Math.round(framerate);
             
             return framerate;
-        }
-    };
+        };
+    }
+
+    return fro;
 });
 
 

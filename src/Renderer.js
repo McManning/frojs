@@ -18,7 +18,7 @@
  */
 
 define([], function() {
-    function Renderer(options) {
+    function Renderer(context, options) {
 
         var canvas = options.canvas,
             usesWebGL = true,
@@ -29,8 +29,8 @@ define([], function() {
 
         try {
             
-            var ctx = canvas.getContext('experimental-webgl');
-            gl = ctx; //WebGLDebugUtils.makeDebugContext(ctx, undefined, validateNoneOfTheArgsAreUndefined);
+            var canvasContext = canvas.getContext('experimental-webgl');
+            gl = canvasContext; //WebGLDebugUtils.makeDebugContext(canvasContext, undefined, validateNoneOfTheArgsAreUndefined);
         
             usesWebGL = true;
         } catch (e) {
@@ -170,10 +170,10 @@ define([], function() {
         /**
          * Add a new shader to our list of available shaders
          * 
-         * @param ShaderResource shader The shader to add
+         * @param Shader shader The shader resource to add
          */
         this.attachShader = function(shader) {
-            shaders[shader.id] = shader;
+            shaders[shader.getId()] = shader;
         };
         
         this.getCurrentShader = function() {
@@ -183,7 +183,7 @@ define([], function() {
         this.getShader = function(id) {
             
             if (!(id in shaders)) {
-                throw new Error('Shader ' + id + ' is not loaded');
+                throw new Error('Shader [' + id + '] is not loaded');
             }
             
             return shaders[id];

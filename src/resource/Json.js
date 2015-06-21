@@ -17,52 +17,62 @@
  *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-"use strict";
+define([
+    'EventHooks',
+    'Utility'
+], function(EventHooks, Util) {
 
-function JsonResource() {}
-JsonResource.prototype = new Resource();
+    /**
+     * Built-in JSON resource type.
+     * On load, this will issue a GET for a JSON file and validate
+     * if it actually JSON.
+     */
+    function Json(context) {
+        Util.extend(this, EventHooks);
 
-JsonResource.prototype.load = function(json) {
+        var id,
+            url,
+            json;
 
-    this.id = json.id;
-    this.url = json.url;
-    
-    var self = this;
-    $.ajax({
-        url: json.url,
-        dataType: 'json',
-        success: function(data) {
+        this.load = function(properties) {
 
-            if (typeof data == 'string') {
-                
-                // decode as JSON
-                try {
-                    self.json = JSON.parse(data);
-                } catch (e) {
-                    fro.log.error(e);
-                    fro.log.error(data);
-                    self.fire('onerror', this);
-                    return;
-                }
-                
-            } else {
-                self.json = data;
-            }
+            id = properties.id;
+            url = properties.url;
             
-            self.fire('onload', this);
-        },
-        error: function(request, status, error) {
-            fro.log.error(error);
-            self.fire('onerror', this);
-        }
-    });
-}
+            var self = this;
+            var request = new XMLHttpRequest();
+            request.open('GET', url, true);
 
-JsonResource.prototype.isLoaded = function() {
+            request.onload = function() {
+                if (request.status >= 200 && request.status < 400) {
+                    json = JSON.parse(request.responseText);
+                    self.fire('onload', this);
+                } else {
+                    // We reached our target server, but it returned an error
+                    self.fire('onerror', this);
+                }
+            };
 
-    return ('json' in this);
-}
+            request.onerror = function() {
+                // There was a connection error of some sort
+                self.fire('onerror', this);
+            };
 
-JsonResource.prototype.getJson = function() {
-    return this.json;
-}
+            request.send();
+        };
+
+        this.isLoaded = function() {
+            return typeof json === 'object';
+        };
+
+        this.getId = function() {
+            return id;
+        };
+
+        this.getJson = function() {
+            return json;
+        };
+    }
+
+    return Json;
+});
