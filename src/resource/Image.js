@@ -128,6 +128,11 @@ define([
             return texture;
         };
 
+        /**
+         * @param vec3 position Translation position.
+         * @param float rotation Optional. Angle (in radians) to rotate.
+         * @param vec2 clip Optional. Source (x, y) to render from.
+         */
         this.render = function(position, rotation, clip) {
 
             // Switch shaders to the active one for this image
@@ -143,18 +148,18 @@ define([
             }
 
             // Set up buffers to use
-            gl.bindBuffer(gl.ARRAY_BUFFER, this.vbuf);
+            gl.bindBuffer(gl.ARRAY_BUFFER, vbuf);
             gl.vertexAttribPointer(shader.getAttrib('aVertexPosition'), 
                                     vbuf.itemSize, gl.FLOAT, false, 0, 0);
             
-            gl.bindBuffer(gl.ARRAY_BUFFER, this.tbuf);
+            gl.bindBuffer(gl.ARRAY_BUFFER, tbuf);
             gl.vertexAttribPointer(shader.getAttrib('aTextureCoord'), 
                                     tbuf.itemSize, gl.FLOAT, false, 0, 0);
 
             if (!texture) {
                 throw new Error('No texture loaded for image [' + id + ']');
             }
-            
+
             shader.bindTexture('uSampler', texture);
             
             // @todo does the default texture also perform clipping? 
@@ -165,7 +170,7 @@ define([
                     throw new Error('Texture [' + id + '] has no image source to clip');
                 }
 
-                var h = (this.height === 0) ? 1.0 : this.height / this.getTextureHeight();
+                var h = (height === 0) ? 1.0 : height / this.getTextureHeight();
                 var x = clip[0] / this.getTextureWidth();
                 var y = 1.0 - h - clip[1] / this.getTextureHeight();
 
@@ -187,8 +192,8 @@ define([
                 gl.deleteBuffer(vbuf);
             }
             
-            var w = this.width * 0.5;
-            var h = this.height * 0.5;
+            var w = width * 0.5;
+            var h = height * 0.5;
 
             vbuf = gl.createBuffer();
             gl.bindBuffer(gl.ARRAY_BUFFER, vbuf);
@@ -196,13 +201,13 @@ define([
             // triangle strip form (since there's no GL_QUAD)
             gl.bufferData(gl.ARRAY_BUFFER, 
                 new glMatrixArrayType([
-                    w, -h, 0.0, // bottom right
-                    w, h, 0.0, // top right
-                    -w, -h, 0.0, // bottom left
-                    -w, h, 0.0 // top left
+                    w, -h, // bottom right
+                    w, h, // top right
+                    -w, -h, // bottom left
+                    -w, h // top left
                 ]), gl.STATIC_DRAW);
                 
-            vbuf.itemSize = 3;
+            vbuf.itemSize = 2;
             vbuf.itemCount = 4;
         };
 
@@ -227,7 +232,6 @@ define([
                         x+w, y+h,
                         x, y,
                         x, y+h
-                        
                     ]), gl.STATIC_DRAW);
 
             tbuf.itemSize = 2;

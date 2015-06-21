@@ -117,7 +117,7 @@ define([
             if (!gl.getShaderParameter(vs, gl.COMPILE_STATUS)) {
                 throw new Error('Program ' + id + ' Vertex Shader Error: ' + 
                                 gl.getShaderInfoLog(vs) + '\n' + 
-                                getBrowserReport(true, gl)
+                                Util.getBrowserReport(true, gl)
                 );
             } else {
                 gl.attachShader(program, vs);
@@ -131,7 +131,7 @@ define([
             if (!gl.getShaderParameter(fs, gl.COMPILE_STATUS)) {
                 throw new Error('Program ' + id + ' Fragment Shader Error: ' + 
                                 gl.getShaderInfoLog(fs) + '\n' + 
-                                getBrowserReport(true, gl)
+                                Util.getBrowserReport(true, gl)
                 );
             } else {
                 gl.attachShader(program, fs);
@@ -143,7 +143,7 @@ define([
             if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
                 throw new Error('Could not initialize shaders: ' + 
                                 gl.getProgramInfoLog(program) + '\n' + 
-                                getBrowserReport(true, gl)
+                                Util.getBrowserReport(true, gl)
                 );
             }
             
@@ -159,7 +159,7 @@ define([
                 throw new Error('Attribute ' + name + ' does not exist in program [' + id + ']');
             }
             
-            return this.attributes[name];
+            return attributes[name];
         };
 
         this.getUniform = function(name) {
@@ -167,7 +167,7 @@ define([
                 throw new Error('Uniform ' + name + ' does not exist in program [' + id + ']');
             }
             
-            return this.uniforms[name];
+            return uniforms[name];
         };
 
         this.getProgram = function() {
