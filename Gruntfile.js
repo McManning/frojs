@@ -50,7 +50,12 @@ module.exports = function(grunt) {
             }
         },
         watch: {
-            files: ['Gruntfile.js', 'require-config.js', 'src/**/*.js'],
+            files: [
+                'Gruntfile.js', 
+                'src/**/*.js', 
+                'src/**/*.vs', // Packaged vertex shaders
+                'src/**/*.fs' // Packaged fragment shaders
+            ],
             tasks: ['dev']
         }
     });
