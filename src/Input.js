@@ -149,45 +149,41 @@ define([
      * Manager for application input, will translate keyboard/mouse events
      * to the GL canvas into hookable events 
      */
-    return Util.extend({
+    function Input(context, options) {
+        Util.extend(this, EventHooks);
 
-        // State management for inputs
-        pressedKeys: [],
-        cursorPosition: vec3.create(),
+        var pressedKeys = [],
+            cursorPosition = vec3.create(),
+            canvas = null,
+            canvasFocus = false;
 
-        canvas: null,
-        canvasFocus: false,
+        canvas = options.canvas;
 
-        initialise : function(options) {
-            
-            this.canvas = options.canvas;
-
-            // Allow the canvas to detect focus/blur events
-            this.canvas.setAttribute('tabindex', -1);
-            
-            // TODO: window versus document?
-            // TODO: These are all terrible, rewrite how we're adding listeners!
-            // I don't want to have to override everything!
-            var self = this;
-            options.canvas.onmousedown = function() { self.onMouseDown(); };
-            
-            options.canvas.onfocus = function() { self.onCanvasFocus(); };
-            options.canvas.onblur = function() { self.onCanvasBlur(); };
-
-            document.onmouseup = function() { self.onMouseUp(); };
-            document.onmousemove = function() { self.onMouseMove(); };
-            
-            window.onkeydown = function() { self.onKeyDown(); };
-            window.onkeyup = function() { self.onKeyUp(); };
-
-            window.onfocus = function() { self.onWindowFocus(); };
-            window.onblur = function() { self.onWindowBlur(); };
-        },
+        // Allow the canvas to detect focus/blur events
+        canvas.setAttribute('tabindex', -1);
         
-        onKeyDown : function(e) {
+        // TODO: window versus document?
+        // TODO: These are all terrible, rewrite how we're adding listeners!
+        // I don't want to have to override everything!
+        var self = this;
+        options.canvas.onmousedown = function() { self.onMouseDown(); };
+        
+        options.canvas.onfocus = function() { self.onCanvasFocus(); };
+        options.canvas.onblur = function() { self.onCanvasBlur(); };
+
+        document.onmouseup = function() { self.onMouseUp(); };
+        document.onmousemove = function() { self.onMouseMove(); };
+        
+        window.onkeydown = function() { self.onKeyDown(); };
+        window.onkeyup = function() { self.onKeyUp(); };
+
+        window.onfocus = function() { self.onWindowFocus(); };
+        window.onblur = function() { self.onWindowBlur(); };
+    
+        this.onKeyDown = function(e) {
             e = e || window.event;
 
-            this.pressedKeys[e.keyCode] = true;
+            pressedKeys[e.keyCode] = true;
             
             this.fire('keydown', e);
             
@@ -197,40 +193,40 @@ define([
                 
                 return false;
             }
-        },
+        };
 
-        onKeyUp : function(e) {
+        this.onKeyUp = function(e) {
             e = e || window.event;
 
-            this.pressedKeys[e.keyCode] = false;
+            pressedKeys[e.keyCode] = false;
             
             this.fire('keyup', e);
-        },
+        };
 
-        onMouseDown : function(e) {
+        this.onMouseDown = function(e) {
             e = e || window.event;
             this.updateCursorPosition(e);
             
             this.fire('mousedown', e);
-        },
+        };
 
-        onMouseUp : function(e) {
+        this.onMouseUp = function(e) {
             e = e || window.event;
             this.updateCursorPosition(e);
             
             this.fire('mouseup', e);
-        },
+        };
         
-        onMouseMove : function(e) {
+        this.onMouseMove = function(e) {
             e = e || window.event;
             
             // Since this is a frequent event, it won't be fired to listeners just yet
             // Instead, they should set up timers and query when needed.
             this.updateCursorPosition(e);
-        },
+        };
         
-        updateCursorPosition : function(e) {
-            var pos = this.cursorPosition;
+        this.updateCursorPosition = function(e) {
+            var pos = cursorPosition;
             
             // Recalculate cursor position and store
             if (e.pageX || e.pageY) {
@@ -241,69 +237,70 @@ define([
                 pos[1] = e.clientY + document.body.scrollTop + document.documentElement.scrollTop; 
             }
             
-            pos[0] -= this.canvas.offsetLeft;
-            pos[1] -= this.canvas.offsetTop;
-        },
+            pos[0] -= canvas.offsetLeft;
+            pos[1] -= canvas.offsetTop;
+        };
         
         /**
          * Canvas loses focus, kill inputs and certain events
          */
-        onCanvasBlur : function() {
+        this.onCanvasBlur = function() {
             
             // Cancel any keypresses, since we won't pick up a keyup event 
-            this.pressedKeys.length = 0;
-            this.canvasFocus = false;
+            pressedKeys.length = 0;
+            canvasFocus = false;
             
             this.fire('canvasblur');
-        },
+        };
 
         /**
          * Canvas regained focus, reactivate inputs and certain events
          */
-        onCanvasFocus : function() {
+        this.onCanvasFocus = function() {
         
-            this.canvasFocus = true;
+            canvasFocus = true;
             this.fire('canvasfocus');
-        },
+        };
         
         /**
          * Window loses focus, kill inputs and certain events
          */
-        onWindowBlur : function() {
+        this.onWindowBlur = function() {
         
             // Cancel any keypresses, since we won't pick up a keyup event 
-            this.pressedKeys.length = 0;
-            this.canvasFocus = false;
+            pressedKeys.length = 0;
+            canvasFocus = false;
             
             this.fire('windowblur');
-        },
+        };
 
         /**
          * Window regained focus, reactivate inputs and certain events
          */
-        onWindowFocus : function() {
+        this.onWindowFocus = function() {
             this.fire('windowfocus');
-        },
+        };
         
         /** Returns true if the specified key is identified as being pressed */
-        isKeyDown : function(keycode) {
-            return this.pressedKeys[keycode] === true;
-        },
+        this.isKeyDown = function(keycode) {
+            return pressedKeys[keycode] === true;
+        };
         
         /** Returns true if our canvas/GL context has input focus */
-        hasFocus : function() {
-            return this.canvasFocus;
-        },
+        this.hasFocus = function() {
+            return canvasFocus;
+        };
         
         /**
          * Helper function to determine where exactly in the canvas the cursor is located
          * @return vec3 result, from (0,0) to (gl.viewportWidth,gl.viewportHeight)
          * @todo may return negatives, and points outside the canvas. Need to ensure cursor is IN the canvas!
          */
-        getCursorPosition : function(e) {
-            return this.cursorPosition;
-        },
+        this.getCursorPosition = function(e) {
+            return cursorPosition;
+        };
 
-    }, EventHooks);
+    }
 
+    return Input;
 });

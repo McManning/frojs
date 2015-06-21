@@ -22,7 +22,7 @@ define([
     'Utility'
 ], function(EventHooks, Util) {
 
-    function Camera(renderer) {
+    function Camera(context, options) {
         Util.extend(this, EventHooks); // Allow events to be fired from the camera
 
         var followedEntity = false,
@@ -31,13 +31,13 @@ define([
             lastFollowedPosition = vec3.create(),
             translation = vec3.create(),
             bounds = rect.create(),
-            gl = renderer.getGLContext();
+            gl = context.renderer.getGLContext();
         
         this.setupViewport = function() {
         
             this.update();
         
-            if (renderer.isWebGL()) {
+            if (context.renderer.isWebGL()) {
         
                 gl.viewport(0, 0, gl.viewportWidth, gl.viewportHeight);
                 
@@ -60,7 +60,7 @@ define([
             
             mat4.translate(gl.mvMatrix, translation);
             
-            renderer.clear();
+            context.renderer.clear();
         };
             
         this.setBounds = function(r) {

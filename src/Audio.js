@@ -22,127 +22,127 @@ define([
     'Utility'
 ], function(EventHooks, Util) {
 
-    return Util.extend({
+    function Audio(context, options) {
+        Util.extend(this, EventHooks);
 
-        context: null,
+        var audioContext,
+            audioGainNode,
+            ambientGainNode;
 
-        initialise: function(options) {
-        
-            var context;
-        
-            try {
-                // Fix up for prefixing
-                window.AudioContext = window.AudioContext||window.webkitAudioContext;
-                
-                if (window.AudioContext) {
-                    context = new window.AudioContext();
-                }
-            } catch(exception) {
-                // TODO: Graceful failure, not a damn exception
-                throw new Exception('Failed to initialise AudioContext: ' + exception);
+        try {
+            // Fix up for prefixing
+            window.AudioContext = window.AudioContext||window.webkitAudioContext;
+            
+            if (window.AudioContext) {
+                audioContext = new window.AudioContext();
             }
-            
-            if (!context.createGain) {
-                context.createGain = context.createGainNode;
-            }
-            
-            this.audioGainNode = context.createGain();
-            this.audioGainNode.connect(context.destination);
-            
-            this.ambientGainNode = context.createGain();
-            this.ambientGainNode.connect(this.audioGainNode);
-            
-            this.context = context;
+        } catch (exception) {
+            // TODO: Graceful failure, not a damn exception
+            throw new Error('Failed to initialise AudioContext: ' + exception);
+        }
+        
+        // More vendor corrections.
+        if (!audioContext.createGain) {
+            audioContext.createGain = audioContext.createGainNode;
+        }
 
-            console.log('Initialised Audio module');
-        },
+        // TODO: Necessary?
+        if (!audioContext.createGain) {
+            throw new Error('Failed to identify createGain() for audio context');
+        }
+        
+        audioGainNode = audioContext.createGain();
+        audioGainNode.connect(audioContext.destination);
+        
+        ambientGainNode = audioContext.createGain();
+        ambientGainNode.connect(audioGainNode);
         
         /** 
          * Returns true if the audio API is available to use
          */
-        isAvailable: function() {
-            return (this.context !== null);
-        },
+        this.isAvailable = function() {
+            return audioContext !== null;
+        };
+
+        this.getAudioContext = function() {
+            return audioContext;
+        };
         
-        getAudioContext: function() {
-            return this.context;
-        },
-        
-        setMasterVolume: function(volume) {
+        this.setMasterVolume = function(volume) {
             
             if (volume > 1.0) {
                 volume = 1.0;
             }
             
-            if (this.context && this.audioGainNode) {
+            if (audioContext && audioGainNode) {
                 // Using an x-squared curve since simple linear (x) 
                 // does not sound as good (via html5rocks.com)
-                this.audioGainNode.gain.value = volume * volume;
+                audioGainNode.gain.value = volume * volume;
                 
                 this.fire('setmaster', volume);
             }
-        },
+        };
         
-        getMasterVolume: function() {
+        this.getMasterVolume = function() {
         
-            if (this.context && this.audioGainNode) {
-                // @todo math is wrong, not the same as setVolume
-                return this.audioGainNode.gain.value;
+            if (audioContext && audioGainNode) {
+                // TODO: math is wrong, not the same as setMasterVolume
+                return audioGainNode.gain.value;
             } else {
                 return 0;
             }
-        },
+        };
         
-        setAmbientVolume: function(volume) {
+        this.setAmbientVolume = function(volume) {
             
             if (volume > 1.0) {
                 volume = 1.0;
             }
             
-            if (this.context && this.ambientGainNode) {
+            if (audioContext && audioGainNode) {
                 // Using an x-squared curve since simple linear (x) 
                 // does not sound as good (via html5rocks.com)
-                this.ambientGainNode.gain.value = volume * volume;
+                ambientGainNode.gain.value = volume * volume;
                 
                 this.fire('setambient', volume);
             }
-        },
+        };
         
-        getAmbientVolume: function(volume) {
+        this.getAmbientVolume = function(volume) {
             
-            if (this.context && this.ambientGainNode) {
-                // @todo math
-                return this.ambientGainNode.gain.value;
+            if (audioContext && audioGainNode) {
+                // TODO: math is wrong, not the same as setAmbientVolume
+                return ambientGainNode.gain.value;
             } else {
                 return 0;
             }
-        },
+        };
         
-        addConnection: function(source, ambient) {
+        this.addConnection = function(source, ambient) {
             
-            if (this.context) {
+            if (audioContext) {
                 if (ambient) {
-                    source.connect(this.ambientGainNode);
+                    source.connect(ambientGainNode);
                 } else { // connect directly to master
-                    source.connect(this.audioGainNode);
+                    source.connect(audioGainNode);
                 }
             }
-        },
+        };
         
-        play: function(source) {
+        this.play = function(source) {
             
-            if (this.context) {
+            if (audioContext) {
                 source.start(0);
             }
-        },
+        };
         
-        stop: function(source) {
+        this.stop = function(source) {
         
-            if (this.context) {
+            if (audioContext) {
                 source.stop(0);
             }
-        }
+        };
+    }
 
-    }, EventHooks);
-
+    return Audio;
 });    
