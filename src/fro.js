@@ -25,27 +25,28 @@ define([
     'Camera',
     'Input',
     'text!shaders/main.vs', // TODO: Maybe not include these shaders in the main package... 
-    'text!shaders/main.fs'
-], function(Timers, Audio, Resources, Renderer, Camera, Input, vertexShaderSource, fragmentShaderSource) {
+    'text!shaders/main.fs',
+    'entity/Sound'
+], function(Timers, Audio, Resources, Renderer, Camera, Input, vertexShaderSource, fragmentShaderSource, Sound) {
 
-    var HEARTBEAT_INTERVAL = 1000/30;
+    var FRAMERATE = 1000/30;
 
     function fro(options) {
+
+        var background;
 
         this.options = options;
 
         this.timers = new Timers();
 
-        this.audio = Audio;
-        this.audio.initialise(options);
+        this.audio = new Audio(this, options);
 
         this.resources = new Resources(this, options);
 
         this.renderer = new Renderer(this, options);
-        this.camera = new Camera(this.renderer);
+        this.camera = new Camera(this, options);
 
-        this.input = Input;
-        this.input.initialise(options);
+        this.input = new Input(this, options);
 
         // Load our packaged default shader
         var self = this;
@@ -106,7 +107,7 @@ define([
             this.timers.run();
 
             var self = this;
-            this.interval = window.setInterval(function() { self.heartbeat(); }, HEARTBEAT_INTERVAL);
+            this.interval = window.setInterval(function() { self.heartbeat(); }, FRAMERATE);
         };
 
         this.heartbeat = function() {
@@ -117,6 +118,9 @@ define([
         this.render = function() {
             this.camera.setupViewport();
 
+            if (background) {
+                background.render([0.0, 0.0, 0.0]);
+            }
             /*
             // Set some GL globals    @todo alternate method for shader animations
             var time = Date.now();
@@ -175,6 +179,10 @@ define([
             framerate = Math.round(framerate);
             
             return framerate;
+        };
+
+        this.setBackground = function(image) {
+            background = image;
         };
     }
 
