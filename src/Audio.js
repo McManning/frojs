@@ -22,9 +22,8 @@ define([
     'Utility'
 ], function(EventHooks, Util) {
 
-    // jshint unused:false
-    // TODO: Use or drop context param
     function Audio(context) {
+        // jshint unused:false
         Util.extend(this, EventHooks);
 
         var audioContext,

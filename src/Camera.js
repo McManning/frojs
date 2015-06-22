@@ -22,10 +22,10 @@ define([
     'Utility'
 ], function(EventHooks, Util) {
 
-    // jshint unused:false
-    // temp hint for properties until I move code over here.
     function Camera(context, properties) {
         Util.extend(this, EventHooks); // Allow events to be fired from the camera
+        // jshint unused:false
+        // temp hint for properties until I move init code over here.
 
         var followedEntity = false,
             position = vec3.create(), // Our position would be the same as the canvas

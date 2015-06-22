@@ -27,10 +27,12 @@ define([
      * On load, this will issue a GET for a JSON file and validate
      * if it actually JSON.
      */
-    // jshint unused:false
-    // TODO: Use or drop context param
+
     function Json(context) {
         Util.extend(this, EventHooks);
+
+        // jshint unused:false
+        // TODO: Use or drop context param
 
         var id,
             url,
