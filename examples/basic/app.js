@@ -1,18 +1,18 @@
 
 requirejs.config({
     paths: {
-        'fro': '../../dist/fro',
-        'jquery': '../../external/jquery-1.7.2.min'
+        'fro': '../../dist/fro'
     }
 });
 
 require([
-    'jquery',
     'fro'
-], function($, fro) {
+], function(fro) {
 
     // In your application main, initialise fro
-    fro.initialise({
-        canvas: $('#fro-canvas')[0]
+    var instance = new fro({
+        canvas: document.querySelectorAll('#fro-canvas')[0]
     });
+
+    instance.run();
 });
