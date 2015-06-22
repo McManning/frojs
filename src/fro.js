@@ -24,10 +24,11 @@ define([
     'Renderer',
     'Camera',
     'Input',
+    'World',
     'text!shaders/main.vs', // TODO: Maybe not include these shaders in the main package... 
-    'text!shaders/main.fs',
-    'entity/Sound'
-], function(Timers, Audio, Resources, Renderer, Camera, Input, vertexShaderSource, fragmentShaderSource, Sound) {
+    'text!shaders/main.fs'
+], function(Timers, Audio, Resources, Renderer, Camera, Input, 
+            World, vertexShaderSource, fragmentShaderSource) {
 
     var FRAMERATE = 1000/30;
 
@@ -37,19 +38,28 @@ define([
 
         this.options = options;
 
+        // Set up properties to record framerates
+        this.framerates = [];
+        this.numFramerates = 10;
+        this.renderTime = -1;
+
+        // Initialise submodules
         this.timers = new Timers();
 
-        this.audio = new Audio(this, options);
-
-        this.resources = new Resources(this, options);
-
+        this.audio = new Audio(this);
+        this.resources = new Resources(this);
         this.renderer = new Renderer(this, options);
         this.camera = new Camera(this, options);
 
         this.input = new Input(this, options);
 
+        this.world = new World(this, options);
+
+        //jshint debug:true
+        debugger;
+
         // Load our packaged default shader
-        var self = this;
+        //var self = this;
         this.resources
             .load({
                 id: 'shader:default',
@@ -74,31 +84,6 @@ define([
         // and don't have event callbacks after loading. Instead, they
         // just automatically attach themselves to the renderer.
 
-        /*this.log.initialise(options);
-        this.timers.initialise();
-        this.resources.initialise();
-        this.audio.initialise(options);
-        
-        // If the renderer submodule is included, 
-        // initialise it and related submodules
-        if ('renderer' in this) {
-            this.renderer.initialise(options);
-
-            this.input.initialise(options);
-            this.camera.initialise();
-            
-            this.camera.setCenter(0, 0);
-        */  
-        // Set up properties to record framerates
-        this.framerates = [];
-        this.numFramerates = 10;
-        this.renderTime = -1;
-
-        /*
-            //this.background = new RenderableImage(400, 300);
-            //this.background.setTexture(this.resources.getDefaultTexture(), false);
-        }*/
-        
         this.run = function() {
         
             this.startTime = Date.now();
@@ -188,5 +173,3 @@ define([
 
     return fro;
 });
-
-

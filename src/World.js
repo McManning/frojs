@@ -18,7 +18,8 @@
  */
 
 define([
-    'entity/Entity',
+    'EventHooks',
+    'Utility',
     'entity/Prop',
     'entity/Actor',
     'entity/Sound'
