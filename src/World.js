@@ -36,6 +36,7 @@ define([
         };
         
         this.renderableEntities = [];
+        this.context = context;
         this.otherEntities = [];
         this.id = properties.id || '';
         this.templates = properties.templates || {};
@@ -43,10 +44,10 @@ define([
         this.loadEntities(properties.entities || []);
 
         // Make sure we have a player entity
-        // @todo maybe this check BEFORE network initialisation? (To avoid false starts)
-        if (!this.getPlayerActor()) {
-            throw new Error('Player Actor was not loaded with World');
-        }
+        // TODO: maybe this check BEFORE network initialisation? (To avoid false starts)
+        //if (!this.getPlayerActor()) {
+        //   throw new Error('Player Actor was not loaded with World');
+        //}
     }
 
     /** 
@@ -100,15 +101,17 @@ define([
     World.prototype.loadEntity = function(properties) {
 
         var id = properties.id,
-            type = properties.type;
+            instance = null,
+            type;
         
         // If this entity has an associated template 
         // (or a default template has been defined), merge
         // properties from the template into this entity instance
         var template = this.getTemplate(properties.template || 'default');
-        Util.extend(properties, this.templates[template]);
+        Util.extend(properties, template);
 
-        var instance = null;
+        // Defined after template injection so we can define types by template.
+        type = properties.type;
 
         // If we don't have a loader for this entity, but it's marked
         // as required, throw an error that we couldn't load it. 
@@ -119,7 +122,7 @@ define([
         }
 
         // Call a loader based on entity type
-        instance = new this.loaders[type](properties);
+        instance = new this.loaders[type](this.context, properties);
 
         // Let listeners know a new entity instance has been created,
         // but before it's actually added to the world. 

@@ -45,18 +45,12 @@ define([
 
         // Initialise submodules
         this.timers = new Timers();
-
-        this.audio = new Audio(this);
         this.resources = new Resources(this);
-        this.renderer = new Renderer(this, options);
-        this.camera = new Camera(this, options);
 
-        this.input = new Input(this, options);
-
-        this.world = new World(this, options);
-
-        //jshint debug:true
-        debugger;
+        this.audio = new Audio(this, options.audio || {});
+        this.renderer = new Renderer(this, options.renderer || {});
+        this.camera = new Camera(this, options.camera || {});
+        this.input = new Input(this, options.input || {});
 
         // Load our packaged default shader
         //var self = this;
@@ -83,6 +77,13 @@ define([
         // TODO: Shader resources are written a bit odd right now 
         // and don't have event callbacks after loading. Instead, they
         // just automatically attach themselves to the renderer.
+
+        // If we specified a world at load time, create it as well.
+        // Note this has to be done after shader loading because entities
+        // loaded will need to know the default shader, if applicable.
+        if ('world' in options) {
+            this.world = new World(this, options.world);
+        }
 
         this.run = function() {
         
@@ -126,10 +127,10 @@ define([
             //if (this.background)
             //    this.background.render(0, 0);
                 
+            */
             if (this.world) {
                 this.world.render();
             }
-            */
         };
         
         this.snapshot = function() {

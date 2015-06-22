@@ -24,7 +24,6 @@ define([
 
     // Shim for KeyEvent. Currently supported in Firefox, but not Chrome. 
     // http://www.w3.org/TR/2001/WD-DOM-Level-3-Events-20010410/DOM3-Events.html#events-Events-KeyEvent
-    // TODO: Define this elsewhere a little better? I don't know if it'll expose properly here.
     if (typeof window.KeyEvent === "undefined") {
         window.KeyEvent = {
             DOM_VK_CANCEL: 3,
@@ -150,14 +149,14 @@ define([
      * to the GL canvas into hookable events 
      */
     function Input(context, options) {
+        // jshint unused:false
+        // temp hint for options
         Util.extend(this, EventHooks);
 
         var pressedKeys = [],
             cursorPosition = vec3.create(),
-            canvas = null,
+            canvas = context.renderer.getCanvas(),
             canvasFocus = false;
-
-        canvas = options.canvas;
 
         // Allow the canvas to detect focus/blur events
         canvas.setAttribute('tabindex', -1);
@@ -166,10 +165,10 @@ define([
         // TODO: These are all terrible, rewrite how we're adding listeners!
         // I don't want to have to override everything!
         var self = this;
-        options.canvas.onmousedown = function() { self.onMouseDown(); };
+        canvas.onmousedown = function() { self.onMouseDown(); };
         
-        options.canvas.onfocus = function() { self.onCanvasFocus(); };
-        options.canvas.onblur = function() { self.onCanvasBlur(); };
+        canvas.onfocus = function() { self.onCanvasFocus(); };
+        canvas.onblur = function() { self.onCanvasBlur(); };
 
         document.onmouseup = function() { self.onMouseUp(); };
         document.onmousemove = function() { self.onMouseMove(); };
