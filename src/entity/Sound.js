@@ -90,9 +90,9 @@ define([
     };
 
     Sound.prototype.setBuffer = function(buffer) {
-        sourceBuffer = buffer;
+        this.sourceBuffer = buffer;
 
-        if (autoplay) {
+        if (this.autoplay) {
             this.play();
         }
     };

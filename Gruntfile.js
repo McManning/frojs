@@ -7,13 +7,23 @@ module.exports = function(grunt) {
             files: ['Gruntfile.js', 'src/**/*.js'],
             options: {
                 globals: {
-                    console: true,
-                    module: true,
+                    console: false,
+                    window: false,
+                    document: false,
+                    define: false,
+                    requirejs: false,
+                    module: false,
                     // TODO: Build glMatrix as well
-                    vec3: true,
-                    rect: true,
-                    mat4: true,
-                }
+                    glMatrixArrayType: false,
+                    vec3: false,
+                    rect: false,
+                    mat4: false
+                },
+                curly: true,
+                eqeqeq: true,
+                forin: true,
+                undef: true,
+                unused: true
             }
         },
         requirejs: {

@@ -64,14 +64,14 @@ define([
             // Bind and wait for the image to be loaded
             var self = this;
             this.image.bind('onerror', function() {
-            
                 // TODO: do something, revert, load default, etc.
+                throw new Error('Failed to load prop image for [' + self.id + ']');
             });
         }
     }
 
     Prop.prototype = Object.create(Entity.prototype);
-    prop.prototype.constructor = Prop;
+    Prop.prototype.constructor = Prop;
 
     Prop.prototype.destroy = function() {
         this.context.timers.removeInterval(this.animateInterval);

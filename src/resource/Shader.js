@@ -57,11 +57,11 @@ define([
             uniforms.uPMatrix = false;
             uniforms.uMVMatrix = false;
             
-            for (var u in properties.uniforms) {
+            for (var u = 0; u < properties.uniforms.length; u++) {
                 uniforms[properties.uniforms[u]] = false;
             }
             
-            for (var a in properties.attributes) {
+            for (var a = 0; a < properties.attributes.length; a++) {
                 attributes[properties.attributes[a]] = false;
             }
 
@@ -88,12 +88,16 @@ define([
             // TODO: error testing for non-existing uniforms/attributes?
             
             for (var u in uniforms) {
-                uniforms[u] = gl.getUniformLocation(program, u);
+                if (uniforms.hasOwnProperty(u)) {
+                    uniforms[u] = gl.getUniformLocation(program, u);
+                }
             }
             
             for (var a in attributes) {
-                attributes[a] = gl.getAttribLocation(program, a);
-                gl.enableVertexAttribArray(attributes[a]);
+                if (attributes.hasOwnProperty(a)) {
+                    attributes[a] = gl.getAttribLocation(program, a);
+                    gl.enableVertexAttribArray(attributes[a]);
+                }
             }
         };
 

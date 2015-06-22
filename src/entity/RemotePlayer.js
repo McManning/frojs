@@ -37,11 +37,11 @@ define([
         this.actionController = new BufferedActionController(this, false);
     }
 
-    RemotePlayer.prototype = Object.create(Entity.prototype);
+    RemotePlayer.prototype = Object.create(Actor.prototype);
     RemotePlayer.prototype.constructor = RemotePlayer;
 
     RemotePlayer.prototype.destroy = function() {
-        fro.timers.removeInterval(this.thinkInterval);
+        this.context.timers.removeInterval(this.thinkInterval);
         Actor.prototype.destroy.call(this);
     };
 

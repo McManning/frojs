@@ -188,8 +188,8 @@ define([
             this.fire('keydown', e);
             
             // Override pageup/pagedown events
-            if (e.keyCode === KeyEvent.DOM_VK_PAGE_UP ||
-                e.keyCode === KeyEvent.DOM_VK_PAGE_DOWN) {
+            if (e.keyCode === window.KeyEvent.DOM_VK_PAGE_UP ||
+                e.keyCode === window.KeyEvent.DOM_VK_PAGE_DOWN) {
                 
                 return false;
             }
@@ -296,7 +296,7 @@ define([
          * @return vec3 result, from (0,0) to (gl.viewportWidth,gl.viewportHeight)
          * @todo may return negatives, and points outside the canvas. Need to ensure cursor is IN the canvas!
          */
-        this.getCursorPosition = function(e) {
+        this.getCursorPosition = function() {
             return cursorPosition;
         };
 

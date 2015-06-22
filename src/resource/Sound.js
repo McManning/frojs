@@ -40,7 +40,7 @@ define([
             id = properties.id;
             url = properties.url;
             
-            var request = new XMLHttpRequest();
+            var request = new window.XMLHttpRequest();
             request.open('GET', url, true);
             request.responseType = 'arraybuffer';
             

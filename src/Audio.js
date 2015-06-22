@@ -22,7 +22,9 @@ define([
     'Utility'
 ], function(EventHooks, Util) {
 
-    function Audio(context, options) {
+    // jshint unused:false
+    // TODO: Use or drop context param
+    function Audio(context) {
         Util.extend(this, EventHooks);
 
         var audioContext,
@@ -108,7 +110,7 @@ define([
             }
         };
         
-        this.getAmbientVolume = function(volume) {
+        this.getAmbientVolume = function() {
             
             if (audioContext && audioGainNode) {
                 // TODO: math is wrong, not the same as setAmbientVolume

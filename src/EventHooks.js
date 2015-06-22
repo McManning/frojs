@@ -36,7 +36,7 @@ define([], function() {
             // Split multiple event bindings into multiple triggers
             var events = evt.split(',');
             
-            for (var i in events) {
+            for (var i = 0; i < events.length; i++) {
                 
                 // Clean up each bind
                 evt = events[i].trim();
@@ -108,16 +108,19 @@ define([], function() {
             } else {
                 
                 if (typeof fn !== 'undefined') {
+
                     // Remove a specific function from all events
                     for (var e in this._events) {
-                        len = this._events[e].length;
-                        while (len--) {
-                            if (this._events[e][len] === fn) {
-                                this._events[e].splice(len, 1);
+                        if (this._events.hasOwnProperty(e)) {
+                            len = this._events[e].length;
+                            // TODO: wrong. Nice splice during an forin. :/
+                            while (len--) {
+                                if (this._events[e][len] === fn) {
+                                    this._events[e].splice(len, 1);
+                                }
                             }
                         }
                     }
-                    
                 } else {
                     // Remove all binds
                     this._events = {};
@@ -148,13 +151,15 @@ define([], function() {
             }
 
             for (var e in this._events[evt]) {
-                var fn = this._events[evt][e];
-                
-                if (!namespaces_re || namespaces_re.test( fn.namespaces )) {
-                    try {
-                        fn.callback.apply( fn.obj, [data] );
-                    } catch (exception) {
-                        throw new Error('Exception during event ' + evt + ': ' + exception.stack);
+                if (this._events.hasOwnProperty(e)) {
+                    var fn = this._events[evt][e];
+                    
+                    if (!namespaces_re || namespaces_re.test( fn.namespaces )) {
+                        try {
+                            fn.callback.apply( fn.obj, [data] );
+                        } catch (exception) {
+                            throw new Error('Exception during event ' + evt + ': ' + exception.stack);
+                        }
                     }
                 }
             }

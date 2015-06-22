@@ -27,6 +27,8 @@ define([
      * On load, this will issue a GET for a JSON file and validate
      * if it actually JSON.
      */
+    // jshint unused:false
+    // TODO: Use or drop context param
     function Json(context) {
         Util.extend(this, EventHooks);
 
@@ -40,7 +42,7 @@ define([
             url = properties.url;
             
             var self = this;
-            var request = new XMLHttpRequest();
+            var request = new window.XMLHttpRequest();
             request.open('GET', url, true);
 
             request.onload = function() {

@@ -22,7 +22,9 @@ define([
     'Utility'
 ], function(EventHooks, Util) {
 
-    function Camera(context, options) {
+    // jshint unused:false
+    // temp hint for properties until I move code over here.
+    function Camera(context, properties) {
         Util.extend(this, EventHooks); // Allow events to be fired from the camera
 
         var followedEntity = false,
@@ -169,7 +171,7 @@ define([
          */
         this.applyBounds = function() {
             
-            if (bounds[0] != bounds[2] && bounds[1] != bounds[3]) {
+            if (bounds[0] !== bounds[2] && bounds[1] !== bounds[3]) {
             
                 var w = gl.viewportWidth * zoom;
                 var h = gl.viewportHeight * zoom;
@@ -177,17 +179,21 @@ define([
                 var x = position[0] - w * 0.5;
                 var y = position[1] - h * 0.5;
 
-                if (x < bounds[0])
+                if (x < bounds[0]) {
                     x = bounds[0];
+                }
                 
-                if (x + w >= bounds[2])
+                if (x + w >= bounds[2]) {
                     x = bounds[2] - w;
+                }
                 
-                if (y < bounds[1])
+                if (y < bounds[1]) {
                     y = bounds[1];
+                }
                     
-                if (y + h >= bounds[3])
+                if (y + h >= bounds[3]) {
                     y = bounds[3] - h;
+                }
                     
                 position[0] = x + w * 0.5;
                 position[1] = y + h * 0.5;

@@ -26,7 +26,7 @@ define([
     'resource/Shader'
 ], function(EventHooks, Util, Image, Sound, Json, Shader) {
 
-    function Resources(context, options) {
+    function Resources(context) {
         Util.extend(this, EventHooks); // Allow events to be fired from resource manager
 
         // Mapping type strings to class names
@@ -42,7 +42,7 @@ define([
             // Canvas used for generating temporary texture sources
             // TODO: Do we still want this? We lose any type of asyncronous support
             // if resources have to wait on a canvas element to work.
-            scratchCanvas = document.createElement('canvas'),
+            //scratchCanvas = document.createElement('canvas'),
             totalPreload = 0,
             completedPreload = 0;
 
@@ -53,7 +53,7 @@ define([
             if ('required' in json) {
                 totalPreload += json.required.length;
 
-                for (var i in json.required) {
+                for (var i = 0; i < json.required.length; i++) {
                     this._preloadResource(json.required[i]);
                 }
             }
@@ -93,7 +93,10 @@ define([
                         }
                     })
                     .bind('onerror', function() {
-                        self.failedResources[i] = json[i];
+                        // TODO: this.load() also adds it to loadedResources even though
+                        // it technically wasn't loaded. Re-evaluate this logic for failure
+                        // handling. 
+                        self.failedResources[this.getId()] = this;
                         self.fire('preload.error', this);
                     });
             }

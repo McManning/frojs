@@ -29,6 +29,7 @@ define([
         Util.extend(this, EventHooks);
 
         var id,
+            url,
             width,
             height,
             shader,

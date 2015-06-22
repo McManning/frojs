@@ -89,7 +89,10 @@ define([
      * @param rect r
      */
     Entity.prototype.getBoundingBox = function(r) {
-        return rect.create(0,0,0,0);
+        r[0] = 0;
+        r[1] = 0;
+        r[2] = 0;
+        r[3] = 0;
     };
 
     Entity.prototype.getRenderable = function() {
@@ -111,7 +114,7 @@ define([
      * @return bool 
      */
     Entity.prototype.collides = function(r) {
-        return false;
+        return false && r; // Tiny hack for jshint.
     };
 
     return Entity;
