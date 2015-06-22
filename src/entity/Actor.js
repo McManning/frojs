@@ -18,33 +18,9 @@
  */
 
 define([
+    'Enum',
     'entity/Entity'
-], function(Entity) {
-
-    var Direction = {
-        NONE : 0,
-        NORTH : 1,
-        SOUTH : 2,
-        EAST : 4,
-        WEST: 8,
-        
-        NORTHEAST : 5,
-        NORTHWEST : 9,
-        SOUTHEAST : 6,
-        SOUTHWEST : 10
-    };
-
-    var Speed = {
-        WALK : 4,
-        RUN : 8
-    };
-
-    var Action = {
-        IDLE : 0,
-        MOVE : 1,
-        SIT : 2,
-        JUMP : 3
-    };
+], function(Enum, Entity) {
 
     var MOVEMENT_DISTANCE = 16;
 
@@ -55,7 +31,7 @@ define([
 
         this.step = 0;
         this.action = properties.action;
-        this.speed = Speed.WALK;
+        this.speed = Enum.Speed.WALK;
         this.direction = properties.direction;
 
         // TODO: Are these two required/used?
@@ -124,15 +100,15 @@ define([
         var x = this.position[0];
         var y = this.position[1];
         
-        if (dir & Direction.NORTH) {
+        if (dir & Enum.Direction.NORTH) {
             y += MOVEMENT_DISTANCE;
-        } else if (dir & Direction.SOUTH) {
+        } else if (dir & Enum.Direction.SOUTH) {
             y -= MOVEMENT_DISTANCE;
         }
             
-        if (dir & Direction.EAST) {
+        if (dir & Enum.Direction.EAST) {
             x += MOVEMENT_DISTANCE;
-        } else if (dir & Direction.WEST) {
+        } else if (dir & Enum.Direction.WEST) {
             x -= MOVEMENT_DISTANCE;
         }
         
@@ -282,13 +258,13 @@ define([
     Actor.prototype.recalculateAvatarRow = function() {
         var row;
         
-        if (this.direction & Direction.NORTH) { // N/NE/NW
+        if (this.direction & Enum.Direction.NORTH) { // N/NE/NW
             row = 8;
-        } else if (this.direction & Direction.SOUTH) { // S/SE/SW
+        } else if (this.direction & Enum.Direction.SOUTH) { // S/SE/SW
             row = 2;
-        } else if (this.direction === Direction.WEST) {
+        } else if (this.direction === Enum.Direction.WEST) {
             row = 4;
-        } else if (this.direction === Direction.EAST) {
+        } else if (this.direction === Enum.Direction.EAST) {
             row = 6;
         } else { // default to south again, just in case
             row = 2;
@@ -296,11 +272,11 @@ define([
 
         var frame = 'stop_';
 
-        if (this.action === Action.MOVE || !this.avatar.hasKeyframe(frame + row)) {
+        if (this.action === Enum.Action.MOVE || !this.avatar.hasKeyframe(frame + row)) {
             frame = 'move_';
         }
         
-        if (this.action === Action.SIT) {
+        if (this.action === Enum.Action.SIT) {
             frame = 'act_';
             if (!this.avatar.hasKeyframe(frame + row)) {
                 frame = 'move_';
@@ -321,15 +297,15 @@ define([
         vec3.set(this.getPosition(), this.destination);
         
         // Offset our destination based on desired direction from our current position
-        if (dir & Direction.NORTH) {
+        if (dir & Enum.Direction.NORTH) {
             this.destination[1] += MOVEMENT_DISTANCE;
-        } else if (dir & Direction.SOUTH) {
+        } else if (dir & Enum.Direction.SOUTH) {
             this.destination[1] -= MOVEMENT_DISTANCE;
         }
             
-        if (dir & Direction.EAST) {
+        if (dir & Enum.Direction.EAST) {
             this.destination[0] += MOVEMENT_DISTANCE;
-        } else if (dir & Direction.WEST) {
+        } else if (dir & Enum.Direction.WEST) {
             this.destination[0] -= MOVEMENT_DISTANCE;
         }
     };
@@ -337,7 +313,7 @@ define([
     /**
      * Sets our actors "close enough" direction, and updates the avatar
      * 
-     * @param dir a Direction constant (ex: Direction.NORTH)
+     * @param dir a Direction constant (ex: Enum.Direction.NORTH)
      */
     Actor.prototype.setDirection = function(dir) {
         this.direction = dir;
@@ -346,18 +322,18 @@ define([
 
     // @todo move to utils!
     Actor.prototype.directionFromVector = function(vec) {
-        var dir = Direction.NONE;
+        var dir = Enum.Direction.NONE;
         
         if (vec[1] > 0) {
-            dir |= Direction.NORTH;
+            dir |= Enum.Direction.NORTH;
         } else if (vec[1] < 0) {
-            dir |= Direction.SOUTH;
+            dir |= Enum.Direction.SOUTH;
         }
         
         if (vec[0] > 0) {
-            dir |= Direction.EAST;
+            dir |= Enum.Direction.EAST;
         } else if (vec[0] < 0) {
-            dir |= Direction.WEST;
+            dir |= Enum.Direction.WEST;
         }
             
         return dir;

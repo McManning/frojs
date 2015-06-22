@@ -18,8 +18,9 @@
  */
 
 define([
+    'Enum',
     'entity/Actor'
-], function(Actor) {
+], function(Enum, Actor) {
 
     var THINK_INTERVAL = 50; // @todo Movement speed is too dependent on this value
 
@@ -34,7 +35,7 @@ define([
             this, this.think, THINK_INTERVAL
         );
 
-        this.actionController = new BufferedActionController(this, false);
+        //this.actionController = new BufferedActionController(this, false);
     }
 
     RemotePlayer.prototype = Object.create(Actor.prototype);
@@ -57,8 +58,8 @@ define([
         } else {
         
             // Go into an idle stance if not already
-            if (this.action === Action.MOVE) {
-                this.setAction(Action.IDLE);
+            if (this.action === Enum.Action.MOVE) {
+                this.setAction(Enum.Action.IDLE);
             }
         
             if (this.avatar) {
