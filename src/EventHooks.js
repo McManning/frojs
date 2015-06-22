@@ -150,21 +150,19 @@ define([], function() {
                 return;
             }
 
-            for (var e in this._events[evt]) {
-                if (this._events.hasOwnProperty(e)) {
-                    var fn = this._events[evt][e];
-                    
-                    if (!namespaces_re || namespaces_re.test( fn.namespaces )) {
-                        try {
-                            fn.callback.apply( fn.obj, [data] );
-                        } catch (exception) {
-                            throw new Error('Exception during event ' + evt + ': ' + exception.stack);
-                        }
+            for (var e = 0; e < this._events[evt].length; e++) {
+                var fn = this._events[evt][e];
+                
+                if (!namespaces_re || namespaces_re.test( fn.namespaces )) {
+                    try {
+                        fn.callback.apply( fn.obj, [data] );
+                    } catch (exception) {
+                        throw new Error('Exception during event [' + evt + ']: ' + exception.stack);
                     }
                 }
             }
         }
-        
+
     };
 
 });
