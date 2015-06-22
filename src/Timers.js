@@ -84,7 +84,9 @@ define([], function() {
             if (typeof id === 'function') { // (fn) 
 
                 for (var i in intervals) {
-                    if (intervals[i].callback === id) {
+                    if (intervals.hasOwnProperty(i) &&
+                        intervals[i].callback === id) {
+
                         delete intervals[i];
                         return;
                     }
@@ -102,20 +104,21 @@ define([], function() {
             var now = Date.now();
      
             for (var id in intervals) {
-     
-                var current = intervals[id];
                 
-                var counter = 0;
-                while (current.lastRun + current.delay < now) {
+                if (intervals.hasOwnProperty(id)) {
+                    var current = intervals[id];
 
-                    var elapsed = (now - current.lastRun);
-                    current.lastRun += current.delay;
-     
-                    current.callback.apply(current.caller, [id, current.delay, elapsed]);
-                    
-                    if (current.runOnce) {
-                        delete intervals[id];
-                        break;
+                    while (current.lastRun + current.delay < now) {
+
+                        var elapsed = (now - current.lastRun);
+                        current.lastRun += current.delay;
+         
+                        current.callback.apply(current.caller, [id, current.delay, elapsed]);
+                        
+                        if (current.runOnce) {
+                            delete intervals[id];
+                            break;
+                        }
                     }
                 }
             }

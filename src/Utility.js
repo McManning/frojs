@@ -70,7 +70,6 @@ define([], function() {
             // futureText var keeps track of text not yet written to a text line
             while (ctx.measureText(currentText).width > maxWidth && wordsInCurrent > 1) {
                 wordsInCurrent--;
-                var linebreak = false;
                 
                 currentText = futureText = "";
                 for (var i = 0; i < wordArrayLength; i++) {
@@ -90,7 +89,7 @@ define([], function() {
             
             // If there is any text left to be written call the function again
             if (futureText) {
-                subWidth = createMultilineText(ctx, futureText, maxWidth, text);
+                subWidth = this.createMultilineText(ctx, futureText, maxWidth, text);
                 if (subWidth > maxLineWidth) { 
                     maxLineWidth = subWidth;
                 }
