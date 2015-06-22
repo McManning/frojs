@@ -6,6 +6,44 @@ Usage
 ======
 TODO!
 
+Building from Source
+======
+To build, you need to have the latest [Node.js/npm](http://nodejs.org/download/) and [git](http://git-scm.com/downloads).
+
+Clone a copy of the main frojs git repo (or your fork):
+```bash
+git clone git://github.com/McManning/frojs.git
+```
+
+Enter the frojs project diretory and load all necessary dependencies:
+```bash
+cd frojs && npm install
+```
+
+Install grunt command line interface as a global package:
+```bash
+npm install -g grunt-cli
+```
+
+Make sure you have grunt installed by testing:
+```bash
+grunt -V
+```
+
+To create the full build, just run:
+```bash
+grunt
+```
+
+The built version of frojs will be put into the `dist/` subdirectory, along with a minified copy and the associated map file. 
+
+To auto-build frojs as you work, just run:
+```bash
+grunt watch
+```
+
+This will skip the minification process and only run the necessary jshint tasks. If no errors are found, all modules will be merged into a single `fro.js` script located in the `dist/` subdirectory.
+
 Contributing
 ======
 Since this is no longer one of my main projects, I'm open to pull requests but may be slow to respond. 
