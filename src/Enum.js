@@ -22,7 +22,7 @@ define([], function() {
     /**
      * Common enumerations accessed throughout modules.
      */
-    var Enums = {
+    var Enum = {
         Direction : {
             NONE : 0,
             NORTH : 1,
@@ -50,8 +50,8 @@ define([], function() {
     };
 
     if (Object.freeze) {
-        Object.freeze(Enums);
+        Object.freeze(Enum);
     }
 
-    return Enums;
+    return Enum;
 });
