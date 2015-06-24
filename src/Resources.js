@@ -23,8 +23,9 @@ define([
     'resource/Image',
     'resource/Sound',
     'resource/Json',
-    'resource/Shader'
-], function(EventHooks, Util, Image, Sound, Json, Shader) {
+    'resource/Shader',
+    'resource/FontImage'
+], function(EventHooks, Util, Image, Sound, Json, Shader, FontImage) {
 
     function Resources(context) {
         Util.extend(this, EventHooks); // Allow events to be fired from resource manager
@@ -34,7 +35,8 @@ define([
             'image': Image,
             'sound': Sound,
             'json': Json,
-            'shader': Shader
+            'shader': Shader,
+            'text': FontImage
         };
 
         this.context = context;

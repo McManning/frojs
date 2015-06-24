@@ -17,105 +17,106 @@
  *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-"use strict";
+define([
+    'Utility',
+    'resource/Image'
+], function(Util, Image) {
 
-function FontImageResource() {}
-FontImageResource.prototype = new ImageResource();
+    // Create an internal worker canvas used to render text to textures
+    var workerCanvas = document.createElement('canvas');
+    
+    function FontImage(context, properties) {
+        Image.call(this, context, properties);
 
-FontImageResource.prototype.load = function(json) {
-    ImageResource.prototype.load.call(this, json);
-    
-    this.fitToTexture = false; 
-    this.text = json.text;
-    this.options = json;
-    
-    this.generateFontTexture(json);
-    
-    this.buildVertexBuffer();
-    this.buildTextureBuffer();
-}
+        // TODO: Image tries to load an image source if properties.url.
+        // Maybe stop that from being defined?
 
-FontImageResource.prototype.generateFontTexture = function(options) {
+        this.fitToTexture = false; 
+        this.text = properties.text || '';
+        this.width = 0;
+        this.height = 0;
+        this.maxWidth = properties.maxWidth || 0;
+        this.fontHeight = properties.height || 16;
+        this.fontFamily = properties.family || '"Helvetica Neue", Helvetica, Arial, sans-serif';
+        this.fontColor = properties.color || 'rgb(0,0,0)';
 
-    if (!fro.resources.scratchCanvas) {
-        throw new Error('No fro.resources.scratchCanvas defined');
-        return null;
-    }
-    
-    var canvas = fro.resources.scratchCanvas;
-    var ctx = canvas.getContext('2d');
-    var text = this.text;
-    
-    if (!text || text.length < 1) {
-        throw new Error('No text');
-    }
-    
-    // Set some defaults, if not defined in the options
-    if (!options.height)
-        options.height = 12;
+        this.generateFontTexture();
         
-    if (!options.family)
-        options.family = '"Helvetica Neue", Helvetica, Arial, sans-serif';
-
-    if (!options.color)
-        options.color = '#000000';
-        
-    ctx.font = options.height + 'px ' + options.family;
-
-    var w, h, textX, textY;
-    var textLines = [];
-    
-    // If we're wider than max width, calculate a wrap
-    if (options.maxWidth && ctx.measureText(text).width > options.maxWidth) {
-        w = createMultilineText(ctx, text, options.maxWidth, textLines);
-        
-        if (w > options.maxWidth)
-            w = options.maxWidth;
-    } else {
-        
-        textLines.push(text);
-        w = ctx.measureText(text).width;
+        this.buildVertexBuffer();
+        this.buildTextureBuffer();
     }
 
-    h = options.height * textLines.length;
+    FontImage.prototype = Object.create(Image.prototype);
+    FontImage.prototype.constructor = FontImage;
 
-    if (w < 1 || h < 1) {
-        throw new Error('Invalid canvas dimensions ' + w + 'x' + h);
-    }
-    
-    canvas.width = w;
-    canvas.height = h;
+    FontImage.prototype.generateFontTexture = function() {
 
-    // Clear canvas
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
+        var ctx = workerCanvas.getContext('2d');
+        var text = this.text;
+        
+        if (this.text.length < 1) {
+            throw new Error('No text');
+        }
+        
+        ctx.font = this.fontHeight + 'px ' + this.fontFamily;
 
-    // Render text
-    textX = w / 2;
-    textY = 0; //h / 2;
+        var w, h, textX, textY;
+        var textLines = [];
+        
+        // If we're wider than max width, calculate a wrap
+        if (this.maxWidth && ctx.measureText(text).width > this.maxWidth) {
+            w = Util.createMultilineText(ctx, text, this.maxWidth, textLines);
+            
+            if (w > this.maxWidth) {
+                w = this.maxWidth;
+            }
+        } else {
+            textLines.push(text);
+            w = ctx.measureText(text).width;
+        }
 
-    ctx.fillStyle = options.color;
-    ctx.textAlign = 'center';
-    
-    ctx.textBaseline = 'top'; // top/middle/bottom
-    ctx.font = options.height + 'px ' + options.family;
-    
-    // draw lines
-    for (var i = 0; i < textLines.length; i++) {
+        h = this.fontHeight * textLines.length;
 
-        textY = i * options.height;
-        ctx.fillText(textLines[i], textX, textY);
-    }
+        if (w < 1 || h < 1) {
+            throw new Error('Invalid canvas dimensions ' + w + 'x' + h);
+        }
+        
+        workerCanvas.width = w;
+        workerCanvas.height = h;
 
-    // Convert canvas context to a texture
-    this.texture = fro.renderer.createTexture(canvas);
-    this.width = canvas.width;
-    this.height = canvas.height;
-}
+        // Clear canvas
+        ctx.clearRect(0, 0, workerCanvas.width, workerCanvas.height);
 
-FontImageResource.prototype.getTextureWidth = function() {
-    return this.width;
-}
+        // Render text
+        textX = w / 2;
+        textY = 0; //h / 2;
 
-FontImageResource.prototype.getTextureHeight = function() {
-    return this.height;
-}
+        ctx.fillStyle = this.fontColor;
+        ctx.textAlign = 'center';
+        
+        ctx.textBaseline = 'top'; // top/middle/bottom
+        ctx.font = this.fontHeight + 'px ' + this.fontFamily;
+        
+        // draw lines
+        for (var i = 0; i < textLines.length; i++) {
+
+            textY = i * this.fontHeight;
+            ctx.fillText(textLines[i], textX, textY);
+        }
+
+        // Convert canvas context to a texture
+        this.texture = this.context.renderer.createTexture(workerCanvas);
+        this.width = workerCanvas.width;
+        this.height = workerCanvas.height;
+    };
+
+    FontImage.prototype.getTextureWidth = function() {
+        return this.width;
+    };
+
+    FontImage.prototype.getTextureHeight = function() {
+        return this.height;
+    };
+
+    return FontImage;
+});
