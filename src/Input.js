@@ -153,10 +153,12 @@ define([
         // temp hint for options
         Util.extend(this, EventHooks);
 
-        var pressedKeys = [],
-            cursorPosition = vec3.create(),
-            canvas = context.renderer.getCanvas(),
-            canvasFocus = false;
+        this.pressedKeys = [];
+        this.cursorPosition = vec3.create();
+        this.context = context;
+        this.canvasFocus = false;
+
+        var canvas = context.renderer.getCanvas();
 
         // Allow the canvas to detect focus/blur events
         canvas.setAttribute('tabindex', -1);
@@ -164,142 +166,145 @@ define([
         // TODO: window versus document?
         // TODO: These are all terrible, rewrite how we're adding listeners!
         // I don't want to have to override everything!
-        var self = this;
-        canvas.onmousedown = function() { self.onMouseDown(); };
-        
-        canvas.onfocus = function() { self.onCanvasFocus(); };
-        canvas.onblur = function() { self.onCanvasBlur(); };
+        canvas.onmousedown = this.onMouseDown.bind(this);
 
-        document.onmouseup = function() { self.onMouseUp(); };
-        document.onmousemove = function() { self.onMouseMove(); };
-        
-        window.onkeydown = function() { self.onKeyDown(); };
-        window.onkeyup = function() { self.onKeyUp(); };
+        canvas.onfocus = this.onCanvasFocus.bind(this);
+        canvas.onblur = this.onCanvasBlur.bind(this);
 
-        window.onfocus = function() { self.onWindowFocus(); };
-        window.onblur = function() { self.onWindowBlur(); };
-    
-        this.onKeyDown = function(e) {
-            e = e || window.event;
+        document.onmouseup = this.onMouseUp.bind(this);
+        document.onmousemove = this.onMouseMove.bind(this);
 
-            pressedKeys[e.keyCode] = true;
-            
-            this.fire('keydown', e);
-            
-            // Override pageup/pagedown events
-            if (e.keyCode === window.KeyEvent.DOM_VK_PAGE_UP ||
-                e.keyCode === window.KeyEvent.DOM_VK_PAGE_DOWN) {
-                
-                return false;
-            }
-        };
+        window.onkeydown = this.onKeyUp.bind(this);
+        window.onkeyup = this.onKeyUp.bind(this);
 
-        this.onKeyUp = function(e) {
-            e = e || window.event;
-
-            pressedKeys[e.keyCode] = false;
-            
-            this.fire('keyup', e);
-        };
-
-        this.onMouseDown = function(e) {
-            e = e || window.event;
-            this.updateCursorPosition(e);
-            
-            this.fire('mousedown', e);
-        };
-
-        this.onMouseUp = function(e) {
-            e = e || window.event;
-            this.updateCursorPosition(e);
-            
-            this.fire('mouseup', e);
-        };
-        
-        this.onMouseMove = function(e) {
-            e = e || window.event;
-            
-            // Since this is a frequent event, it won't be fired to listeners just yet
-            // Instead, they should set up timers and query when needed.
-            this.updateCursorPosition(e);
-        };
-        
-        this.updateCursorPosition = function(e) {
-            var pos = cursorPosition;
-            
-            // Recalculate cursor position and store
-            if (e.pageX || e.pageY) {
-                pos[0] = e.pageX;
-                pos[1] = e.pageY;
-            } else {
-                pos[0] = e.clientX + document.body.scrollLeft + document.documentElement.scrollLeft; 
-                pos[1] = e.clientY + document.body.scrollTop + document.documentElement.scrollTop; 
-            }
-            
-            pos[0] -= canvas.offsetLeft;
-            pos[1] -= canvas.offsetTop;
-        };
-        
-        /**
-         * Canvas loses focus, kill inputs and certain events
-         */
-        this.onCanvasBlur = function() {
-            
-            // Cancel any keypresses, since we won't pick up a keyup event 
-            pressedKeys.length = 0;
-            canvasFocus = false;
-            
-            this.fire('canvasblur');
-        };
-
-        /**
-         * Canvas regained focus, reactivate inputs and certain events
-         */
-        this.onCanvasFocus = function() {
-        
-            canvasFocus = true;
-            this.fire('canvasfocus');
-        };
-        
-        /**
-         * Window loses focus, kill inputs and certain events
-         */
-        this.onWindowBlur = function() {
-        
-            // Cancel any keypresses, since we won't pick up a keyup event 
-            pressedKeys.length = 0;
-            canvasFocus = false;
-            
-            this.fire('windowblur');
-        };
-
-        /**
-         * Window regained focus, reactivate inputs and certain events
-         */
-        this.onWindowFocus = function() {
-            this.fire('windowfocus');
-        };
-        
-        /** Returns true if the specified key is identified as being pressed */
-        this.isKeyDown = function(keycode) {
-            return pressedKeys[keycode] === true;
-        };
-        
-        /** Returns true if our canvas/GL context has input focus */
-        this.hasFocus = function() {
-            return canvasFocus;
-        };
-        
-        /**
-         * Helper function to determine where exactly in the canvas the cursor is located
-         * @return vec3 result, from (0,0) to (gl.viewportWidth,gl.viewportHeight)
-         * @todo may return negatives, and points outside the canvas. Need to ensure cursor is IN the canvas!
-         */
-        this.getCursorPosition = function() {
-            return cursorPosition;
-        };
-
+        window.onfocus = this.onWindowFocus.bind(this);
+        window.onblur = this.onWindowBlur.bind(this);
     }
+
+    Input.prototype.onKeyDown = function(e) {
+        e = e || window.event;
+
+        this.pressedKeys[e.keyCode] = true;
+        
+        this.fire('keydown', e);
+        
+        // Override pageup/pagedown events
+        if (e.keyCode === window.KeyEvent.DOM_VK_PAGE_UP ||
+            e.keyCode === window.KeyEvent.DOM_VK_PAGE_DOWN) {
+            
+            return false;
+        }
+    };
+
+    Input.prototype.onKeyUp = function(e) {
+        e = e || window.event;
+
+        this.pressedKeys[e.keyCode] = false;
+        
+        this.fire('keyup', e);
+    };
+
+    Input.prototype.onMouseDown = function(e) {
+        e = e || window.event;
+        this.updateCursorPosition(e);
+        
+        this.fire('mousedown', e);
+    };
+
+    Input.prototype.onMouseUp = function(e) {
+        e = e || window.event;
+        this.updateCursorPosition(e);
+        
+        this.fire('mouseup', e);
+    };
+    
+    Input.prototype.onMouseMove = function(e) {
+        e = e || window.event;
+        
+        // Since this is a frequent event, it won't be fired to listeners just yet
+        // Instead, they should set up timers and query when needed.
+        this.updateCursorPosition(e);
+    };
+    
+    Input.prototype.updateCursorPosition = function(e) {
+        var pos = this.cursorPosition;
+        var canvas = this.context.renderer.getCanvas();
+        
+        // Recalculate cursor position and store
+        if (e.pageX || e.pageY) {
+            pos[0] = e.pageX;
+            pos[1] = e.pageY;
+        } else {
+            pos[0] = e.clientX + document.body.scrollLeft + document.documentElement.scrollLeft; 
+            pos[1] = e.clientY + document.body.scrollTop + document.documentElement.scrollTop; 
+        }
+        
+        pos[0] -= canvas.offsetLeft;
+        pos[1] -= canvas.offsetTop;
+    };
+    
+    /**
+     * Canvas loses focus, kill inputs and certain events
+     */
+    Input.prototype.onCanvasBlur = function() {
+        
+        // Cancel any keypresses, since we won't pick up a keyup event 
+        this.pressedKeys.length = 0;
+        this.canvasFocus = false;
+        
+        this.fire('canvasblur');
+    };
+
+    /**
+     * Canvas regained focus, reactivate inputs and certain events
+     */
+    Input.prototype.onCanvasFocus = function() {
+    
+        this.canvasFocus = true;
+        this.fire('canvasfocus');
+    };
+    
+    /**
+     * Window loses focus, kill inputs and certain events
+     */
+    Input.prototype.onWindowBlur = function() {
+    
+        // Cancel any keypresses, since we won't pick up a keyup event 
+        this.pressedKeys.length = 0;
+        this.canvasFocus = false;
+        
+        this.fire('windowblur');
+    };
+
+    /**
+     * Window regained focus, reactivate inputs and certain events
+     */
+    Input.prototype.onWindowFocus = function() {
+
+        this.fire('windowfocus');
+    };
+    
+    /** Returns true if the specified key is identified as being pressed */
+    Input.prototype.isKeyDown = function(keycode) {
+
+        return this.pressedKeys[keycode] === true;
+    };
+    
+    /** Returns true if our canvas/GL context has input focus */
+    Input.prototype.hasFocus = function() {
+
+        return this.canvasFocus;
+    };
+    
+    /**
+     * Helper function to determine where exactly in the canvas the cursor is located
+     * @return vec3 result, from (0,0) to (gl.viewportWidth,gl.viewportHeight)
+     * @todo may return negatives, and points outside the canvas. Need to ensure cursor is IN the canvas!
+     */
+    Input.prototype.getCursorPosition = function() {
+
+        return this.cursorPosition;
+    };
 
     return Input;
 });

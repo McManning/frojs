@@ -26,16 +26,12 @@ define([
         // jshint unused:false
         Util.extend(this, EventHooks);
 
-        var audioContext,
-            audioGainNode,
-            ambientGainNode;
-
         try {
             // Fix up for prefixing
             window.AudioContext = window.AudioContext||window.webkitAudioContext;
             
             if (window.AudioContext) {
-                audioContext = new window.AudioContext();
+                this.audioContext = new window.AudioContext();
             }
         } catch (exception) {
             // TODO: Graceful failure, not a damn exception
@@ -43,107 +39,107 @@ define([
         }
         
         // More vendor corrections.
-        if (!audioContext.createGain) {
-            audioContext.createGain = audioContext.createGainNode;
+        if (!this.audioContext.createGain) {
+            this.audioContext.createGain = this.audioContext.createGainNode;
         }
 
         // TODO: Necessary?
-        if (!audioContext.createGain) {
+        if (!this.audioContext.createGain) {
             throw new Error('Failed to identify createGain() for audio context');
         }
         
-        audioGainNode = audioContext.createGain();
-        audioGainNode.connect(audioContext.destination);
+        this.audioGainNode = this.audioContext.createGain();
+        this.audioGainNode.connect(this.audioContext.destination);
         
-        ambientGainNode = audioContext.createGain();
-        ambientGainNode.connect(audioGainNode);
-        
-        /** 
-         * Returns true if the audio API is available to use
-         */
-        this.isAvailable = function() {
-            return audioContext !== null;
-        };
-
-        this.getAudioContext = function() {
-            return audioContext;
-        };
-        
-        this.setMasterVolume = function(volume) {
-            
-            if (volume > 1.0) {
-                volume = 1.0;
-            }
-            
-            if (audioContext && audioGainNode) {
-                // Using an x-squared curve since simple linear (x) 
-                // does not sound as good (via html5rocks.com)
-                audioGainNode.gain.value = volume * volume;
-                
-                this.fire('setmaster', volume);
-            }
-        };
-        
-        this.getMasterVolume = function() {
-        
-            if (audioContext && audioGainNode) {
-                // TODO: math is wrong, not the same as setMasterVolume
-                return audioGainNode.gain.value;
-            } else {
-                return 0;
-            }
-        };
-        
-        this.setAmbientVolume = function(volume) {
-            
-            if (volume > 1.0) {
-                volume = 1.0;
-            }
-            
-            if (audioContext && audioGainNode) {
-                // Using an x-squared curve since simple linear (x) 
-                // does not sound as good (via html5rocks.com)
-                ambientGainNode.gain.value = volume * volume;
-                
-                this.fire('setambient', volume);
-            }
-        };
-        
-        this.getAmbientVolume = function() {
-            
-            if (audioContext && audioGainNode) {
-                // TODO: math is wrong, not the same as setAmbientVolume
-                return ambientGainNode.gain.value;
-            } else {
-                return 0;
-            }
-        };
-        
-        this.addConnection = function(source, ambient) {
-            
-            if (audioContext) {
-                if (ambient) {
-                    source.connect(ambientGainNode);
-                } else { // connect directly to master
-                    source.connect(audioGainNode);
-                }
-            }
-        };
-        
-        this.play = function(source) {
-            
-            if (audioContext) {
-                source.start(0);
-            }
-        };
-        
-        this.stop = function(source) {
-        
-            if (audioContext) {
-                source.stop(0);
-            }
-        };
+        this.ambientGainNode = this.audioContext.createGain();
+        this.ambientGainNode.connect(this.audioGainNode);
     }
+
+    /** 
+     * Returns true if the audio API is available to use
+     */
+    Audio.prototype.isAvailable = function() {
+        return this.audioContext !== null;
+    };
+
+    Audio.prototype.getAudioContext = function() {
+        return this.audioContext;
+    };
+    
+    Audio.prototype.setMasterVolume = function(volume) {
+        
+        if (volume > 1.0) {
+            volume = 1.0;
+        }
+        
+        if (this.audioContext && this.audioGainNode) {
+            // Using an x-squared curve since simple linear (x) 
+            // does not sound as good (via html5rocks.com)
+            this.audioGainNode.gain.value = volume * volume;
+            
+            this.fire('setmaster', volume);
+        }
+    };
+    
+    Audio.prototype.getMasterVolume = function() {
+    
+        if (this.audioContext && this.audioGainNode) {
+            // TODO: math is wrong, not the same as setMasterVolume
+            return this.audioGainNode.gain.value;
+        } else {
+            return 0;
+        }
+    };
+    
+    Audio.prototype.setAmbientVolume = function(volume) {
+        
+        if (volume > 1.0) {
+            volume = 1.0;
+        }
+        
+        if (this.audioContext && this.audioGainNode) {
+            // Using an x-squared curve since simple linear (x) 
+            // does not sound as good (via html5rocks.com)
+            this.ambientGainNode.gain.value = volume * volume;
+            
+            this.fire('setambient', volume);
+        }
+    };
+    
+    Audio.prototype.getAmbientVolume = function() {
+        
+        if (this.audioContext && this.audioGainNode) {
+            // TODO: math is wrong, not the same as setAmbientVolume
+            return this.ambientGainNode.gain.value;
+        } else {
+            return 0;
+        }
+    };
+    
+    Audio.prototype.addConnection = function(source, ambient) {
+        
+        if (this.audioContext) {
+            if (ambient) {
+                source.connect(this.ambientGainNode);
+            } else { // connect directly to master
+                source.connect(this.audioGainNode);
+            }
+        }
+    };
+    
+    Audio.prototype.play = function(source) {
+        
+        if (this.audioContext) {
+            source.start(0);
+        }
+    };
+    
+    Audio.prototype.stop = function(source) {
+    
+        if (this.audioContext) {
+            source.stop(0);
+        }
+    };
 
     return Audio;
 });    

@@ -157,13 +157,13 @@ define([
         // Start throwing around hash maps. 
 
         for (var i = 0; i < this.renderableEntities.length; i++) {
-            if (this.renderableEntities[i].getId() === id) {
+            if (this.renderableEntities[i].id === id) {
                 return this.renderableEntities[i];
             }
         }
         
         for (var j = 0; j < this.otherEntities.length; j++) {
-            if (this.otherEntities[j].getId() === id) {
+            if (this.otherEntities[j].id === id) {
                 return this.otherEntities[j];
             }
         }

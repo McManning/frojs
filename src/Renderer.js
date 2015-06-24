@@ -198,7 +198,7 @@ define([], function() {
      * @param Shader shader The shader resource to add
      */
     Renderer.prototype.attachShader = function(shader) {
-        this.shaders[shader.getId()] = shader;
+        this.shaders[shader.id] = shader;
     };
     
     Renderer.prototype.getCurrentShader = function() {

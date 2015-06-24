@@ -28,67 +28,53 @@ define([
      * by the user's browser and buffer the contents. Note, this
      * does not attempt to determine support for track types. 
      */
-    function Sound(context) {
+    function Sound(context, properties) {
         Util.extend(this, EventHooks);
 
-        var id,
-            url,
-            buffer;
+        this.id = properties.id;
+        this.url = properties.url;
+        this.type = properties.type;
+        this.buffer = null;
+        
+        var request = new window.XMLHttpRequest();
+        request.open('GET', this.url, true);
+        request.responseType = 'arraybuffer';
+        
+        // Decode asynchronously
+        var self = this;
+        request.onload = function() {
+            var audioContext = context.audio.getAudioContext();
+            if (audioContext) {
+                
+                audioContext.decodeAudioData(request.response, function(buffer) {
 
-        this.load = function(properties) {
-
-            id = properties.id;
-            url = properties.url;
-            
-            var request = new window.XMLHttpRequest();
-            request.open('GET', url, true);
-            request.responseType = 'arraybuffer';
-            
-            // Decode asynchronously
-            var self = this;
-            request.onload = function() {
-                var audioContext = context.audio.getAudioContext();
-                if (audioContext) {
+                    self.buffer = buffer;
+                    self.fire('onload', self);
                     
-                    audioContext.decodeAudioData(request.response, function(buffer) {
-
-                        self.buffer = buffer;
-                        self.fire('onload', self);
-                        
-                    }, function() {
-                        self.fire('onerror', self);
-                    });
-                    
-                } else {
+                }, function() {
                     self.fire('onerror', self);
-                }
-            };
-            
-            // hook an error handler for network errors
-            request.onerror = function() { 
+                });
+                
+            } else {
                 self.fire('onerror', self);
-            };
-            
-            request.send();
-        };
-
-        this.isLoaded = function() {
-
-            if (!buffer) {
-                return false;
             }
-            
-            return true;
         };
-
-        this.getId = function() {
-            return id;
+        
+        // hook an error handler for network errors
+        request.onerror = function() { 
+            self.fire('onerror', self);
         };
-
-        this.getBuffer = function() {
-            return buffer;
-        };
+        
+        request.send();
     }
+
+    this.isLoaded = function() {
+        return !!this.buffer;
+    };
+
+    this.getBuffer = function() {
+        return this.buffer;
+    };
 
     return Sound;
 });

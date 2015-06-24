@@ -28,55 +28,45 @@ define([
      * if it actually JSON.
      */
 
-    function Json(context) {
+    function Json(context, properties) {
         Util.extend(this, EventHooks);
 
         // jshint unused:false
         // TODO: Use or drop context param
 
-        var id,
-            url,
-            json;
+        this.id = properties.id;
+        this.url = properties.url;
+        this.type = properties.type;
+        
+        var request = new window.XMLHttpRequest();
+        request.open('GET', this.url, true);
 
-        this.load = function(properties) {
-
-            id = properties.id;
-            url = properties.url;
-            
-            var self = this;
-            var request = new window.XMLHttpRequest();
-            request.open('GET', url, true);
-
-            request.onload = function() {
-                if (request.status >= 200 && request.status < 400) {
-                    json = JSON.parse(request.responseText);
-                    self.fire('onload', this);
-                } else {
-                    // We reached our target server, but it returned an error
-                    self.fire('onerror', this);
-                }
-            };
-
-            request.onerror = function() {
-                // There was a connection error of some sort
+        var self = this;
+        request.onload = function() {
+            if (request.status >= 200 && request.status < 400) {
+                self.json = JSON.parse(request.responseText);
+                self.fire('onload', this);
+            } else {
+                // We reached our target server, but it returned an error
                 self.fire('onerror', this);
-            };
-
-            request.send();
+            }
         };
 
-        this.isLoaded = function() {
-            return typeof json === 'object';
+        request.onerror = function() {
+            // There was a connection error of some sort
+            self.fire('onerror', this);
         };
 
-        this.getId = function() {
-            return id;
-        };
-
-        this.getJson = function() {
-            return json;
-        };
+        request.send();
     }
+
+    Json.prototype.isLoaded = function() {
+        return typeof this.json === 'object';
+    };
+
+    Json.prototype.getJson = function() {
+        return this.json;
+    };
 
     return Json;
 });
