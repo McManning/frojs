@@ -166,19 +166,31 @@ define([
         // TODO: window versus document?
         // TODO: These are all terrible, rewrite how we're adding listeners!
         // I don't want to have to override everything!
-        canvas.onmousedown = this.onMouseDown.bind(this);
 
-        canvas.onfocus = this.onCanvasFocus.bind(this);
-        canvas.onblur = this.onCanvasBlur.bind(this);
+        // Rebind methods in a way that forces `this` to scope to Input.
+        // This way we can easily bind and unbind them to the DOM
+        this.onCanvasFocus = this.onCanvasFocus.bind(this);
+        this.onCanvasBlur = this.onCanvasBlur.bind(this);
+        this.onMouseUp = this.onMouseUp.bind(this);
+        this.onMouseDown = this.onMouseDown.bind(this);
+        this.onMouseMove = this.onMouseMove.bind(this);
+        this.onKeyUp = this.onKeyUp.bind(this);
+        this.onKeyDown = this.onKeyDown.bind(this);
+        this.onWindowFocus = this.onWindowFocus.bind(this);
+        this.onWindowBlur = this.onWindowBlur.bind(this);
 
-        document.onmouseup = this.onMouseUp.bind(this);
-        document.onmousemove = this.onMouseMove.bind(this);
+        // TODO: There's a reason I bound mousedown to canvas and not document. Why?
+        canvas.addEventListener('mousedown', this.onMouseDown);
+        canvas.addEventListener('focus', this.onCanvasFocus);
+        canvas.addEventListener('blur', this.onCanvasBlur);
 
-        window.onkeydown = this.onKeyUp.bind(this);
-        window.onkeyup = this.onKeyUp.bind(this);
+        document.addEventListener('mouseup', this.onMouseUp);
+        document.addEventListener('mousemove', this.onMouseMove);
 
-        window.onfocus = this.onWindowFocus.bind(this);
-        window.onblur = this.onWindowBlur.bind(this);
+        window.addEventListener('keyup', this.onKeyUp);
+        window.addEventListener('keydown', this.onKeyDown);
+        window.addEventListener('focus', this.onWindowFocus);
+        window.addEventListener('blur', this.onWindowBlur);
     }
 
     Input.prototype.onKeyDown = function(e) {
