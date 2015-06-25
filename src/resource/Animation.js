@@ -22,37 +22,38 @@ define([
     'Utility'
 ], function(EventHooks, Util) {
 
-    // TODO: I actually would prefer to abstract away the frameset rules
-    // a bit more. I want to be able to let NPCs or whomever just play
-    // random animations - which would be defined by framesets. 
-
     /** 
-     * Definition of an avatar/sprite object a particular actor can wear.
-     * Handles animation, frameset changes, loading, etc.
+     * Definition of an animation/spritesheet. 
+     * Handles setting framesets, animation timing, looping, etc. 
      */
-    function Avatar(context, properties) {
+    function Animation(context, properties) {
         Util.extend(this, EventHooks);
 
         if (!this.validateMetadata(properties)) {
             // TODO: better error handling
-            throw new Error('Malformed Avatar metadata');
+            throw new Error('Malformed Animation metadata');
         }
 
-        // This has an internal state, cannot be shared between instances.
-        this.isShared = false; 
+        // Since each animation has an internal state, it can't be shared
+        // among other resources (otherwise they'll all play the same 
+        // frames simultaneously. And that gets boring :P)
+        this.shareable = false;
 
+        this.context = context;
         this.url = properties.url;
         this.width = properties.width;
         this.height = properties.height;
+        this.playing = true;
         this.keyframes = properties.keyframes;
-
-        this.keyframe = '';
-
         this.clip = rect.create();
+        this.keyframe = null; // So that setKeyframe() to 'undefined' forces default.
+
+        // Initialize keyframe-tracking properties and reset
+        this.setKeyframe();
 
         // Load an image resource. Note that we load this 
         // as a sub-resource so that we can load cached images
-        // if another avatar instance already uses the same source.
+        // if another Animation instance already uses the same source.
         this.image = context.resources.load({
             type: 'image',
             url: properties.url,
@@ -72,8 +73,12 @@ define([
             this.onImageReady();
         }
 
-        // Initialize keyframe-tracking properties
-        this.reset();
+        // Create an animation timer for this avatar
+        this.playInterval = context.timers.addInterval(
+            this, 
+            this.onInterval, 
+            this.delay
+        ); 
     }
 
     /**
@@ -81,13 +86,13 @@ define([
      *
      * @param {Object} metadata
      *
-     * @return boolean
+     * @return {boolean}
      */
-    Avatar.prototype.validateMetadata = function(metadata) {
+    Animation.prototype.validateMetadata = function(metadata) {
 
         // TODO: More validation rules!
         var requiredKeys = [
-            'id', 'width', 'height', 'url', 'keyframes'
+            'width', 'height', 'url', 'keyframes'
         ];
         
         for (var i = 0; i < requiredKeys.length; i++) {
@@ -102,14 +107,13 @@ define([
     /** 
      * Increment which frame of the current animation is rendered.
      *
-     * @param {boolean} forceLoop if it should reset() after the final frame
+     * @param {boolean} forceLoop even if the frameset set loop to false
      */
-    Avatar.prototype.nextFrame = function(forceLoop) {
+    Animation.prototype.next = function(forceLoop) {
         
-        // If our avatar somehow lost the keyframe, attempt to 
-        // gracefully degrade down to something that works. 
+        // If our animation somehow lost the keyframe, play default
         if (this.keyframes.hasOwnProperty(this.keyframe)) {
-            this.setKeyframe(this.keyframe, true);
+            this.setKeyframe();
         }
 
         // if we hit the end of the animation, loop (if desired)
@@ -140,42 +144,37 @@ define([
      * @param {String} key to apply 
      * @param {Boolean} force true will ignore a match with the current keyframe
      */
-    Avatar.prototype.setKeyframe = function(key, force) {
+    Animation.prototype.setKeyframe = function(key) {
 
         // If they change the keyframe, or force a set, try to set.
-        if (this.keyframe !== key || force === true) {
+        if (this.keyframe !== key) {
 
-            if (this.keyframes.hasOwnProperty(key)) {
+            if (key && this.keyframes.hasOwnProperty(key)) {
                 this.keyframe = key;
                 this.reset();
+            } else {
+                // Default active keyframe to the first one found
+                this.keyframe = Object.keys(this.keyframes)[0];
             }
-
-            // TODO: Check if it exists, if not, default to something.
-            // Default rules from original fro were (in order):
-            // - if act_* and no act_*, use stop_*
-            // - if stop_* and no stop_*, use move_*
-            // - if move_* and no move_*, use move_2
-            // - if move_2 and no move_2, use first keyframe
         }
     };
 
     /**
      * Reset the current animation to the beginning of the frameset.
      */
-    Avatar.prototype.reset = function() {
+    Animation.prototype.reset = function() {
 
         this.index = 0;
-        this.delay = 0;
         this.frame = 0;
-        this.next = new Date().getTime();
-        
-        this.nextFrame(false);
+        this.delay = 0;
+
+        this.next(false);
     };
 
     /** 
      * Recalculate the source rect of our texture based on the current row/frame 
      */
-    Avatar.prototype.updateTextureClip = function() {
+    Animation.prototype.updateTextureClip = function() {
 
         if (this.image) {
             var framesPerRow = Math.floor(this.image.getTextureWidth() / this.width);
@@ -192,18 +191,19 @@ define([
         }
     };
 
-    Avatar.prototype.onImageReady = function() {
+    Animation.prototype.onImageReady = function() {
+        this.reset();
 
-        // Re-set our active keyframe, just in case the current keyframe
-        // does not exist in the new avatar.
-        this.setKeyframe(this.keyframe, true);
+        // Notify listeners
+        this.fire('onload', this);
     };
 
-    Avatar.prototype.onImageError = function() {
+    Animation.prototype.onImageError = function() {
         // TODO: Stuff!
+        this.fire('onerror', this);
     };
 
-    Avatar.prototype.render = function(position) {
+    Animation.prototype.render = function(position) {
 
         // Just render a clip of our source image
         if (this.image) {
@@ -211,5 +211,50 @@ define([
         }
     };
 
-    return Avatar;
+    Animation.prototype.onInterval = function() {
+        
+        if (this.playing) {
+            this.next(false);
+
+            // TODO: Probably not use Timers engine. The whole deal is that
+            // Timers is steady, so if there's a delay in processing, it'll
+            // re-run the callback constantly until it catches up. Animations
+            // don't matter, and we can skip playback of a few frames. Although
+            // I guess it technically doesn't know how many to skip, and this
+            // would prevent slowdown and instead actually skip.
+
+            // Update timer delay to the next frame's delay
+            // TODO: This line is dumb. Reference the interval instance or something.
+            this.context.timers.intervals[this.playInterval].delay = this.delay;
+        }
+
+        // TODO: If not playing, we need to reset the interval to something to check
+        // for playback, or reset. 
+    };
+
+    /**
+     * Start automatic playback of the active keyframe animation.
+     */
+    Animation.prototype.play = function() {
+        this.playing = true;
+
+        // Update the timer to continue playback
+        var interval = this.context.timers.intervals[this.playInterval];
+        interval.delay = this.delay;
+        interval.lastRun = Date.now();
+    };
+
+    /**
+     * Stop playback of the current keyframe animation.
+     */
+    Animation.prototype.stop = function() {
+        this.playing = false;
+
+        // TODO: Proper "stop". For now, we just set it to a large number
+        // to prevent it from running as often. 
+        var interval = this.context.timers.intervals[this.playInterval];
+        interval.delay = 100000;
+    };
+
+    return Animation;
 });
