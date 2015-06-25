@@ -31,23 +31,19 @@ define([
         this.collisions = [];
         this.delay = 0;
 
-        if ('collisions' in properties) {
+        if (properties.hasOwnProperty('collisions')) {
             this.loadCollisions(properties.collisions);
         }
 
-        if ('offset_x' in properties) {
-            this.offset[0] = properties.offset_x;
+        if (properties.hasOwnProperty('offset')) {
+            this.setOffset(properties.offset);
         }
         
-        if ('offset_y' in properties) {
-            this.offset[1] = properties.offset_y;
-        }
-        
-        this.setPosition(properties.x, properties.y, properties.z);
+        this.setPosition(properties.position);
         
         // If there's a delay key, this prop is animated.
         // Our dimensions will define a clip of the image, rather than the whole thing
-        if ('delay' in properties && properties.delay > 0) {
+        if (properties.hasOwnProperty('delay') && properties.delay > 0) {
             this.delay = properties.delay;
             this.frame = 0;
             
