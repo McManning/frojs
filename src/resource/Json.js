@@ -36,7 +36,7 @@ define([
 
         this.url = properties.url;
         this.type = properties.type;
-        this.isShared = true; // Mark this resource as share-able (without internal state)
+        this.shareable = true;
         
         var request = new window.XMLHttpRequest();
         request.open('GET', this.url, true);

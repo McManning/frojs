@@ -39,7 +39,7 @@ define([
         */
 
         this.type = properties.type;
-        this.isShared = true; // Mark this resource as share-able (without internal state)
+        this.shareable = true; // Resource can be used in multiple places simultaneously
         
         //this.vbuf = 
         //this.tbuf = 
