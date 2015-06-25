@@ -27,6 +27,10 @@ define([
     'resource/FontImage'
 ], function(EventHooks, Util, Image, Sound, Json, Shader, FontImage) {
 
+    // TODO: Rewrite a lot of this. I don't like the error list, I don't like how
+    // the error handling works in general, etc. This can be a lot simpler, and a lot
+    // more elegant to use. 
+
     function Resources(context) {
         Util.extend(this, EventHooks); // Allow events to be fired from resource manager
 
@@ -41,6 +45,7 @@ define([
 
         this.context = context;
         this.loaded = [];
+        this.preloading = [];
         this.failed = [];
         // Canvas used for generating temporary texture sources
         // TODO: Do we still want this? We lose any type of asyncronous support
@@ -48,13 +53,17 @@ define([
         //scratchCanvas = document.createElement('canvas'),
         this.totalPreload = 0;
         this.completedPreload = 0;
+
+        // Bind callbacks to this instance
+        this.onPreloadResourceComplete = this.onPreloadResourceComplete.bind(this);
+        this.onPreloadResourceError = this.onPreloadResourceError.bind(this);
     }
 
     Resources.prototype.preload = function(json) {
         this.totalPreload = 0;
         this.completedPreload = 0;
         
-        if ('required' in json) {
+        if (json.hasOwnProperty('required')) {
             this.totalPreload += json.required.length;
 
             for (var i = 0; i < json.required.length; i++) {
@@ -74,90 +83,75 @@ define([
 
         var resource = this.load(json);
         if (resource.isLoaded()) {
-            // Download was already complete
-            this.completedPreload++;
-            this.fire('preload.status', resource);
-            
-            // If this was the last resource to download, fire a complete event
-            if (this.completedPreload === this.totalPreload) {
-                this.fire('preload.complete');
-            }
-        
+            this.onPreloadResourceComplete(resource);
         } else {
-            // Need to wait further for the download to complete
-            var self = this;
+            // Need to wait further for downloads/processing to complete
             resource
-                .bind('onload', function() {
-                    self.this.completedPreload++;
-                    self.fire('preload.status', this);
-                    
-                    // If this was the last resource to download, fire a complete event
-                    if (self.this.completedPreload === self.this.totalPreload) {
-                        self.fire('preload.complete');
-                    }
-                })
-                .bind('onerror', function() {
-                    // TODO: this.load() also adds it to this.loaded even though
-                    // it technically wasn't loaded. Re-evaluate this logic for failure
-                    // handling. 
-                    self.this.failed[this.id] = this;
-                    self.fire('preload.error', this);
-                });
+                .bind('onload', this.onPreloadResourceComplete)
+                .bind('onerror', this.onPreloadResourceError);
         }
-    };
-        
-    Resources.prototype.isLoaded = function(id) {
-        return (id in this.loaded);
     };
 
-    Resources.prototype.load = function(jsonOrId) {
+    Resources.prototype.onPreloadResourceComplete = function(resource) {
+        this.completedPreload++;
+        this.fire('preload.status', resource);
         
-        // load("resource_id")
-        if (typeof jsonOrId === 'string') {
-            if (jsonOrId in this.loaded) {
-                //fro.log.debug('Loading from cache ' + jsonOrId);
-                return this.loaded[jsonOrId];
-            } else {
-                throw new Error('Resource [' + jsonOrId + '] has not been cached.');
-            }
+        // If this was the last resource to download, fire a complete event
+        if (this.completedPreload === this.totalPreload) {
+            this.fire('preload.complete');
         }
-        
-        // otherwise, assume JSON
-        // TODO: Support more interesting loaders (like functions)
+    };
+
+    Resources.prototype.onPreloadResourceError = function(resource) {
+        // TODO: this.load() also adds it to this.loaded even though
+        // it technically wasn't loaded. Re-evaluate this logic for failure
+        // handling. 
+        this.failed[resource.id] = resource;
+        this.fire('preload.error', resource);
+    };
+    
+    Resources.prototype.isLoaded = function(id) {
+        return this.loaded.hasOwnProperty(id);
+    };
+
+    /**
+     * Load a resource by JSON definition. If the JSON definition matches
+     * a previously loaded resource, this will immediately return a
+     * reference to the old resource. If the returned resource's 
+     * isLoaded() method returns true, it can be used immediately. Otherwise
+     * the implementer must bind to it's 'onload' and 'onerror' events and
+     * wait until it has been fully loaded.
+     */
+    Resources.prototype.load = function(json) {
         
         // Validate JSON properties
         // TODO: Better validators
-        if (!('id' in jsonOrId)) {
-            throw new Error('JSON resource is missing required attribute [id]: ' + JSON.stringify(jsonOrId));
-        }
-
-        if (!('type' in jsonOrId)) {
-            throw new Error('JSON resource is missing required attribute [type]: ' + JSON.stringify(jsonOrId));
+        if (!json.hasOwnProperty('type')) {
+            throw new Error(
+                'JSON resource is missing required attribute [type]: ' + 
+                JSON.stringify(json)
+            );
         }
         
-        var id = jsonOrId.id;
-        var type = jsonOrId.type;
+        // Generate a unique ID from a hash of the JSON
+        var id = Util.hashCode(JSON.stringify(json));
+        var type = json.type;
         
-        // If it already exists, just return the existing resource 
-        if (id in this.loaded) {
-            if (this.loaded[id].type !== type) {
-                throw new Error(
-                    'Type mismatch: Trying to load resource [' + id + 
-                    '] as [' + type + '] but already instanced as [' + 
-                    this.loaded[id].type + ']'
-                );
-            }
+        // If we've already loaded the same resource, simply return the original
+        if (this.loaded.hasOwnProperty(id)) {
             return this.loaded[id];
         }
-        
-        //fro.log.debug('Loading new resource ' + id);
 
-        if (!(type in this.resourceTypes)) {
-            this.failed[id] = jsonOrId;
-            throw new Error('Cannot load [' + id + ']. No loader for type [' + type + ']');
+        if (!this.resourceTypes.hasOwnProperty(type)) {
+            this.failed[id] = json;
+            throw new Error(
+                'Cannot load [' + id + ']. No loader for type [' + 
+                type + ']'
+            );
         }
 
-        var resource = new this.resourceTypes[type](this.context, jsonOrId);            
+        var resource = new this.resourceTypes[type](this.context, json);
+        resource.id = id;
         this.loaded[id] = resource;
         
         return resource;
