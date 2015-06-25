@@ -192,15 +192,17 @@ define([], function() {
         /**
          * Fast string hashing.
          */
-        hash: function(string) {
-            var hash = 0;
+        hash: function(s) {
+            var i, c, hash = 0,
+                strlen = s.length;
 
-            if (string.length === 0) {
+            if (strlen === 0) {
                 return hash;
             }
 
-            for (var i = 0; i < string.length; i++) {
-                hash = ((hash << 5) - hash) + string.charCodeAt(i);
+            for (i = 0; i < strlen; ++i) {
+                c = s.charCodeAt(i);
+                hash = ((hash << 5) - hash) + c;
                 hash = hash & hash; // Convert to 32bit integer
             }
 
