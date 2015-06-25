@@ -126,12 +126,6 @@ define([
     };
 
     Prop.prototype.render = function() {
-        var renderer = this.context.renderer;
-
-        // Get whatever shader is being used for this prop
-        var shader = renderer.getShader(this.image.shader);
-        renderer.useShader(shader);
-
         this.image.render(this.translation, 0, this.clip);
     };
 
