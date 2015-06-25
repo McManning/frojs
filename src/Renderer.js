@@ -207,7 +207,7 @@ define([], function() {
     
     Renderer.prototype.getShader = function(id) {
         
-        if (!(id in this.shaders)) {
+        if (!this.shaders.hasOwnProperty(id)) {
             throw new Error('Shader [' + id + '] is not loaded');
         }
         

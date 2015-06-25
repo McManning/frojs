@@ -34,7 +34,6 @@ define([
         this.url = properties.url;
         this.type = properties.type;
         this.buffer = null;
-        this.shareable = true;
         
         var request = new window.XMLHttpRequest();
         request.open('GET', this.url, true);
@@ -75,6 +74,9 @@ define([
     this.getBuffer = function() {
         return this.buffer;
     };
+
+    // Resource can be cached and reused
+    Sound.shareable = true;
 
     return Sound;
 });

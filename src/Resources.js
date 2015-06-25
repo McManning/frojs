@@ -44,9 +44,8 @@ define([
         };
 
         this.context = context;
-        this.loaded = [];
-        this.preloading = [];
-        this.failed = [];
+        this.loaded = {};
+        this.failed = {};
         // Canvas used for generating temporary texture sources
         // TODO: Do we still want this? We lose any type of asyncronous support
         // if resources have to wait on a canvas element to work.
@@ -106,7 +105,7 @@ define([
         // TODO: this.load() also adds it to this.loaded even though
         // it technically wasn't loaded. Re-evaluate this logic for failure
         // handling. 
-        this.failed[resource.id] = resource;
+        this.failed[resource._resourceId] = resource;
         this.fire('preload.error', resource);
     };
     
@@ -132,16 +131,11 @@ define([
                 JSON.stringify(json)
             );
         }
-        
+
         // Generate a unique ID from a hash of the JSON
-        var id = Util.hashCode(JSON.stringify(json));
+        var id = Util.hash(JSON.stringify(json));
         var type = json.type;
         
-        // If we've already loaded the same resource, simply return the original
-        if (this.loaded.hasOwnProperty(id)) {
-            return this.loaded[id];
-        }
-
         if (!this.resourceTypes.hasOwnProperty(type)) {
             this.failed[id] = json;
             throw new Error(
@@ -150,9 +144,23 @@ define([
             );
         }
 
+        console.log(this.resourceTypes[type].shareable);
+
+        var shareable = this.resourceTypes[type].shareable;
+
+        // If the resource can be shared between instances, and we already have it
+        // loaded, just return the original resource.
+        if (shareable && this.loaded.hasOwnProperty(id)) {
+            return this.loaded[id];
+        }
+
         var resource = new this.resourceTypes[type](this.context, json);
-        resource.id = id;
-        this.loaded[id] = resource;
+        resource._resourceId = id;
+
+        // If we can share it between instances, cache the results.
+        if (shareable) {
+            this.loaded[id] = resource;
+        }
         
         return resource;
     };

@@ -36,7 +36,6 @@ define([
 
         this.url = properties.url;
         this.type = properties.type;
-        this.shareable = true;
         
         var request = new window.XMLHttpRequest();
         request.open('GET', this.url, true);
@@ -67,6 +66,9 @@ define([
     Json.prototype.getJson = function() {
         return this.json;
     };
+
+    // Resource can be cached and reused
+    Json.shareable = true;
 
     return Json;
 });

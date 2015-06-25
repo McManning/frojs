@@ -34,11 +34,6 @@ define([
             throw new Error('Malformed Animation metadata');
         }
 
-        // Since each animation has an internal state, it can't be shared
-        // among other resources (otherwise they'll all play the same 
-        // frames simultaneously. And that gets boring :P)
-        this.shareable = false;
-
         this.context = context;
         this.url = properties.url;
         this.width = properties.width;
@@ -255,6 +250,11 @@ define([
         var interval = this.context.timers.intervals[this.playInterval];
         interval.delay = 100000;
     };
+
+    // Since each animation has an internal state, it can't be shared
+    // among other resources (otherwise they'll all play the same 
+    // frames simultaneously. And that gets boring :P)
+    Animation.shareable = false;
 
     return Animation;
 });

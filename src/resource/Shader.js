@@ -30,6 +30,7 @@ define([
 
         /*
             Expected JSON parameters:
+            id - unique ID for referencing shaders in the renderer
             vertex - vertex shader source url
             fragment - fragment shader source url
             uniforms = [
@@ -40,10 +41,10 @@ define([
             ]
         */
         
+        this.id = properties.id;
         this.type = properties.type;
         this.context = context;
         this.program = null;
-        this.shareable = true;
         
         // Add some values expected of all shaders
         //this.attributes['aVertexPosition'] = false;
@@ -182,6 +183,9 @@ define([
         gl.bindTexture(gl.TEXTURE_2D, texture);
         gl.uniform1i(this.getUniform(uniform), 0);
     };
+
+    // Resource can be cached and reused
+    Shader.shareable = true;
 
     return Shader;
 });

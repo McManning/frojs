@@ -39,8 +39,7 @@ define([
         */
 
         this.type = properties.type;
-        this.shareable = true; // Resource can be used in multiple places simultaneously
-        
+
         //this.vbuf = 
         //this.tbuf = 
         //this.texture = 
@@ -243,5 +242,8 @@ define([
         return this.image.height;
     };
 
+    // Resource can be cached and reused
+    Image.shareable = true; 
+    
     return Image;
 });
