@@ -64,7 +64,7 @@ define([
         if (position.length > 2) {
             this.position[2] = Math.floor(position[2]);
         }
-        
+
         this.updateTranslation();
     };
 
@@ -72,15 +72,21 @@ define([
         return this.offset;
     };
 
-    Entity.prototype.setOffset = function(x, y) {
-        this.offset[0] = x;
-        this.offset[1] = y;
+    /**
+     * Set the offset coordinates that our image renders from 
+     * our base position. 
+     *
+     * @param {vec2} offset
+     */
+    Entity.prototype.setOffset = function(offset) {
+        this.offset[0] = Math.floor(offset[0]);
+        this.offset[1] = Math.floor(offset[1]);
 
         this.updateTranslation();
     };
 
     /**
-     * @param rect r
+     * @param {rect} r
      */
     Entity.prototype.getBoundingBox = function(r) {
         r[0] = 0;
