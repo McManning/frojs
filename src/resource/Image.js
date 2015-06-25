@@ -38,8 +38,8 @@ define([
                 fitToTexture - whether the width/height should change based on the loaded texture dimensions
         */
 
-        this.id = properties.id;
         this.type = properties.type;
+        this.isShared = true; // Mark this resource as share-able (without internal state)
         
         //this.vbuf = 
         //this.tbuf = 

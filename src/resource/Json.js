@@ -34,9 +34,9 @@ define([
         // jshint unused:false
         // TODO: Use or drop context param
 
-        this.id = properties.id;
         this.url = properties.url;
         this.type = properties.type;
+        this.isShared = true; // Mark this resource as share-able (without internal state)
         
         var request = new window.XMLHttpRequest();
         request.open('GET', this.url, true);

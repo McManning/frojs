@@ -40,10 +40,10 @@ define([
             ]
         */
         
-        this.id = properties.id;
         this.type = properties.type;
         this.context = context;
         this.program = null;
+        this.isShared = true; // Mark this resource as share-able (without internal state)
         
         // Add some values expected of all shaders
         //this.attributes['aVertexPosition'] = false;
