@@ -19,8 +19,9 @@
 
 define([
     'Enum',
+    'Utility',
     'entity/Entity'
-], function(Enum, Entity) {
+], function(Enum, Util, Entity) {
 
     var MOVEMENT_DISTANCE = 16;
 
@@ -139,7 +140,7 @@ define([
     };
 
     /**
-     * @param rect r
+     * @param {rect} r
      */
     Actor.prototype.getBoundingBox = function(r) {
 
@@ -160,12 +161,15 @@ define([
         }
     };
 
-    /** 
-     * Wrapper to set the position of this actor on the map. 
-     * Will prevent automatic walking to a destination.
+    /**
+     * Set the actor's position. Accepts either an (x,y) pair
+     * or an (x,y,z) to also specify the z-order. This will
+     * also stop any automatic walking to a destination. 
+     *
+     * @param {vec2|vec3} position
      */
-    Actor.prototype.setPosition = function(x, y, z) {
-        Entity.prototype.setPosition.call(this, x, y, z);
+    Actor.prototype.setPosition = function(position) {
+        Entity.prototype.setPosition.call(this, position);
 
         vec3.set(this.getPosition(), this.destination);
         this.fire('move', this.getPosition());
@@ -173,6 +177,8 @@ define([
 
     /** 
      * Sets our current action (idle, sit, etc) and updates the avatar.
+     *
+     * @param {Enum.Action} action
      */
     Actor.prototype.setAction = function(action) { 
         this.action = action;
@@ -181,6 +187,8 @@ define([
 
     /** 
      * Sets our current movement speed (walk/run).
+     *
+     * @param {Enum.Speed} speed
      */
     Actor.prototype.setSpeed = function(speed) {
         this.speed = speed;
@@ -242,7 +250,7 @@ define([
         }
         
         // If our relative direction changed, make sure we reflect that
-        var d = this.directionFromVector(direction);
+        var d = Util.directionFromVector(direction);
         
         if (d !== this.direction) {
             this.setDirection(d);
@@ -253,7 +261,7 @@ define([
 
     /** 
      * Determines what row to render based on a translation of our 
-     *   direction and current action
+     * direction and current action.
      */
     Actor.prototype.recalculateAvatarRow = function() {
         var row;
@@ -313,30 +321,11 @@ define([
     /**
      * Sets our actors "close enough" direction, and updates the avatar
      * 
-     * @param dir a Direction constant (ex: Enum.Direction.NORTH)
+     * @param {Enum.Direction} dir
      */
     Actor.prototype.setDirection = function(dir) {
         this.direction = dir;
         this.recalculateAvatarRow();
-    };
-
-    // @todo move to utils!
-    Actor.prototype.directionFromVector = function(vec) {
-        var dir = Enum.Direction.NONE;
-        
-        if (vec[1] > 0) {
-            dir |= Enum.Direction.NORTH;
-        } else if (vec[1] < 0) {
-            dir |= Enum.Direction.SOUTH;
-        }
-        
-        if (vec[0] > 0) {
-            dir |= Enum.Direction.EAST;
-        } else if (vec[0] < 0) {
-            dir |= Enum.Direction.WEST;
-        }
-            
-        return dir;
     };
 
     Actor.prototype.say = function(message) {

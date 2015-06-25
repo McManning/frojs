@@ -20,7 +20,9 @@
 // Stuff that have no real home
 
 
-define([], function() {
+define([
+    'Enum'
+], function(Enum) {
 
     var htmlEntityMap = {
         "&": "&amp;",
@@ -179,10 +181,15 @@ define([], function() {
 
         /**
          * Simple shim for $.extend() to provide some inheritance for objects.
+         *
+         * @param {object} target to extend
+         * @param {object} source object to retrieve properties from
+         *
+         * @return {object}
          */
         extend: function(target, source) {
             Object.keys(source).map(function (prop) {
-                if (!(prop in target)) {
+                if (!target.hasOwnProperty(prop)) {
                     target[prop] = source[prop];
                 }
             });
@@ -191,6 +198,10 @@ define([], function() {
 
         /**
          * Fast string hashing.
+         *
+         * @param {string} s
+         *
+         * @return {string}
          */
         hash: function(s) {
             var i, c, hash = 0,
@@ -207,8 +218,32 @@ define([], function() {
             }
 
             return hash;
-        }
+        },
 
+        /** 
+         * Convert a vector to a cardinal direction.
+         *
+         * @param {vec2} vec
+         * 
+         * @return {Enum.Direction}
+         */
+        directionFromVector : function(vec) {
+            var dir = Enum.Direction.NONE;
+            
+            if (vec[1] > 0) {
+                dir |= Enum.Direction.NORTH;
+            } else if (vec[1] < 0) {
+                dir |= Enum.Direction.SOUTH;
+            }
+            
+            if (vec[0] > 0) {
+                dir |= Enum.Direction.EAST;
+            } else if (vec[0] < 0) {
+                dir |= Enum.Direction.WEST;
+            }
+                
+            return dir;
+        }
     };
 
 });

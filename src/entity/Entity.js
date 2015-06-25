@@ -50,25 +50,19 @@ define([
         return this.position;
     };
 
-    Entity.prototype.setPosition = function(x, y, z) {
+    /**
+     * Set the entity's position. Accepts either an (x,y) pair
+     * or an (x,y,z) to also specify the z-order.
+     *
+     * @param {vec2|vec3} position
+     */
+    Entity.prototype.setPosition = function(position) {
 
-        // if it's in the form of setPosition(vec3) 
-        if (typeof x === 'object') {
-            
-            this.position[0] = Math.floor(x[0]);
-            this.position[1] = Math.floor(x[1]);
-            this.position[2] = Math.floor(x[2]);
-            
-        } else {
-        
-            // Form setPosition(x, y)
-            this.position[0] = Math.floor(x);
-            this.position[1] = Math.floor(y);
-            
-            // If it's in the form setPosition(x, y, z)
-            if (z !== undefined) {
-                this.position[2] = Math.floor(z);
-            }
+        this.position[0] = Math.floor(position[0]);
+        this.position[1] = Math.floor(position[1]);
+
+        if (position.length > 2) {
+            this.position[2] = Math.floor(position[2]);
         }
         
         this.updateTranslation();

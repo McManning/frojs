@@ -81,7 +81,7 @@ define([
     /** 
      * Our loaded state depends on the loaded texture.
      *
-     * @return boolean
+     * @return {boolean}
      */
     Prop.prototype.isLoaded = function() {
         return this.image.isLoaded();
@@ -130,7 +130,7 @@ define([
     };
 
     /**
-     * @param rect r
+     * @param {rect} r
      */
     Prop.prototype.getBoundingBox = function(r) {
         
@@ -146,8 +146,8 @@ define([
     };
 
     /**
-     * @param rect r
-     * @return boolean
+     * @param {rect} r
+     * @return {boolean}
      */
     Prop.prototype.collides = function(r) {
         
