@@ -187,7 +187,26 @@ define([], function() {
                 }
             });
             return target;
+        },
+
+        /**
+         * Fast string hashing.
+         */
+        hash: function(string) {
+            var hash = 0;
+
+            if (string.length === 0) {
+                return hash;
+            }
+
+            for (var i = 0; i < string.length; i++) {
+                hash = ((hash << 5) - hash) + string.charCodeAt(i);
+                hash = hash & hash; // Convert to 32bit integer
+            }
+
+            return hash;
         }
+
     };
 
 });
