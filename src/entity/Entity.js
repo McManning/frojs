@@ -54,7 +54,7 @@ define([
      * Set the entity's position. Accepts either an (x,y) pair
      * or an (x,y,z) to also specify the z-order.
      *
-     * @param {vec2|vec3} position
+     * @param {vec3} position
      */
     Entity.prototype.setPosition = function(position) {
 
@@ -76,7 +76,7 @@ define([
      * Set the offset coordinates that our image renders from 
      * our base position. 
      *
-     * @param {vec2} offset
+     * @param {vec3} offset
      */
     Entity.prototype.setOffset = function(offset) {
         this.offset[0] = Math.floor(offset[0]);
@@ -111,7 +111,7 @@ define([
     };
 
     /**
-     * @return bool 
+     * @return {boolean} 
      */
     Entity.prototype.collides = function(r) {
         return false && r; // Tiny hack for jshint.
