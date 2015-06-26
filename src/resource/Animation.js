@@ -54,6 +54,7 @@ define([
             url: properties.url,
             width: properties.width,
             height: properties.height,
+            shader: properties.shader,
             fitToTexture: false
         });
 
@@ -91,7 +92,7 @@ define([
         ];
         
         for (var i = 0; i < requiredKeys.length; i++) {
-            if (!metadata.hasOwnProperty(i)) {
+            if (!metadata.hasOwnProperty(requiredKeys[i])) {
                 return false;
             }
         }
@@ -107,7 +108,7 @@ define([
     Animation.prototype.next = function(forceLoop) {
         
         // If our animation somehow lost the keyframe, play default
-        if (this.keyframes.hasOwnProperty(this.keyframe)) {
+        if (!this.keyframes.hasOwnProperty(this.keyframe)) {
             this.setKeyframe();
         }
 
@@ -184,6 +185,15 @@ define([
             this.clip[0] = x * this.width;
             this.clip[1] = y * this.height;
         }
+    };
+
+    /**
+     * Returns true if the underlying Image resource has fully loaded.
+     *
+     * @return {boolean}
+     */
+    Animation.prototype.isLoaded = function() {
+        return this.image.isLoaded();
     };
 
     Animation.prototype.onImageReady = function() {

@@ -24,8 +24,9 @@ define([
     'resource/Sound',
     'resource/Json',
     'resource/Shader',
-    'resource/FontImage'
-], function(EventHooks, Util, Image, Sound, Json, Shader, FontImage) {
+    'resource/FontImage',
+    'resource/Animation'
+], function(EventHooks, Util, Image, Sound, Json, Shader, FontImage, Animation) {
 
     // TODO: Rewrite a lot of this. I don't like the error list, I don't like how
     // the error handling works in general, etc. This can be a lot simpler, and a lot
@@ -40,7 +41,8 @@ define([
             'sound': Sound,
             'json': Json,
             'shader': Shader,
-            'text': FontImage
+            'text': FontImage,
+            'animation': Animation
         };
 
         this.context = context;
