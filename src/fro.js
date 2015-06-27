@@ -26,7 +26,7 @@ define([
     'World',
     'text!shaders/main.vs', // TODO: Maybe not include these shaders in the main package... 
     'text!shaders/main.fs'
-], function(Timers, Audio, Resources, Renderer, Camera, Input, 
+], function(Audio, Resources, Renderer, Camera, Input, 
             World, vertexShaderSource, fragmentShaderSource) {
 
     var FRAMERATE = 1000/30;
