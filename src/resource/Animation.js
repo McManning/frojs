@@ -23,6 +23,9 @@ define([
     'Timer'
 ], function(EventHooks, Util, Timer) {
 
+    // Minimum allowed display time for each frame.
+    var MINIMUM_FRAME_MS = 100;
+
     /** 
      * Definition of an animation/spritesheet. 
      * Handles setting framesets, animation timing, looping, etc. 
@@ -39,7 +42,7 @@ define([
         this.url = properties.url;
         this.width = properties.width;
         this.height = properties.height;
-        this.playing = true;
+        this.autoplay = !!properties.autoplay; // Optional, default false
         this.keyframes = properties.keyframes;
         this.clip = rect.create();
         this.keyframe = null; // So that setKeyframe() to 'undefined' forces default.
@@ -125,8 +128,8 @@ define([
         // pull out the delay for the next frame
         this.delay = this.keyframes[this.keyframe].frames[this.index+1];
 
-        // Limit frame display time so nobody can set a 1ms frame
-        this.delay = Math.max(this.delay, 100);
+        // Limit frame display time so nobody can set a ridiculously short delay
+        this.delay = Math.max(this.delay, MINIMUM_FRAME_MS);
 
         // pull out the frame number for the next frame
         this.index += 2;
@@ -197,6 +200,10 @@ define([
 
     Animation.prototype.onImageReady = function() {
         this.reset();
+
+        if (this.autoplay) {
+            this.play();
+        }
 
         // Notify listeners
         this.fire('onload', this);
