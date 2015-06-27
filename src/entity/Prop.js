@@ -18,19 +18,16 @@
  */
 
 define([
-    'entity/Entity',
-    'Timer'
-], function(Entity, Timer) {
+    'entity/Entity'
+], function(Entity) {
 
     function Prop(context, properties) {
         Entity.call(this, context, properties);
         
         this.width = properties.w;
         this.height = properties.h;
-        this.clip = rect.create();
         this.isRenderable = true; // Add this entity to the render queue
         this.collisions = [];
-        this.delay = 0;
 
         if (properties.hasOwnProperty('collisions')) {
             this.loadCollisions(properties.collisions);
@@ -41,18 +38,6 @@ define([
         }
         
         this.setPosition(properties.position);
-        
-        // If there's a delay key, this prop is animated.
-        // Our dimensions will define a clip of the image, rather than the whole thing
-        if (properties.hasOwnProperty('delay') && properties.delay > 0) {
-            this.delay = properties.delay;
-            this.frame = 0;
-            
-            this.animate.bind(this);
-            this.animateTimer = new Timer(this.animate, this.delay);
-            this.animateTimer.start();
-        }
-        
         this.image = context.resources.load(properties.image);
         
         // If it needs to load external resources, hook for errors
@@ -104,29 +89,8 @@ define([
         }
     };
 
-    Prop.prototype.animate = function() {
-        
-        if (this.delay > 0 && this.image.getTexture()) {
-        
-            this.frame = this.frame + 1;
-
-            // Determine if the next calculated frame is actually within the source image
-            if (this.image.getTextureWidth() >= (this.width * (this.frame + 1))) {
-
-                this.clip[0] = this.frame * this.width;
-                this.clip[1] = 0;
-                
-            } else { // loop to the start
-            
-                this.frame = 0;
-                this.clip[0] = 0;
-                this.clip[1] = 0;
-            }
-        }
-    };
-
     Prop.prototype.render = function() {
-        this.image.render(this.translation, 0, this.clip);
+        this.image.render(this.translation, 0.0);
     };
 
     /**
