@@ -18,6 +18,7 @@
  */
 
 define([
+    'Timer',
     'Audio',
     'Resources',
     'Renderer',
@@ -26,7 +27,7 @@ define([
     'World',
     'text!shaders/main.vs', // TODO: Maybe not include these shaders in the main package... 
     'text!shaders/main.fs'
-], function(Audio, Resources, Renderer, Camera, Input, 
+], function(Timer, Audio, Resources, Renderer, Camera, Input, 
             World, vertexShaderSource, fragmentShaderSource) {
 
     var FRAMERATE = 1000/30;
@@ -80,19 +81,16 @@ define([
         if ('world' in options) {
             this.world = new World(this, options.world);
         }
+
+        this.heartbeat = this.heartbeat.bind(this);
+        this.heartbeatTimer = new Timer(this.heartbeat, FRAMERATE);
     }
 
     Fro.prototype.run = function() {
     
         this.startTime = Date.now();
 
-        // Let timers start processing
-        this.timers.run();
-
-        this.interval = window.setInterval(
-            this.heartbeat.bind(this), 
-            FRAMERATE
-        );
+        this.heartbeatTimer.start();
     };
 
     Fro.prototype.heartbeat = function() {
