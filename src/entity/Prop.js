@@ -18,8 +18,9 @@
  */
 
 define([
-    'entity/Entity'
-], function(Entity) {
+    'entity/Entity',
+    'Timer'
+], function(Entity, Timer) {
 
     function Prop(context, properties) {
         Entity.call(this, context, properties);
@@ -47,9 +48,9 @@ define([
             this.delay = properties.delay;
             this.frame = 0;
             
-            this.animateInterval = context.timers.addInterval(
-                this, this.animate, this.delay
-            );
+            this.animate.bind(this);
+            this.animateTimer = new Timer(this.animate, this.delay);
+            this.animateTimer.start();
         }
         
         this.image = context.resources.load(properties.image);
@@ -70,7 +71,10 @@ define([
     Prop.prototype.constructor = Prop;
 
     Prop.prototype.destroy = function() {
-        this.context.timers.removeInterval(this.animateInterval);
+        if (this.animateTimer) {
+            this.animateTimer.stop();
+        }
+
         Entity.prototype.destroy.call(this);
     };
 

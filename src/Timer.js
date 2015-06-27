@@ -61,13 +61,16 @@ define([], function() {
         this.planned += this.interval;
 
         while (this.planned < now) {
-
+            
             //console.log('catch-up');
+
+            // TODO: The delta passed in isn't actually 0. It could be
+            // drift by a few milliseconds (or longer, depending on the callback)
             this.callback(this, 0);
             this.lastRun = this.planned;
             this.planned += this.interval;
-
-            this.actualRuns++;
+            
+            //this.actualRuns++;
         }
 
         //console.log(
@@ -102,10 +105,6 @@ define([], function() {
     Timer.prototype.stop = function() {
         this.running = false;
         window.clearTimeout(this.timeout);
-    };
-
-    Timer.prototype.destroy = function() {
-
     };
 
     return Timer;

@@ -19,8 +19,9 @@
 
 define([
     'EventHooks',
-    'Utility'
-], function(EventHooks, Util) {
+    'Utility',
+    'Timer'
+], function(EventHooks, Util, Timer) {
 
     /** 
      * Definition of an animation/spritesheet. 
@@ -70,11 +71,8 @@ define([
         }
 
         // Create an animation timer for this avatar
-        this.playInterval = context.timers.addInterval(
-            this, 
-            this.onInterval, 
-            this.delay
-        ); 
+        this.onTimer.bind(this);
+        this.animateTimer = new Timer(this.onTimer, this.delay);
     }
 
     /**
@@ -126,7 +124,10 @@ define([
         
         // pull out the delay for the next frame
         this.delay = this.keyframes[this.keyframe].frames[this.index+1];
-        
+
+        // Limit frame display time so nobody can set a 1ms frame
+        this.delay = Math.max(this.delay, 100);
+
         // pull out the frame number for the next frame
         this.index += 2;
 
@@ -162,8 +163,6 @@ define([
 
         this.index = 0;
         this.frame = 0;
-        this.delay = 0;
-
         this.next(false);
     };
 
@@ -216,49 +215,38 @@ define([
         }
     };
 
-    Animation.prototype.onInterval = function() {
+    Animation.prototype.onTimer = function() {
         
-        if (this.playing) {
-            this.next(false);
+        this.next(false);
 
-            // TODO: Probably not use Timers engine. The whole deal is that
-            // Timers is steady, so if there's a delay in processing, it'll
-            // re-run the callback constantly until it catches up. Animations
-            // don't matter, and we can skip playback of a few frames. Although
-            // I guess it technically doesn't know how many to skip, and this
-            // would prevent slowdown and instead actually skip.
+        // Update timer interval to the next frames display time
+        this.animationTimer.interval = this.delay;
 
-            // Update timer delay to the next frame's delay
-            // TODO: This line is dumb. Reference the interval instance or something.
-            this.context.timers.intervals[this.playInterval].delay = this.delay;
-        }
-
-        // TODO: If not playing, we need to reset the interval to something to check
-        // for playback, or reset. 
+        // TODO: Probably not use Timers engine. The whole deal is that
+        // Timers is steady, so if there's a delay in processing, it'll
+        // re-run the callback constantly until it catches up. Animations
+        // don't matter, and we can skip playback of a few frames. Although
+        // I guess it technically doesn't know how many to skip, and this
+        // would prevent slowdown and instead actually skip.
     };
 
     /**
      * Start automatic playback of the active keyframe animation.
      */
     Animation.prototype.play = function() {
-        this.playing = true;
-
-        // Update the timer to continue playback
-        var interval = this.context.timers.intervals[this.playInterval];
-        interval.delay = this.delay;
-        interval.lastRun = Date.now();
+        this.animateTimer.interval = this.delay;
+        this.animateTimer.start();
     };
 
     /**
      * Stop playback of the current keyframe animation.
      */
     Animation.prototype.stop = function() {
-        this.playing = false;
-
-        // TODO: Proper "stop". For now, we just set it to a large number
-        // to prevent it from running as often. 
-        var interval = this.context.timers.intervals[this.playInterval];
-        interval.delay = 100000;
+        this.animateTimer.stop();
+    };
+    
+    Animation.prototype.isPlaying = function() {
+        return this.animateTimer.running;
     };
 
     // Since each animation has an internal state, it can't be shared

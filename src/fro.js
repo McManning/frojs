@@ -18,7 +18,6 @@
  */
 
 define([
-    'Timers',
     'Audio',
     'Resources',
     'Renderer',
@@ -42,7 +41,6 @@ define([
         this.renderTime = -1;
 
         // Initialise submodules
-        this.timers = new Timers();
         this.resources = new Resources(this);
 
         this.audio = new Audio(this, options.audio || {});
