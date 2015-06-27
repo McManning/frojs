@@ -62,6 +62,10 @@ define([
             fitToTexture: false
         });
 
+        // Create an animation timer for this avatar
+        this.onTimer = this.onTimer.bind(this);
+        this.animateTimer = new Timer(this.onTimer, this.delay);
+
         this.onImageReady = this.onImageReady.bind(this);
         this.onImageError = this.onImageError.bind(this);
 
@@ -72,10 +76,6 @@ define([
         } else {
             this.onImageReady();
         }
-
-        // Create an animation timer for this avatar
-        this.onTimer = this.onTimer.bind(this);
-        this.animateTimer = new Timer(this.onTimer, this.delay);
     }
 
     /**
