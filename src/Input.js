@@ -163,10 +163,6 @@ define([
         // Allow the canvas to detect focus/blur events
         canvas.setAttribute('tabindex', -1);
         
-        // TODO: window versus document?
-        // TODO: These are all terrible, rewrite how we're adding listeners!
-        // I don't want to have to override everything!
-
         // Rebind methods in a way that forces `this` to scope to Input.
         // This way we can easily bind and unbind them to the DOM
         this.onCanvasFocus = this.onCanvasFocus.bind(this);
@@ -179,6 +175,7 @@ define([
         this.onWindowFocus = this.onWindowFocus.bind(this);
         this.onWindowBlur = this.onWindowBlur.bind(this);
 
+        // TODO: window versus document?
         // TODO: There's a reason I bound mousedown to canvas and not document. Why?
         canvas.addEventListener('mousedown', this.onMouseDown);
         canvas.addEventListener('focus', this.onCanvasFocus);
@@ -189,8 +186,12 @@ define([
 
         window.addEventListener('keyup', this.onKeyUp);
         window.addEventListener('keydown', this.onKeyDown);
-        window.addEventListener('focus', this.onWindowFocus);
-        window.addEventListener('blur', this.onWindowBlur);
+
+        // TODO: Not firing?
+        // Check out http://www.quirksmode.org/dom/events/blurfocus.html
+        // May need to tabindex the window, but that's kinda gross. 
+        window.onfocus = this.onWindowFocus; // addEventListener('focus', this.onWindowFocus);
+        window.onblur = this.onWindowBlur; // addEventListener('blur', this.onWindowBlur);
     }
 
     Input.prototype.onKeyDown = function(e) {

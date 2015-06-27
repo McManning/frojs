@@ -78,7 +78,7 @@ define([
         // If we specified a world at load time, create it as well.
         // Note this has to be done after shader loading because entities
         // loaded will need to know the default shader, if applicable.
-        if ('world' in options) {
+        if (options.hasOwnProperty('world')) {
             this.world = new World(this, options.world);
         }
 

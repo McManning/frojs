@@ -74,7 +74,7 @@ define([
         }
 
         // Create an animation timer for this avatar
-        this.onTimer.bind(this);
+        this.onTimer = this.onTimer.bind(this);
         this.animateTimer = new Timer(this.onTimer, this.delay);
     }
 
@@ -222,12 +222,12 @@ define([
         }
     };
 
-    Animation.prototype.onTimer = function() {
+    Animation.prototype.onTimer = function(timer) {
         
         this.next(false);
 
         // Update timer interval to the next frames display time
-        this.animationTimer.interval = this.delay;
+        timer.interval = this.delay;
 
         // TODO: Probably not use Timers engine. The whole deal is that
         // Timers is steady, so if there's a delay in processing, it'll
