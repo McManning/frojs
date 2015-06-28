@@ -20,10 +20,14 @@
 define([
     'Enum',
     'Utility',
+    'Timer',
     'entity/Entity'
-], function(Enum, Util, Entity) {
+], function(Enum, Util, Timer, Entity) {
 
     var MOVEMENT_DISTANCE = 16;
+
+    // TODO: Movement speed is too dependent on this value
+    var THINK_INTERVAL_MS = 50; 
 
     function Actor(context, properties) {
         Entity.call(this, context, properties);
@@ -39,10 +43,33 @@ define([
         this.directionNormal = vec3.create();
         
         this.setPosition(properties.position);
-        this.setNick(properties.nick || '');
+        this.setName(properties.name || '');
         
+        // Create a think timer for this avatar
+        this.onThink = this.onThink.bind(this);
+        this.thinkTimer = new Timer(this.onThink, THINK_INTERVAL_MS);
+        this.thinkTimer.start();
+
         if (properties.hasOwnProperty('avatar')) {
-            this.setAvatar(properties.avatar);
+            var avatar = context.resources.load(properties.avatar);
+            
+            // If it needs to load external resources, hook for errors
+            if (!avatar.isLoaded()) {
+            
+                // Bind and wait for the image to be loaded
+                var self = this;
+                this.avatar
+                    .bind('onload', function() {
+                        self.setAvatar(avatar);
+                    })
+                    .bind('onerror', function() {
+                        // TODO: do something, revert, load default, etc.
+                        throw new Error('Failed to load prop image for [' + self.id + ']');
+                    });
+            } else {
+                // load in
+                this.setAvatar(avatar);
+            }
         }
     }
 
@@ -172,13 +199,24 @@ define([
      * or an (x,y,z) to also specify the z-order. This will
      * also stop any automatic walking to a destination. 
      *
-     * @param {vec2|vec3} position
+     * @param {vec3} position
      */
     Actor.prototype.setPosition = function(position) {
         Entity.prototype.setPosition.call(this, position);
 
         vec3.set(this.position, this.destination);
         this.fire('move', this.position);
+    };
+
+    /** 
+     * Set the actor's destination position that they will automatically
+     * walk to. Accepts an (x,y) pair. TODO: Support z-order changing.
+     *
+     * @param {vec3} destination
+     */
+    Actor.prototype.setDestination = function(destination) {
+        this.destination[0] = Math.floor(destination[0]);
+        this.destination[1] = Math.floor(destination[1]);
     };
 
     /** 
@@ -210,6 +248,26 @@ define([
         this.recalculateAvatarRow();
     };
 
+    Actor.prototype.onThink = function() {
+
+        // Check for new actions on our buffer
+        if (!this.isMoving()) {
+            // this.controller.processActions()
+        }
+
+        // If we were moving, or new data on the buffer made us
+        // start moving, process the actual movement. 
+        if (this.isMoving()) {
+            this.processMovement();
+        } else {
+
+            // Go into an idle stance if not already
+            if (this.action === Enum.Action.MOVE) {
+                this.setAction(Enum.Action.IDLE);
+            }
+        }
+    };
+
     /** 
      * Moves our actor in order to match up our current position with our destination
      */
@@ -238,6 +296,10 @@ define([
         
         //console.log('Adjusted Distance: ' + distance);
         //console.log(direction);
+
+        if (this.action !== Enum.Action.MOVE) {
+            this.setAction(Enum.Action.MOVE);
+        }
         
         if (distance > 0) { // Move toward destination
         
@@ -253,18 +315,6 @@ define([
             Entity.prototype.setPosition.call(this, position);
         }
         
-        // Animate the step
-        // TODO: better logic here to delay step animations to every-other distance
-        if (this.step < 2) {
-            this.step += 1;
-        } else {
-            this.step = 0;
-            this.avatar.nextFrame(true);
-            
-            // Get the map to queue a resort of objects
-            this.context.world.resort();
-        }
-        
         // If our relative direction changed, make sure we reflect that
         var d = Util.directionFromVector(direction);
         
@@ -272,6 +322,18 @@ define([
             this.setDirection(d);
         }
 
+        // Animate the step
+        // TODO: better logic here to delay step animations to every-other distance
+        if (this.step < 2) {
+            this.step++;
+        } else {
+            this.step = 0;
+            this.avatar.next(true);
+            
+            // Get the map to queue a resort of objects
+            this.context.world.resort();
+        }
+        
         this.fire('move', this.position);
     };
 
@@ -313,6 +375,7 @@ define([
             row = '2';
         }
 
+        //console.log('row ' + frame + row + ' ' + Date.now());
         this.avatar.setKeyframe(frame + row);
     };
 
