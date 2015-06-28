@@ -310,12 +310,13 @@ define([
     };
     
     /**
-     * Helper function to determine where exactly in the canvas the cursor is located
-     * @return vec3 result, from (0,0) to (gl.viewportWidth,gl.viewportHeight)
-     * @todo may return negatives, and points outside the canvas. Need to ensure cursor is IN the canvas!
+     * Helper function to determine where exactly in the canvas 
+     * the cursor is located.
+     *
+     * @return {vec3} result, from (0,0) to (gl.viewportWidth,gl.viewportHeight)
      */
     Input.prototype.getCursorPosition = function() {
-
+        // TODO: Actually clip to the (0, 0) -> (viewport) as it doesn't currently.
         return this.cursorPosition;
     };
 
