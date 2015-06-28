@@ -62,7 +62,7 @@ define([
             fitToTexture: false
         });
 
-        // Create an animation timer for this avatar
+        // Create an animation timer for this animation
         this.onTimer = this.onTimer.bind(this);
         this.animateTimer = new Timer(this.onTimer, this.delay);
 
@@ -124,7 +124,8 @@ define([
         
         // Get the frame index (of the source image) to render
         this.frame = this.keyframes[this.keyframe].frames[this.index];
-        
+        //console.log('frame ' + this.frame + ' on ' + Date.now());
+
         // pull out the delay for the next frame
         this.delay = this.keyframes[this.keyframe].frames[this.index+1];
 
@@ -141,8 +142,8 @@ define([
      * Set the active keyframe and reset the animation from the beginning.
      * This method will try to gracefully degrade down to something that works
      *
-     * @param {String} key to apply 
-     * @param {Boolean} force true will ignore a match with the current keyframe
+     * @param {string} key to apply 
+     * @param {boolean} force true will ignore a match with the current keyframe
      */
     Animation.prototype.setKeyframe = function(key) {
 
@@ -157,6 +158,17 @@ define([
                 this.keyframe = Object.keys(this.keyframes)[0];
             }
         }
+    };
+
+    /**
+     * Returns true if the input keyframe key exists in this animation.
+     *
+     * @param {string} key
+     *
+     * @return {boolean}
+     */
+    Animation.prototype.hasKeyframe = function(key) {
+        return this.keyframes.hasOwnProperty(key);
     };
 
     /**
