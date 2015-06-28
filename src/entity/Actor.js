@@ -55,45 +55,57 @@ define([
     Actor.prototype = Object.create(Entity.prototype);
     Actor.prototype.constructor = Actor;
 
-    Actor.prototype.setNick = function(nick) {
-        this.nick = nick;
-        this.fire('nick', nick);
+    /**
+     * Set the display name of this Actor. This triggers a `name`
+     * event that can be handled by all plugins as appropriate
+     * (to update a nameplate, or send to the chatbox, etc).
+     * 
+     * @param {string} name to change to
+     */
+    Actor.prototype.setName = function(name) {
+        this.name = name;
+        this.fire('name', this);
     };
 
     /**
-     * Sets this.avatar to the new Avatar object, and reconfigures
+     * Sets this.avatar to the new Animation object, and reconfigures
      * the actor's properties as appropriate (resize, animation reset, etc)
+     *
+     * @param {Animation} animation to use as an avatar
      */
-    Actor.prototype.applyAvatar = function(avatar) {
-        this.avatar = avatar;
+    Actor.prototype.setAvatar = function(animation) {
+        this.avatar = animation;
+        this.fire('avatar', this);
         
-        this.width = avatar.getWidth();
-        this.height = avatar.getHeight();
-        
-        this.offset[1] = this.height * 0.5;
+        this.offset[1] = this.avatar.height * 0.5;
         this.updateTranslation();
         
         this.recalculateAvatarRow();
     };
 
-    Actor.prototype.setAvatar = function(id) {
-
-        // Delegate to plugins
-        this.fire('avatar.set', id);
+    /**
+     * Send a `say` message to everyone. This triggers a `say` event
+     * event that can be handled by all plugins as appropriate
+     * (to create word bubbles, or dialog, etc).
+     *
+     * @param {string} message to send
+     */
+    Actor.prototype.say = function(message) {
+        this.fire('say', message);
     };
 
     Actor.prototype.render = function() {
 
         if (this.avatar) {
-            this.avatar.render(this.translation);
+            this.avatar.render(this.translation, 0.0);
         }
     };
 
     /**
-     * @param dir Direction constant to test 
-     * @return boolean
+     * @param {Enum.Direction} direction to test 
+     * @return {boolean}
      */
-    Actor.prototype.canMove = function(dir) {
+    Actor.prototype.canMove = function(direction) {
 
         // TODO: test the points between current location and target (x, y)
         // For now, it assumes the distance is close enough to be negligible
@@ -101,15 +113,15 @@ define([
         var x = this.position[0];
         var y = this.position[1];
         
-        if (dir & Enum.Direction.NORTH) {
+        if (direction & Enum.Direction.NORTH) {
             y += MOVEMENT_DISTANCE;
-        } else if (dir & Enum.Direction.SOUTH) {
+        } else if (direction & Enum.Direction.SOUTH) {
             y -= MOVEMENT_DISTANCE;
         }
             
-        if (dir & Enum.Direction.EAST) {
+        if (direction & Enum.Direction.EAST) {
             x += MOVEMENT_DISTANCE;
-        } else if (dir & Enum.Direction.WEST) {
+        } else if (direction & Enum.Direction.WEST) {
             x -= MOVEMENT_DISTANCE;
         }
         
@@ -128,13 +140,13 @@ define([
      * Returns true if our current position does not match up with 
      *  our current destination
      *  
-     * @return boolean
+     * @return {boolean}
      */
     Actor.prototype.isMoving = function() {
 
         var pos = this.getPosition();
 
-        // @todo referencing action buffer???
+        // TODO: referencing action buffer???
         return (pos[0] !== this.destination[0] ||
                 pos[1] !== this.destination[1]);
     };
@@ -144,17 +156,17 @@ define([
      */
     Actor.prototype.getBoundingBox = function(r) {
 
-        // @todo factor in rotations and scaling
+        // TODO: factor in rotations and scaling
         // and utilize this.renderable.getTopLeft(), getBottomRight(), etc
         
         var pos = this.getPosition();
 
         r[0] = pos[0];
-        r[1] = pos[1] + this.height * 0.5;
+        r[1] = pos[1] + this.avatar.height * 0.5;
         
         if (this.avatar) {
-            r[2] = this.avatar.getWidth();
-            r[3] = this.avatar.getHeight();
+            r[2] = this.avatar.width;
+            r[3] = this.avatar.height;
         } else {
             r[2] = 0;
             r[3] = 0;
@@ -171,8 +183,8 @@ define([
     Actor.prototype.setPosition = function(position) {
         Entity.prototype.setPosition.call(this, position);
 
-        vec3.set(this.getPosition(), this.destination);
-        this.fire('move', this.getPosition());
+        vec3.set(this.position, this.destination);
+        this.fire('move', this.position);
     };
 
     /** 
@@ -192,6 +204,16 @@ define([
      */
     Actor.prototype.setSpeed = function(speed) {
         this.speed = speed;
+    };
+
+    /**
+     * Sets our actors "close enough" direction, and updates the avatar
+     * 
+     * @param {Enum.Direction} dir
+     */
+    Actor.prototype.setDirection = function(dir) {
+        this.direction = dir;
+        this.recalculateAvatarRow();
     };
 
     /** 
@@ -316,20 +338,6 @@ define([
         } else if (dir & Enum.Direction.WEST) {
             this.destination[0] -= MOVEMENT_DISTANCE;
         }
-    };
-
-    /**
-     * Sets our actors "close enough" direction, and updates the avatar
-     * 
-     * @param {Enum.Direction} dir
-     */
-    Actor.prototype.setDirection = function(dir) {
-        this.direction = dir;
-        this.recalculateAvatarRow();
-    };
-
-    Actor.prototype.say = function(message) {
-        this.fire('say', message);
     };
 
     return Actor;
