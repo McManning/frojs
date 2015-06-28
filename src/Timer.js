@@ -88,14 +88,16 @@ define([], function() {
      * fires will be now + this.interval milliseconds.
      */
     Timer.prototype.start = function() {
-        this.running = true;
-        this.planned = Date.now() + this.interval;
-        this.lastRun = Date.now();
-        //this.actual = Date.now();
+        if (!this.running) {
+            this.running = true;
+            this.planned = Date.now() + this.interval;
+            this.lastRun = Date.now();
+            //this.actual = Date.now();
 
-        this.timeout = window.setTimeout(
-            this.tick.bind(this), this.interval
-        );
+            this.timeout = window.setTimeout(
+                this.tick.bind(this), this.interval
+            );
+        }
     };
 
     /**
