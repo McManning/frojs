@@ -258,12 +258,18 @@ define([
         // If we were moving, or new data on the buffer made us
         // start moving, process the actual movement. 
         if (this.isMoving()) {
+            // Stop autoplay for the avatar, we'll let stepping handle it.
+            this.avatar.stop(); 
+
             this.processMovement();
         } else {
 
             // Go into an idle stance if not already
             if (this.action === Enum.Action.MOVE) {
                 this.setAction(Enum.Action.IDLE);
+                
+                // Start autoplaying the avatar again, if it's animated
+                this.avatar.play();
             }
         }
     };
