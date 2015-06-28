@@ -38,6 +38,7 @@ define([
         this.action = properties.action;
         this.speed = Enum.Speed.WALK;
         this.direction = properties.direction;
+        this.buffer = '';
 
         this.destination = vec3.create();
         this.directionNormal = vec3.create();
@@ -102,6 +103,16 @@ define([
         this.updateTranslation();
         
         this.recalculateAvatarRow();
+    };
+
+    /**
+     * Adds actions to our buffer to be processed by the actor.
+     *
+     * @param {string} buffer content to append to the current buffer
+     */
+    Actor.prototype.addToActionBuffer = function(buffer) {
+        this.fire('add.buffer', buffer);    
+        this.buffer += buffer;
     };
 
     /**
@@ -252,7 +263,7 @@ define([
 
         // Check for new actions on our buffer
         if (!this.isMoving()) {
-            // this.controller.processActions()
+            this.processActionBuffer();
         }
 
         // If we were moving, or new data on the buffer made us
@@ -271,6 +282,61 @@ define([
                 // Start autoplaying the avatar again, if it's animated
                 this.avatar.play();
             }
+        }
+    };
+
+    /**
+     * Walks through the buffer and perform the next action.
+     */
+    Actor.prototype.processActionBuffer = function() {
+        
+        var c, recheck, eraseCount, dir;
+
+        if (this.buffer) {
+            do {
+            
+                c = this.buffer.charAt(0);
+                dir = Util.charToDirection(c);
+                recheck = false;
+                eraseCount = 1;
+            
+                if (dir !== Enum.Direction.NONE) { // moving in direction
+                    this.stepInDirection(dir);
+                    
+                } else if (c === 'w') { // change speed to walk
+
+                    this.setSpeed(Enum.Speed.WALK);
+                    recheck = true;
+                    
+                } else if (c === 'r') { // change speed to run
+
+                    this.setSpeed(Enum.Speed.RUN);
+                    recheck = true;
+                    
+                } else if (c === 's') { // sit + 1 char for direction
+                    
+                    if (this.buffer.length > 1) {
+                        dir = this.charToDirection(this.buffer.charAt(1));
+                        this.setDirection(dir);
+                        eraseCount++;
+                    }
+
+                    this.setAction(Enum.Action.SIT);
+                    
+                } else if (c === 't') { // stand/turn + 1 char for direction
+                    
+                    if (this.buffer.length > 1) {
+                        dir = this.charToDirection(this.buffer.charAt(1));
+                        this.setDirection(dir);
+                        eraseCount++;
+                    }
+
+                    this.setAction(Enum.Action.IDLE);
+                }
+
+                this.buffer = this.buffer.substr(eraseCount);
+
+            } while (recheck && this.buffer);
         }
     };
 

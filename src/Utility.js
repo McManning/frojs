@@ -243,7 +243,35 @@ define([
             }
                 
             return dir;
+        },
+
+        /**
+         * Converts an Enum.Direction to a character that could be serialized.
+         *
+         * @param {Enum.Direction} direction to convert
+         *
+         * @return {string}
+         */
+        directionToChar : function(direction) {
+            return String.fromCharCode(65 + direction);
+        },
+
+        /**
+         * Returns a direction if the character can be translated to 
+         * a direction constant. If it cannot, will return Direction.NONE
+         *
+         * @return {Enum.Direction}
+         */
+        charToDirection : function(ch) {
+            
+            var dir = ch.charCodeAt(0) - 65;
+            if (dir >= Enum.Direction.NORTH && dir <= Enum.Direction.SOUTHWEST) {
+                return dir;
+            } else {
+                return Enum.Direction.NONE;
+            }
         }
+
     };
 
 });
