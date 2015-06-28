@@ -35,19 +35,13 @@ define([
         this.speed = Enum.Speed.WALK;
         this.direction = properties.direction;
 
-        // TODO: Are these two required/used?
-        this.width = 0;
-        this.height = 0;
-        
         this.destination = vec3.create();
         this.directionNormal = vec3.create();
         
-        this.setPosition(properties.x, properties.y, properties.z);
+        this.setPosition(properties.position);
         this.setNick(properties.nick || '');
         
-        this.setAvatar('default');
-        
-        if ('avatar' in properties) {
+        if (properties.hasOwnProperty('avatar')) {
             this.setAvatar(properties.avatar);
         }
     }
