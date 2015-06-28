@@ -103,8 +103,10 @@ define([], function() {
      * will not attempt to play catch-up after start(). 
      */
     Timer.prototype.stop = function() {
-        this.running = false;
-        window.clearTimeout(this.timeout);
+        if (this.running) {
+            this.running = false;
+            window.clearTimeout(this.timeout);
+        }
     };
 
     return Timer;
