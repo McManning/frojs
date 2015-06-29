@@ -59,7 +59,7 @@ define([
             
                 // Bind and wait for the image to be loaded
                 var self = this;
-                this.avatar
+                avatar
                     .bind('onload', function() {
                         self.setAvatar(avatar);
                     })
