@@ -141,40 +141,15 @@ define([
 
         // TODO: test the points between current location and target (x, y)
         // For now, it assumes the distance is close enough to be negligible
-
-        var x = this.position[0];
-        var y = this.position[1];
-
-        // Offset our destination based on desired direction from our current position
-        if (direction === Enum.Direction.NORTH || 
-            direction === Enum.Direction.NORTHWEST || 
-            direction === Enum.Direction.NORTHEAST) {
-
-            y += MOVEMENT_DISTANCE;
-        } else if (direction === Enum.Direction.SOUTH ||
-            direction === Enum.Direction.SOUTHWEST ||
-            direction === Enum.Direction.SOUTHEAST) {
-            
-            y -= MOVEMENT_DISTANCE;
-        }
         
-        if (direction === Enum.Direction.EAST ||
-            direction === Enum.Direction.SOUTHEAST ||
-            direction === Enum.Direction.NORTHEAST) {
+        var normal = Enum.Direction.toVec3(direction);
+        vec3.scale(normal, MOVEMENT_DISTANCE);
 
-            x += MOVEMENT_DISTANCE;
-        } else if (direction === Enum.Direction.WEST ||
-            direction === Enum.Direction.SOUTHWEST ||
-            direction === Enum.Direction.NORTHWEST) {
-
-            x -= MOVEMENT_DISTANCE;
-        }
-        
         // Collision rectangle is a 16x16 (@todo generate into this.collisions?)
         // TODO: optimize rect creation
         var r = rect.create([
-                    x - 8,
-                    y,
+                    this.position[0] + normal[0] - 8,
+                    this.position[1] + normal[1],
                     16, 16
                 ]);
         
