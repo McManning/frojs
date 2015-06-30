@@ -79,7 +79,7 @@ define([], function() {
                 switch (direction) {
                     case this.NORTH: v = [0, 1]; break;
                     case this.NORTHEAST: v = [1, 1]; break;
-                    case this.NORTHWEST: v = [0, -1]; break;
+                    case this.NORTHWEST: v = [-1, 1]; break;
                     case this.SOUTH: v = [0, -1]; break;
                     case this.SOUTHEAST: v = [1, -1]; break;
                     case this.SOUTHWEST: v = [-1, -1]; break;
