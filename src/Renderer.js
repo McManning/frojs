@@ -98,7 +98,7 @@ define([], function() {
         );
         this.gl.clearColor(0.0, 0.0, 0.0, 1.0);
 
-        if ('background' in options) {
+        if (options.hasOwnProperty('background')) {
             this.setClearColor(options.background);
         }
     }
