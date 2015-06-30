@@ -20,9 +20,7 @@
 // Stuff that have no real home
 
 
-define([
-    'Enum'
-], function(Enum) {
+define([], function() {
 
     var htmlEntityMap = {
         "&": "&amp;",
@@ -50,12 +48,12 @@ define([
          * 
          * @author http://delphic.me.uk/webgltext.html
          * 
-         * @param context ctx Canvas context rendering the string
-         * @param string textToWrite Text to be broken up into multiple lines
-         * @param number maxWidth Maximum width of a single line of text
-         * @param array text Split lines will be dumped into this array
+         * @param {context} ctx Canvas context rendering the string
+         * @param {string} textToWrite Text to be broken up into multiple lines
+         * @param {number} maxWidth Maximum width of a single line of text
+         * @param {array} text Split lines will be dumped into this array
          * 
-         * @return integer final width of the rendered text
+         * @return {integer} final width of the rendered text
          */
         createMultilineText : function(ctx, textToWrite, maxWidth, text) {
             textToWrite = textToWrite.replace("\n"," ");
@@ -218,60 +216,7 @@ define([
             }
 
             return hash;
-        },
-
-        /** 
-         * Convert a vector to a cardinal direction.
-         *
-         * @param {vec2} vec
-         * 
-         * @return {Enum.Direction}
-         */
-        directionFromVector : function(vec) {
-            var dir = Enum.Direction.NONE;
-            
-            if (vec[1] > 0) {
-                dir |= Enum.Direction.NORTH;
-            } else if (vec[1] < 0) {
-                dir |= Enum.Direction.SOUTH;
-            }
-            
-            if (vec[0] > 0) {
-                dir |= Enum.Direction.EAST;
-            } else if (vec[0] < 0) {
-                dir |= Enum.Direction.WEST;
-            }
-                
-            return dir;
-        },
-
-        /**
-         * Converts an Enum.Direction to a character that could be serialized.
-         *
-         * @param {Enum.Direction} direction to convert
-         *
-         * @return {string}
-         */
-        directionToChar : function(direction) {
-            return String.fromCharCode(65 + direction);
-        },
-
-        /**
-         * Returns a direction if the character can be translated to 
-         * a direction constant. If it cannot, will return Direction.NONE
-         *
-         * @return {Enum.Direction}
-         */
-        charToDirection : function(ch) {
-            
-            var dir = ch.charCodeAt(0) - 65;
-            if (dir >= Enum.Direction.NORTH && dir <= Enum.Direction.SOUTHWEST) {
-                return dir;
-            } else {
-                return Enum.Direction.NONE;
-            }
         }
-
     };
 
 });

@@ -144,16 +144,29 @@ define([
 
         var x = this.position[0];
         var y = this.position[1];
-        
-        if (direction & Enum.Direction.NORTH) {
+
+        // Offset our destination based on desired direction from our current position
+        if (direction === Enum.Direction.NORTH || 
+            direction === Enum.Direction.NORTHWEST || 
+            direction === Enum.Direction.NORTHEAST) {
+
             y += MOVEMENT_DISTANCE;
-        } else if (direction & Enum.Direction.SOUTH) {
+        } else if (direction === Enum.Direction.SOUTH ||
+            direction === Enum.Direction.SOUTHWEST ||
+            direction === Enum.Direction.SOUTHEAST) {
+            
             y -= MOVEMENT_DISTANCE;
         }
-            
-        if (direction & Enum.Direction.EAST) {
+        
+        if (direction === Enum.Direction.EAST ||
+            direction === Enum.Direction.SOUTHEAST ||
+            direction === Enum.Direction.NORTHEAST) {
+
             x += MOVEMENT_DISTANCE;
-        } else if (direction & Enum.Direction.WEST) {
+        } else if (direction === Enum.Direction.WEST ||
+            direction === Enum.Direction.SOUTHWEST ||
+            direction === Enum.Direction.NORTHWEST) {
+
             x -= MOVEMENT_DISTANCE;
         }
         
@@ -296,7 +309,7 @@ define([
             do {
             
                 c = this.buffer.charAt(0);
-                dir = Util.charToDirection(c);
+                dir = Enum.Direction.fromChar(c);
                 recheck = false;
                 eraseCount = 1;
             
@@ -316,7 +329,7 @@ define([
                 } else if (c === 's') { // sit + 1 char for direction
                     
                     if (this.buffer.length > 1) {
-                        dir = this.charToDirection(this.buffer.charAt(1));
+                        dir = Enum.Direction.fromChar(this.buffer.charAt(1));
                         this.setDirection(dir);
                         eraseCount++;
                     }
@@ -326,7 +339,7 @@ define([
                 } else if (c === 't') { // stand/turn + 1 char for direction
                     
                     if (this.buffer.length > 1) {
-                        dir = this.charToDirection(this.buffer.charAt(1));
+                        dir = Enum.Direction.fromChar(this.buffer.charAt(1));
                         this.setDirection(dir);
                         eraseCount++;
                     }
@@ -388,8 +401,8 @@ define([
         }
         
         // If our relative direction changed, make sure we reflect that
-        var d = Util.directionFromVector(direction);
-        
+        var d = Enum.Direction.fromVec3(direction);
+
         if (d !== this.direction) {
             this.setDirection(d);
         }
@@ -416,15 +429,24 @@ define([
     Actor.prototype.recalculateAvatarRow = function() {
         var row;
         
-        if (this.direction & Enum.Direction.NORTH) { // N/NE/NW
+        if (this.direction === Enum.Direction.NORTH ||
+            this.direction === Enum.Direction.NORTHEAST ||
+            this.direction === Enum.Direction.NORTHWEST) {
+
             row = 8;
-        } else if (this.direction & Enum.Direction.SOUTH) { // S/SE/SW
+        } else if (this.direction === Enum.Direction.SOUTH ||
+            this.direction === Enum.Direction.SOUTHEAST ||
+            this.direction === Enum.Direction.SOUTHWEST) {
+
             row = 2;
         } else if (this.direction === Enum.Direction.WEST) {
+
             row = 4;
         } else if (this.direction === Enum.Direction.EAST) {
+
             row = 6;
         } else { // default to south again, just in case
+
             row = 2;
         }
 
@@ -451,22 +473,12 @@ define([
         this.avatar.setKeyframe(frame + row);
     };
 
-    Actor.prototype.stepInDirection = function(dir) {
+    Actor.prototype.stepInDirection = function(direction) {
         
         vec3.set(this.getPosition(), this.destination);
         
-        // Offset our destination based on desired direction from our current position
-        if (dir & Enum.Direction.NORTH) {
-            this.destination[1] += MOVEMENT_DISTANCE;
-        } else if (dir & Enum.Direction.SOUTH) {
-            this.destination[1] -= MOVEMENT_DISTANCE;
-        }
-            
-        if (dir & Enum.Direction.EAST) {
-            this.destination[0] += MOVEMENT_DISTANCE;
-        } else if (dir & Enum.Direction.WEST) {
-            this.destination[0] -= MOVEMENT_DISTANCE;
-        }
+        var normal = Enum.Direction.toVec3(direction);
+        vec3.add(this.destination, vec3.scale(normal, MOVEMENT_DISTANCE));
     };
 
     return Actor;
