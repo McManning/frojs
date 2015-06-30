@@ -25,10 +25,11 @@ define([
     'Camera',
     'Input',
     'World',
+    'Player',
     'text!shaders/main.vs', // TODO: Maybe not include these shaders in the main package... 
     'text!shaders/main.fs'
 ], function(Timer, Audio, Resources, Renderer, Camera, Input, 
-            World, vertexShaderSource, fragmentShaderSource) {
+            World, Player, vertexShaderSource, fragmentShaderSource) {
 
     var FRAMERATE = 1000/30;
 
@@ -81,6 +82,8 @@ define([
         if (options.hasOwnProperty('world')) {
             this.world = new World(this, options.world);
         }
+
+        this.player = new Player(this, options.player);
 
         this.heartbeat = this.heartbeat.bind(this);
         this.heartbeatTimer = new Timer(this.heartbeat, FRAMERATE);
