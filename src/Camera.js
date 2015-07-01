@@ -34,6 +34,10 @@ define([
         this.translation = vec3.create();
         this.bounds = rect.create();
         this.context = context;
+
+        if (options.hasOwnProperty('bounds')) {
+            this.setBounds(options.bounds);
+        }
     }
 
     Camera.prototype.setupViewport = function() {
