@@ -173,8 +173,6 @@ define([
         var gl = this.context.renderer.getGLContext();
 
         // TODO: reduce these equations
-        result[0] = (pos[0] - gl.viewportWidth * 0.5) * this.zoom + this.position[0];
-        result[1] = (gl.viewportHeight - pos[1] - gl.viewportHeight * 0.5 ) * this.zoom + this.position[1];
         result[0] = Math.floor((pos[0] - gl.viewportWidth * 0.5) * this.zoom + this.position[0]);
         result[1] = Math.floor((gl.viewportHeight - pos[1] - gl.viewportHeight * 0.5 ) * this.zoom + this.position[1]);
     };
