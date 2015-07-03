@@ -29,7 +29,7 @@ define([
      * New entity type that is just an Actor's nickname
      * floating overhead, and attached to some parent Actor.
      */
-    function ActorNametag(context, properties) {
+    function Nametag(context, properties) {
         Entity.call(this, context, properties);
         
         this.isRenderable = true; // Add this entity to the render queue
@@ -41,38 +41,43 @@ define([
         // Move our Z-order up to the UI layer
         this.position[2] = NICKNAME_ZORDER;
         
-        this.trackedEntity = properties.entity;
-
-        // bind events to our tracked entity (talking, moving, deleting)
-        this.trackedEntity.bind('name.nickname', this, function(name) {
-            
-            this.change(name);
-        
-        }).bind('move.nickname, avatar.nickname', this, function() { // TODO: fix the avatar.nickname bind
-            
-            this.updatePosition();
-            
-        }).bind('destroy.nickname', this, function() {
-            
-            this.destroy();
-        });
-        
-        // Render their current name
-        this.change(this.trackedEntity.name);
+        this.updateText = this.updateText.bind(this);
+        this.updatePosition = this.updatePosition.bind(this);
     }
 
-    ActorNametag.prototype = Object.create(Entity.prototype);
-    ActorNametag.prototype.constructor = ActorNametag;
+    Nametag.prototype = Object.create(Entity.prototype);
+    Nametag.prototype.constructor = Nametag;
 
-    ActorNametag.prototype.change = function(name) {
+    /**
+     * Override to bind parent update events to also update this nametag.
+     *
+     * @param {Entity} entity
+     */
+    Nametag.prototype.setParent = function(entity) {
+        Entity.prototype.setParent.call(this, entity);
+
+        if (entity) {
+            entity
+                .bind('name.nickname', this.updateText)
+                .bind('move.nickname, avatar.nickname', this.updatePosition);
+
+            this.updateText(entity.name);
+            this.updatePosition();
+        }
+    };
+
+    /**
+     * Update displayed text to the new parent name.
+     */
+    Nametag.prototype.updateText = function() {
         
-        if (name.length < 1) { // No nickname, hide this entity
+        if (this.parent.name.length < 1) { // No nickname, hide this entity
             this.visible = false;
             
         } else {
             // regenerate a name texture, unmanaged by resources (TODO: manage?)
             this.image = new FontImage(this.context, {
-                text: name,
+                text: this.parent.name,
                 fontFamily: this.fontFamily,
                 fontColor: this.fontColor,
                 fontHeight: this.fontHeight,
@@ -83,21 +88,22 @@ define([
         }
     };
 
-    ActorNametag.prototype.updatePosition = function() {
- 
-        var epos = this.trackedEntity.getPosition();        
-        var r = rect.create();
+    Nametag.prototype.updatePosition = function() {
+        this.position[0] = 0;
+        this.position[1] = 0;
 
-        this.trackedEntity.getBoundingBox(r);
-        
-        this.position[0] = epos[0];
-        this.position[1] = epos[1] + r[3] + 10; // Above the tracked entity's head
-        
-        this.translation[0] = this.position[0];
-        this.translation[1] = this.position[1] + epos[2];
+        // If the parent actor has an avatar, 
+        // move the nametag above it. 
+        if (this.parent.avatar) {
+            this.position[1] = this.parent.avatar.height + 10;
+        } else {
+            this.position[1] = 0;
+        }
+
+        this.updateTranslation();
     };
 
-    ActorNametag.prototype.render = function() {
+    Nametag.prototype.render = function() {
 
         this.image.render(this.translation, 0.0);
     };
@@ -105,7 +111,7 @@ define([
     /**
      * @param {rect} r
      */
-    ActorNametag.prototype.getBoundingBox = function(r) {
+    Nametag.prototype.getBoundingBox = function(r) {
 
         // TODO: factor in rotations and scaling
         // and utilize this.renderable.getTopLeft(), getBottomRight(), etc
@@ -137,7 +143,7 @@ define([
     NametagPlugin.prototype.onNewEntity = function(entity) {
 
         if (entity instanceof Actor) {
-            var nametag = new ActorNametag(this.context, {
+            var nametag = new Nametag(this.context, {
                 entity: entity,
                 fontFamily: this.fontFamily,
                 fontColor: this.fontColor,
@@ -145,7 +151,9 @@ define([
             });
 
             this.context.world.add(nametag);
-            // TODO: Some way of referencing this entity from the Actor?
+
+            // Connect the nametag as a child of the actor
+            entity.addChild(nametag);
         }
     };
 
