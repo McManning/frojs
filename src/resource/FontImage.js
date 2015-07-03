@@ -73,7 +73,7 @@ define([
             }
         } else {
             textLines.push(text);
-            w = ctx.measureText(text).width;
+            w = Math.ceil(ctx.measureText(text).width);
         }
 
         h = this.fontHeight * textLines.length;

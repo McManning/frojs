@@ -85,7 +85,7 @@ define([], function() {
             }
             
             text.push(currentText); // Write this line of text to the array
-            maxLineWidth = ctx.measureText(currentText).width;
+            maxLineWidth = Math.ceil(ctx.measureText(currentText).width);
             
             // If there is any text left to be written call the function again
             if (futureText) {
