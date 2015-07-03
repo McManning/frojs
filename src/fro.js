@@ -26,12 +26,9 @@ define([
     'Input',
     'World',
     'Player',
-    'text!shaders/main.vs', // TODO: Maybe not include these shaders in the main package... 
-    'text!shaders/main.fs',
     'plugins/Nametag'
 ], function(Timer, Audio, Resources, Renderer, Camera, Input, 
-            World, Player, vertexShaderSource, fragmentShaderSource,
-            NametagPlugin) {
+            World, Player, NametagPlugin) {
 
     var FRAMERATE = 1000/30;
 
@@ -52,32 +49,6 @@ define([
         this.renderer = new Renderer(this, options.renderer || {});
         this.camera = new Camera(this, options.camera || {});
         this.input = new Input(this, options.input || {});
-
-        // Load our packaged default shader
-        //var self = this;
-        this.resources
-            .load({
-                id: 'shader:default',
-                type: 'shader',
-                vertex: vertexShaderSource,
-                fragment: fragmentShaderSource,
-                uniforms: [
-                    'uTime',
-                    'uCamera',
-                    'uClip',
-                    'uSampler',
-                    'uMVMatrix',
-                    'uPMatrix'
-                ],
-                attributes: [
-                    'aVertexPosition',
-                    'aTextureCoord'
-                ]
-            });
-
-        // TODO: Shader resources are written a bit odd right now 
-        // and don't have event callbacks after loading. Instead, they
-        // just automatically attach themselves to the renderer.
 
         // If we specified a world at load time, create it as well.
         // Note this has to be done after shader loading because entities

@@ -17,7 +17,11 @@
  *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-define([], function() {
+define([
+    'text!shaders/main.vs',
+    'text!shaders/main.fs',
+], function(vertexShaderSource, fragmentShaderSource) {
+
     function Renderer(context, options) {
 
         this.canvas = options.canvas;
@@ -101,6 +105,31 @@ define([], function() {
         if (options.hasOwnProperty('background')) {
             this.setClearColor(options.background);
         }
+
+        // Load default shader
+
+        // This is a slight hack to ensure renderer context is
+        // defined prior to loading the shader resource
+        context.renderer = this; 
+
+        this.defaultShader = context.resources.load({
+            id: 'shader:default',
+            type: 'shader',
+            vertex: vertexShaderSource,
+            fragment: fragmentShaderSource,
+            uniforms: [
+                'uTime',
+                'uCamera',
+                'uClip',
+                'uSampler',
+                'uMVMatrix',
+                'uPMatrix'
+            ],
+            attributes: [
+                'aVertexPosition',
+                'aTextureCoord'
+            ]
+        });
     }
 
     Renderer.prototype.isWebGL = function() {
@@ -188,6 +217,11 @@ define([], function() {
      */
     Renderer.prototype.useShader = function(shader) {
 
+        // TODO: Maybe actually throw an error here?
+        if (!shader) {
+            shader = this.getDefaultShader();
+        }
+
         this.currentShader = shader;
         this.gl.useProgram(shader.getProgram());
     };
@@ -214,6 +248,16 @@ define([], function() {
         return this.shaders[id];
     };
     
+    Renderer.prototype.getDefaultShader = function() {
+
+        return this.defaultShader;
+    };
+
+    Renderer.prototype.setDefaultShader = function(shader) {
+
+        this.defaultShader = shader;
+    };
+
     // @todo the functionality of changing active shaders.
     // Need to take in account that we probably need to link a vs/fs to 
     // the same program, causing duplicates if we have duplicates in sets.
