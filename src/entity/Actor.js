@@ -97,12 +97,13 @@ define([
      */
     Actor.prototype.setAvatar = function(animation) {
         this.avatar = animation;
-        this.fire('avatar', this);
         
         this.offset[1] = this.avatar.height * 0.5;
         this.updateTranslation();
         
         this.recalculateAvatarRow();
+
+        this.fire('avatar', this);
     };
 
     /**
