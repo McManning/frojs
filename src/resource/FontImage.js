@@ -24,6 +24,7 @@ define([
 
     // Create an internal worker canvas used to render text to textures
     var workerCanvas = document.createElement('canvas');
+    //document.querySelector('body').appendChild(workerCanvas);
     
     function FontImage(context, properties) {
         Image.call(this, context, properties);
@@ -36,9 +37,9 @@ define([
         this.width = 0;
         this.height = 0;
         this.maxWidth = properties.maxWidth || 0;
-        this.fontHeight = properties.height || 16;
-        this.fontFamily = properties.family || '"Helvetica Neue", Helvetica, Arial, sans-serif';
-        this.fontColor = properties.color || 'rgb(0,0,0)';
+        this.fontHeight = properties.fontHeight || 16;
+        this.fontFamily = properties.fontFamily || '"Helvetica Neue", Helvetica, Arial, sans-serif';
+        this.fontColor = properties.fontColor || 'rgb(0,0,0)';
 
         this.generateFontTexture();
         
@@ -116,6 +117,10 @@ define([
 
     FontImage.prototype.getTextureHeight = function() {
         return this.height;
+    };
+
+    FontImage.prototype.isLoaded = function() {
+        return true;
     };
 
     return FontImage;
