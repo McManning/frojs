@@ -181,14 +181,15 @@ define([
         // and utilize this.renderable.getTopLeft(), getBottomRight(), etc
         
         var pos = this.getPosition();
-
-        r[0] = pos[0];
-        r[1] = pos[1] + this.avatar.height * 0.5;
         
         if (this.avatar) {
+            r[0] = pos[0];
+            r[1] = pos[1] + this.avatar.height * 0.5;
             r[2] = this.avatar.width;
             r[3] = this.avatar.height;
         } else {
+            r[0] = pos[0];
+            r[1] = pos[1];
             r[2] = 0;
             r[3] = 0;
         }
