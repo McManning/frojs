@@ -54,10 +54,10 @@ define([
             this.shader = context.renderer.getDefaultShader();
         }
 
-        this.fitToTexture = properties.fitToTexture;
+        this.fitToTexture = properties.fitToTexture || true;
         
         // If this image resource uses an external url, load it as a texture
-        if ('url' in properties) {
+        if (properties.hasOwnProperty('url')) {
             this.url = properties.url;
             
             this.image = new window.Image();
@@ -71,7 +71,7 @@ define([
                     textures, so here we would perform the conversion
                     and test for any errors that may occur
                 */
-                self.setupTexture();
+                self.setupTexture(self.image);
                 
                 self.fire('onload', self);
             };
@@ -80,6 +80,10 @@ define([
             this.image.onerror = function() { 
                 self.fire('onerror', self);
             };
+        } else if (properties.hasOwnProperty('canvas')) {
+            // Image source is a canvas element. 
+            // Clone the canvas into a texture
+            this.setupTexture(properties.canvas);
         }
     }
     
@@ -87,30 +91,16 @@ define([
      * Construct this.texture from this.img Image resource
      * and resource properties
      */
-    Image.prototype.setupTexture = function() {
+    Image.prototype.setupTexture = function(source) {
 
-        // Make sure our image is actually loaded
-        if (!this.isLoaded()) {
-            throw new Error('Cannot get texture, image not yet loaded for [' + this.id + ']');
-        }
-
-        this.texture = this.context.renderer.createTexture(this.image);
+        this.texture = this.context.renderer.createTexture(source);
         this.buildVertexBuffer();
         this.buildTextureBuffer();
     };
 
     Image.prototype.isLoaded = function() {
 
-        if (!this.image || !this.image.complete) {
-            return false;
-        }
-        
-        if (typeof this.image.naturalWidth !== 'undefined' && 
-            this.image.naturalWidth === 0) {
-            return false;
-        }
-        
-        return true;
+        return !!this.texture;
     };
 
     Image.prototype.getTexture = function() {
@@ -241,11 +231,21 @@ define([
     };
 
     Image.prototype.getTextureWidth = function() {
-        return this.image.width;
+        if (this.image) {
+            return this.image.width;
+        } else {
+            // Assume texture width is same as image width
+            return this.width;
+        }
     };
 
     Image.prototype.getTextureHeight = function() {
-        return this.image.height;
+        if (this.image) {
+            return this.image.height;
+        } else {
+            // Assume texture height is same as image height
+            return this.height;
+        }
     };
 
     // Resource can be cached and reused
