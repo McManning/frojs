@@ -86,7 +86,7 @@ define([
         workerCanvas.height = h;
 
         // Clear canvas
-        ctx.clearRect(0, 0, workerCanvas.width, workerCanvas.height);
+        ctx.clearRect(0, 0, w, h);
 
         // Render text
         textX = w / 2;
