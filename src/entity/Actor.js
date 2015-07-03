@@ -77,6 +77,14 @@ define([
     Actor.prototype = Object.create(Entity.prototype);
     Actor.prototype.constructor = Actor;
 
+    Actor.prototype.destroy = function() {
+        if (this.thinkTimer) {
+            this.thinkTimer.stop();
+        }
+
+        Entity.prototype.destroy.call(this);
+    };
+
     /**
      * Set the display name of this Actor. This triggers a `name`
      * event that can be handled by all plugins as appropriate
@@ -124,7 +132,11 @@ define([
      * @param {string} message to send
      */
     Actor.prototype.say = function(message) {
-        this.fire('say', message);
+
+        this.fire('say', {
+            entity: this,
+            message: message
+        });
     };
 
     Actor.prototype.render = function() {
@@ -176,12 +188,10 @@ define([
      * @param {rect} r
      */
     Actor.prototype.getBoundingBox = function(r) {
-
         // TODO: factor in rotations and scaling
-        // and utilize this.renderable.getTopLeft(), getBottomRight(), etc
         
-        var pos = this.getPosition();
-        
+        var pos = this.position;
+
         if (this.avatar) {
             r[0] = pos[0];
             r[1] = pos[1] + this.avatar.height * 0.5;
@@ -236,6 +246,7 @@ define([
      * @param {Enum.Speed} speed
      */
     Actor.prototype.setSpeed = function(speed) {
+
         this.speed = speed;
     };
 
