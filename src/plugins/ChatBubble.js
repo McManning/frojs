@@ -48,7 +48,7 @@ define([
             (BUBBLE_MIN_TTL * Math.ceil(this.text.length / 50));
         this.fontFamily = properties.fontFamily || 'sans-serif';
         this.fontColor = properties.fontColor || '#000000';
-        this.fontHeight = properties.fontHeight || 14;
+        this.fontSize = properties.fontSize || 14;
         this.maxWidth = properties.maxWidth || 256;
         this.minWidth = properties.minWidth || 25;
         this.padding = properties.padding || 7;
@@ -94,7 +94,7 @@ define([
             throw new Error('No text');
         }
         
-        ctx.font = this.fontHeight + 'px ' + this.fontFamily;
+        ctx.font = this.fontSize + 'px ' + this.fontFamily;
 
         var w, h, textY;
         var textLines = [];
@@ -108,10 +108,10 @@ define([
             }
         } else {
             textLines.push(text);
-            w = ctx.measureText(text).width;
+            w = Math.ceil(ctx.measureText(text).width);
         }
 
-        h = this.fontHeight * textLines.length;
+        h = this.fontSize * textLines.length;
 
         // Add in padding for the bubble
         if (this.padding) {
@@ -119,7 +119,7 @@ define([
             w += this.padding * 2;
         }
 
-        var arrowHeight = this.fontHeight / 2;
+        var arrowHeight = this.fontSize / 2;
         
         h += arrowHeight;
         
@@ -202,14 +202,14 @@ define([
         ctx.textAlign = 'center';
         
         ctx.textBaseline = 'middle'; // top/middle/bottom
-        ctx.font = this.fontHeight + 'px ' + this.fontFamily;
+        ctx.font = this.fontSize + 'px ' + this.fontFamily;
         
-        var textTopPadding = this.padding + this.fontHeight / 2;
+        var textTopPadding = this.padding + this.fontSize / 2;
         
         // draw lines
         for (var i = 0; i < textLines.length; i++) {
         
-            textY = i * this.fontHeight + textTopPadding;
+            textY = i * this.fontSize + textTopPadding;
             ctx.fillText(textLines[i], m, textY);
         }
 

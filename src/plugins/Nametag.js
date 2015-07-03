@@ -36,7 +36,7 @@ define([
 
         this.fontFamily = properties.fontFamily || 'sans-serif';
         this.fontColor = properties.fontColor || '#000000';
-        this.fontHeight = properties.fontHeight || 14;
+        this.fontSize = properties.fontSize || 14;
 
         // Move our Z-order up to the UI layer
         this.position[2] = NICKNAME_ZORDER;
@@ -80,7 +80,7 @@ define([
                 text: this.parent.name,
                 fontFamily: this.fontFamily,
                 fontColor: this.fontColor,
-                fontHeight: this.fontHeight
+                fontSize: this.fontSize
             });
         
             this.updatePosition();
@@ -125,10 +125,7 @@ define([
     function Plugin(context, options) {
 
         this.context = context;
-
-        this.fontFamily = options.fontFamily;
-        this.fontColor = options.fontColor;
-        this.fontHeight = options.fontHeight;
+        this.options = options;
 
         this.onNewEntity = this.onNewEntity.bind(this);
         context.world.bind('add.entity', this.onNewEntity);
@@ -142,11 +139,7 @@ define([
     Plugin.prototype.onNewEntity = function(entity) {
 
         if (entity instanceof Actor) {
-            var nametag = new Nametag(this.context, {
-                fontFamily: this.fontFamily,
-                fontColor: this.fontColor,
-                fontHeight: this.fontHeight
-            });
+            var nametag = new Nametag(this.context, this.options);
 
             this.context.world.add(nametag);
 
