@@ -41,7 +41,6 @@ require([
                     avatar: { // image: {
                         type: 'animation',
                         url: "http://i.imgur.com/MAT9aD2.png", // Original frojs default avatar
-                        shader: 'shader:default', // SIGH.
                         autoplay: true,
                         width: 32,
                         height: 64,

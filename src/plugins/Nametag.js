@@ -80,8 +80,7 @@ define([
                 text: this.parent.name,
                 fontFamily: this.fontFamily,
                 fontColor: this.fontColor,
-                fontHeight: this.fontHeight,
-                shader: 'shader:default'
+                fontHeight: this.fontHeight
             });
         
             this.updatePosition();

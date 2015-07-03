@@ -47,7 +47,13 @@ define([
 
         this.width = properties.width;
         this.height = properties.height;
-        this.shader = context.renderer.getShader(properties.shader); // TODO: handle default shader (if missing parameter)
+
+        if (properties.hasOwnProperty('shader') && properties.shader) {
+            this.shader = context.renderer.getShader(properties.shader);
+        } else {
+            this.shader = context.renderer.getDefaultShader();
+        }
+
         this.fitToTexture = properties.fitToTexture;
         
         // If this image resource uses an external url, load it as a texture
