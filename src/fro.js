@@ -27,15 +27,18 @@ define([
     'World',
     'Player',
     'text!shaders/main.vs', // TODO: Maybe not include these shaders in the main package... 
-    'text!shaders/main.fs'
+    'text!shaders/main.fs',
+    'plugins/Nametag'
 ], function(Timer, Audio, Resources, Renderer, Camera, Input, 
-            World, Player, vertexShaderSource, fragmentShaderSource) {
+            World, Player, vertexShaderSource, fragmentShaderSource,
+            NametagPlugin) {
 
     var FRAMERATE = 1000/30;
 
     function Fro(options) {
 
         this.options = options;
+        this.plugins = {};
 
         // Set up properties to record framerates
         this.framerates = [];
@@ -87,6 +90,10 @@ define([
 
         this.heartbeat = this.heartbeat.bind(this);
         this.heartbeatTimer = new Timer(this.heartbeat, FRAMERATE);
+
+        // Add nametag plugin here randomly because fuck it.
+        // TODO: Figure out plugin loaders from the outside...
+        this.plugins.nametag = new NametagPlugin(this, {});
     }
 
     Fro.prototype.run = function() {
