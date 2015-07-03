@@ -204,30 +204,21 @@ define([
         // TODO: Allow this to be callable from the world anyway, 
         // and not just entity.destroy()
 
-        for (var i = 0; i < this.renderableEntities.length; i++) {
-            if (this.renderableEntities[i] === entity) {
-
-                this.fire('remove.entity', entity);
-                delete this.renderableEntities[i];
-
-                // TODO: array cleanup somewhere after all iterations
-                // are complete, since delete just nullfies
-                return true;
-            }
+        var index = this.renderableEntities.indexOf(entity);
+        if (~index) {
+            this.renderableEntities.splice(index, 1);
+            this.fire('remove.entity', entity);
+            return true;
         }
-        
-        for (var j = 0; j < this.otherEntities.length; j++) {
-            if (this.otherEntities[j] === entity) {
 
-                this.fire('remove.entity', entity);
-                delete this.otherEntities[j];
-                
-                // TODO: array cleanup somewhere after all iterations
-                // are complete, since delete just nullfies
-                return true;
-            }
+        // If not in that list, try non-renderables
+        index = this.otherEntities.indexOf(entity);
+        if (~index) {
+            this.otherEntities.splice(index, 1);
+            this.fire('remove.entity', entity);
+            return true;
         }
-        
+
         return false;
     };
 
