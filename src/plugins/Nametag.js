@@ -58,8 +58,8 @@ define([
 
         if (entity) {
             entity
-                .bind('name.nickname', this.updateText)
-                .bind('move.nickname, avatar.nickname', this.updatePosition);
+                .bind('name.Nametag', this.updateText)
+                .bind('move.Nametag, avatar.Nametag', this.updatePosition);
 
             this.updateText(entity.name);
             this.updatePosition();
@@ -122,7 +122,7 @@ define([
         r[3] = this.image.height;
     };
 
-    function NametagPlugin(context, options) {
+    function Plugin(context, options) {
 
         this.context = context;
 
@@ -139,11 +139,10 @@ define([
         }
     }
 
-    NametagPlugin.prototype.onNewEntity = function(entity) {
+    Plugin.prototype.onNewEntity = function(entity) {
 
         if (entity instanceof Actor) {
             var nametag = new Nametag(this.context, {
-                entity: entity,
                 fontFamily: this.fontFamily,
                 fontColor: this.fontColor,
                 fontHeight: this.fontHeight
@@ -156,5 +155,5 @@ define([
         }
     };
 
-    return NametagPlugin;
+    return Plugin;
 });
