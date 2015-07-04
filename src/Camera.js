@@ -22,6 +22,10 @@ define([
     'Utility'
 ], function(EventHooks, Util) {
 
+    // TODO: Make the camera an entity child, so follow is done just by parenting.
+    // As well, if the child entity is destroyed, don't destroy the camera and instead
+    // delink and re-associate with the world's root entity (when applicable)
+
     function Camera(context, options) {
         Util.extend(this, EventHooks); // Allow events to be fired from the camera
         // jshint unused:false
@@ -169,12 +173,17 @@ define([
         }
     };
     
-    Camera.prototype.canvasVec3ToWorld = function(pos, result) {
+    Camera.prototype.canvasVec3ToWorld = function(position) {
         var gl = this.context.renderer.getGLContext();
 
         // TODO: reduce these equations
-        result[0] = Math.floor((pos[0] - gl.viewportWidth * 0.5) * this.zoom + this.position[0]);
-        result[1] = Math.floor((gl.viewportHeight - pos[1] - gl.viewportHeight * 0.5 ) * this.zoom + this.position[1]);
+        // TODO: Equations are screwed. Resolve. 
+        position[0] = Math.floor((position[0] - gl.viewportWidth * 0.5) * this.zoom + this.position[0]);
+        position[1] = Math.floor((gl.viewportHeight - position[1] - gl.viewportHeight * 0.5 ) * this.zoom + this.position[1]);
+    
+        // off by 400 300 when zoom = 0.5
+        // off by 200 150 REAL pixels when zoom = 2  (0.5x zoom)
+        // width * this.zoom 
     };
 
     /**
