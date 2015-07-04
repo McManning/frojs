@@ -26,9 +26,10 @@ define([
     'Input',
     'World',
     'Player',
-    'plugins/Nametag'
+    'plugins/Nametag',
+    'plugins/ChatBubble'
 ], function(Timer, Audio, Resources, Renderer, Camera, Input, 
-            World, Player, NametagPlugin) {
+            World, Player, NametagPlugin, ChatBubblePlugin) {
 
     var FRAMERATE = 1000/30;
 
@@ -59,24 +60,39 @@ define([
 
         this.player = new Player(this, options.player);
 
-        this.heartbeat = this.heartbeat.bind(this);
-        this.heartbeatTimer = new Timer(this.heartbeat, FRAMERATE);
-
-        // Add nametag plugin here randomly because fuck it.
         // TODO: Figure out plugin loaders from the outside...
-        this.plugins.nametag = new NametagPlugin(this, {});
+        if (options.hasOwnProperty('plugins')) {
+
+            if (options.plugins.hasOwnProperty('Nametag')) {
+                this.plugins.Nametag = new NametagPlugin(this, options.plugins.Nametag);
+            }
+
+            if (options.plugins.hasOwnProperty('ChatBubble')) {
+                this.plugins.ChatBubble = new ChatBubblePlugin(this, options.plugins.ChatBubble);
+            }
+        }
     }
 
     Fro.prototype.run = function() {
-    
-        this.startTime = Date.now();
+        
+        this.lastTime = Date.now();
 
-        this.heartbeatTimer.start();
+        this.startTime = Date.now();
+        this.heartbeat();
     };
 
     Fro.prototype.heartbeat = function() {
-        this.render();
-        this.snapshot();
+        window.requestAnimationFrame(this.heartbeat.bind(this));
+
+        var now = Date.now();
+        var delta = now - this.lastTime;
+
+        if (delta > FRAMERATE) {
+            this.render();
+            this.snapshot();
+
+            this.lastTime = now - (delta % FRAMERATE);
+        }
     };
 
     Fro.prototype.render = function() {
