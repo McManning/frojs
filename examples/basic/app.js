@@ -11,7 +11,7 @@ require([
 
     // In your application main, initialise fro
     var instance = new fro({
-        canvas: document.querySelectorAll('#fro-canvas')[0]
+        canvas: document.getElementById('fro-canvas')
     });
 
     instance.run();

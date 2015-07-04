@@ -25,7 +25,7 @@ require([
             }
         },
         renderer: {
-            canvas: document.querySelectorAll('#fro-canvas')[0],
+            canvas: document.getElementById('fro-canvas'),
             background: [145, 184, 101]
         },
         camera: {
@@ -163,7 +163,7 @@ require([
 
     // Test timers
     var fpsTimer = new Timer(function() {
-        document.querySelector('#fps').innerHTML = instance.getFramerate();
+        document.getElementById('fps').innerHTML = instance.getFramerate();
     }, 1000);
 
     fpsTimer.start();
@@ -257,7 +257,7 @@ require([
     window.fro = instance;
 
     // Bind our input box to create coolio chat bubbles
-    document.querySelector('#chat').addEventListener('keydown', function(evt) {
+    document.getElementById('chat').addEventListener('keydown', function(evt) {
         if (evt.keyCode === KeyEvent.DOM_VK_RETURN) {
             instance.player.actor.say(this.value);
             this.value = '';

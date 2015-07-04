@@ -10,7 +10,7 @@ require([
 ], function(fro) {
 
     var froInstance1 = new fro({
-        canvas: document.querySelectorAll('#fro-canvas-1')[0]
+        canvas: document.getElementById('fro-canvas-1')
     });
 
     froInstance1.renderer.setClearColor(0,255,0);
@@ -18,7 +18,7 @@ require([
 
     // Second instance of the client in the same closure
     var froInstance2 = new fro({
-        canvas: document.querySelectorAll('#fro-canvas-2')[0]
+        canvas: document.getElementById('fro-canvas-2')
     });
 
     froInstance2.renderer.setClearColor(0,0,255);
@@ -31,7 +31,7 @@ require([
 ], function(fro) {
 
     var froInstance1 = new fro({
-        canvas: document.querySelectorAll('#fro-canvas-3')[0]
+        canvas: document.getElementById('fro-canvas-3')
     });
 
     froInstance1.renderer.setClearColor(0,255,255);
