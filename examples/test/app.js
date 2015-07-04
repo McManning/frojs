@@ -173,12 +173,18 @@ require([
         .bind('mousedown', console, function() {
             //this.log('mousedown');
             //debugger;
-          /*  var position = instance.input.getCursorPosition();
-            var destination = vec3.create();
-            instance.camera.canvasVec3ToWorld(position, destination);
-            console.log(destination);
+            
+            // Figure out where we clicked in world space
+            var position = instance.input.getCursorPosition();
+            instance.camera.canvasVec3ToWorld(position);
 
-            instance.world.find('test').setDestination(destination); */
+            // Spawn a new crate!
+            instance.world.loadEntity({
+                template: 'crate',
+                position: position
+            });
+
+            //instance.world.find('test').setDestination(destination);
         })
         .bind('keydown', console, function(evt) {
             this.log('keydown: ' + evt.keyCode);
