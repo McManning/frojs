@@ -310,14 +310,14 @@ define([
     };
     
     /**
-     * Helper function to determine where exactly in the canvas 
-     * the cursor is located.
+     * Return a vec3 representing the cursor's current position on the canvas.
      *
-     * @return {vec3} result, from (0,0) to (gl.viewportWidth,gl.viewportHeight)
+     * @return {vec3} 
      */
     Input.prototype.getCursorPosition = function() {
-        // TODO: Actually clip to the (0, 0) -> (viewport) as it doesn't currently.
-        return this.cursorPosition;
+        // TODO: Clip to the (0, 0) -> (gl.viewportWidth,gl.viewportHeight) 
+        // as it doesn't currently.
+        return vec3.create(this.cursorPosition);
     };
 
     return Input;
