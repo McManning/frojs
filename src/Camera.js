@@ -136,13 +136,15 @@ define([
     /**
      * Sets the center of this camera to the point defined
      * and unsets getFollowedEntity()
+     *
+     * @param {vec3} position (z-axis is ignored)
      */
-    Camera.prototype.setCenter = function(x, y) {
+    Camera.prototype.setCenter = function(position) {
         
         this.followedEntity = null;
 
-        this.position[0] = x;
-        this.position[1] = y;
+        this.position[0] = position[0];
+        this.position[1] = position[1];
         
         this.applyBounds();
         this.updateTranslation();

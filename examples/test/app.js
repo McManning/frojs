@@ -176,7 +176,10 @@ require([
             
             // Figure out where we clicked in world space
             var position = instance.input.getCursorPosition();
+
+            console.log(position);
             instance.camera.canvasVec3ToWorld(position);
+            console.log(position);
 
             // Spawn a new crate!
             instance.world.loadEntity({
@@ -245,7 +248,7 @@ require([
             console.log('Failed to load sound resource');
         });
 
-    instance.camera.setCenter(0, 0);
+    instance.camera.setCenter([0, 0]);
     instance.run();
 
     //var nametag = new NametagPlugin(instance, {});
