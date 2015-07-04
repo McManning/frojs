@@ -14,12 +14,39 @@ require([
 
     // In your application main, initialise fro
     var instance = new fro({
+        plugins: {
+            Nametag: {
+                fontSize: 14
+            },
+            ChatBubble: {
+                fontSize: 14,
+                backgroundColor1: '#CAC',
+                backgroundColor2: '#FEF'
+            }
+        },
         renderer: {
             canvas: document.querySelectorAll('#fro-canvas')[0],
-            background: [0, 255, 0]
+            background: [145, 184, 101]
+        },
+        camera: {
+            bounds: [-800, -600, 800, 600]
         },
         world: {
             templates: [
+                {
+                    id: 'crate',
+                    type: 'prop',
+                    image: {
+                        id: 'crate',
+                        type: 'image',
+                        url: 'http://i.imgur.com/2LlSRc8.png',
+                        fitToTexture: false,
+                        width: 132,
+                        height: 143
+                    },
+                    offset: [0, -24],
+                    collisions: [-66, -95, 132, 98]
+                },
                 {
                     id: 'actorTest',
                     type: 'actor',
@@ -87,6 +114,18 @@ require([
             ],
             entities: [
                 {
+                    template: 'crate',
+                    position: [30, -20, 0]
+                },
+                {
+                    template: 'crate',
+                    position: [210, 100, 0]
+                },
+                {
+                    template: 'crate',
+                    position: [200, 0, 0]
+                },
+                {
                     template: 'actorTest',
                     id: 'test',
                     position: [0, 0, 0],
@@ -94,7 +133,7 @@ require([
                     direction: 2, // south
                     action: 0 // idle
                 },
-                /*{
+                {
                     template: 'actorTest',
                     id: 'test2',
                     position: [50, 50, 0],
@@ -112,12 +151,12 @@ require([
                 },
                 {
                     template: 'actorTest',
-                    id: 'test3',
+                    id: 'test4',
                     position: [50, -50, 0],
-                    name: 'Test 3',
+                    name: 'Test 4',
                     direction: 2, // south
                     action: 2 // sit
-                },*/
+                }
             ]
         }
     });
@@ -203,8 +242,20 @@ require([
     instance.camera.setCenter(0, 0);
     instance.run();
 
+    //var nametag = new NametagPlugin(instance, {});
+
     instance.player.actor = instance.world.find('test');
+    //instance.camera.followEntity(instance.player.actor);
 
     // Attach to window so I can debug easier :/
     window.fro = instance;
+
+    // Bind our input box to create coolio chat bubbles
+    document.querySelector('#chat').addEventListener('keydown', function(evt) {
+        if (evt.keyCode === KeyEvent.DOM_VK_RETURN) {
+            instance.player.actor.say(this.value);
+            this.value = '';
+        }
+    });
+
 });
