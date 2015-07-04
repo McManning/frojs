@@ -240,6 +240,10 @@ define([
         }
     };
 
+    /**
+     * Update position to remain overhead the parent. This may be 
+     * called when the parent's avatar changes dimensions. 
+     */
     ChatBubble.prototype.updatePosition = function() {
         this.position[0] = 0;
         this.position[1] = 0;

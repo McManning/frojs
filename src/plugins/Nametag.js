@@ -26,8 +26,11 @@ define([
     var NICKNAME_ZORDER = 998; // TODO: global UI_ZORDER
     
     /**
-     * New entity type that is just an Actor's nickname
-     * floating overhead, and attached to some parent Actor.
+     * New entity type that is simply a rendering of an Actor's
+     * name property overhead that actor. 
+     *
+     * @param {object} context fro instance
+     * @param {object} properties to tweak rendering this Nametag
      */
     function Nametag(context, properties) {
         Entity.call(this, context, properties);
@@ -75,7 +78,7 @@ define([
             this.visible = false;
             
         } else {
-            // regenerate a name texture, unmanaged by resources (TODO: manage?)
+            // regenerate a name texture
             this.image = new FontImage(this.context, {
                 text: this.parent.name,
                 fontFamily: this.fontFamily,
@@ -87,6 +90,10 @@ define([
         }
     };
 
+    /**
+     * Update position to remain overhead the parent. This may be 
+     * called when the parent's avatar changes dimensions. 
+     */
     Nametag.prototype.updatePosition = function() {
         this.position[0] = 0;
         this.position[1] = 0;
@@ -122,6 +129,16 @@ define([
         r[3] = this.image.height;
     };
 
+    /**
+     * Entry point for the Nametag plugin. This will listen on the 
+     * `add` event for whenever new entities are added to the world 
+     * and attach a child Nametag entity to them, if they were inherited
+     * from the Actor base class. 
+     *
+     * @param {object} context fro instance to bind the plugin
+     * @param {object} options for this plugin (equivalent 
+     *                         to Nametag properties)
+     */
     function Plugin(context, options) {
 
         this.context = context;
@@ -131,11 +148,17 @@ define([
         context.world.bind('add.entity', this.onNewEntity);
 
         // Also load for all existing actors
-        for (var i = 0; i < context.world.renderableEntities.length; i++) {
+        var i = context.world.renderableEntities.length;
+        while (i--) {
             this.onNewEntity(context.world.renderableEntities[i]);
         }
     }
 
+    /**
+     * Create and attach a new Nametag entity to new Actors. 
+     *
+     * @param {Entity} entity that has been added to the world
+     */
     Plugin.prototype.onNewEntity = function(entity) {
 
         if (entity instanceof Actor) {
