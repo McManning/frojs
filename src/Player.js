@@ -34,7 +34,7 @@ define([
         // Create a think timer for this avatar
         this.onThink = this.onThink.bind(this);
         this.thinkTimer = new Timer(this.onThink, THINK_INTERVAL_MS);
-        this.thinkTimer.start();
+        //this.thinkTimer.start();
     }
 
     Player.prototype.onThink = function() {
@@ -48,7 +48,6 @@ define([
             buffer = '',
             dir = Enum.Direction.NONE,
             north, east, south, west;
-
         
         // Don't process additional actions if we have no actor, or are still moving
         if (!this.actor || this.actor.isMoving()) {
@@ -84,8 +83,8 @@ define([
         // TODO: Rebindable settings!
         north = input.isKeyDown(window.KeyEvent.DOM_VK_W) || input.isKeyDown(window.KeyEvent.DOM_VK_UP);
         south = input.isKeyDown(window.KeyEvent.DOM_VK_S) || input.isKeyDown(window.KeyEvent.DOM_VK_DOWN);
-        east = input.isKeyDown(window.KeyEvent.DOM_VK_D) || input.isKeyDown(window.KeyEvent.DOM_VK_RIGHT);
         west = input.isKeyDown(window.KeyEvent.DOM_VK_A) || input.isKeyDown(window.KeyEvent.DOM_VK_LEFT);
+        east = input.isKeyDown(window.KeyEvent.DOM_VK_D) || input.isKeyDown(window.KeyEvent.DOM_VK_RIGHT);
 
         if (north) {
             if (east) {
@@ -148,11 +147,13 @@ define([
             }
         }
 
-        // Queue up the buffer to be sent to the network
-        this.networkBuffer += buffer;
+        if (buffer.length > 0) {
+            // Queue up the buffer to be sent to the network
+            this.networkBuffer += buffer;
 
-        // Also move our linked actor
-        this.actor.addToActionBuffer(buffer);
+            // Also move our linked actor
+            this.actor.addToActionBuffer(buffer);
+        }
     };
 
     return Player;
