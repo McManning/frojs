@@ -49,8 +49,25 @@ define([
 
         this.update();
     
+        // If the canvas has changed size, resize our viewport
+        if (gl.canvas.width !== gl.canvas.clientWidth ||
+            gl.canvas.height !== gl.canvas.clientHeight) {
+
+            // Update canvas size to match client size
+            gl.canvas.width = gl.canvas.clientWidth;
+            gl.canvas.height = gl.canvas.clientHeight;
+
+            // Keep the viewport at a nice even number so pixels remain as expected
+            gl.viewportWidth = 2 * Math.round(gl.canvas.width * 0.5);
+            gl.viewportHeight = 2 * Math.round(gl.canvas.height * 0.5);
+
+            // Re-orient our translation to match the new viewport
+            this.applyBounds();
+            this.updateTranslation();
+        }
+        
         if (this.context.renderer.isWebGL()) {
-    
+
             gl.viewport(0, 0, gl.viewportWidth, gl.viewportHeight);
             
             // set up projection matrix

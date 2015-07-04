@@ -7,10 +7,14 @@
 
     <style>
 
+        html,body {
+            height: 100%;
+        }
+
         #container {
             position: relative;
-            width: 800px;
-            height: 600px;
+            width: 100%;
+            height: 100%;
         }
 
         input {
@@ -27,6 +31,11 @@
             color: #FFF;
             padding: 2px;
         }
+
+        #fro-canvas {
+            width: 100%;
+            height: 100%;
+        }
     </style>
 </head>
 <body>
@@ -34,7 +43,7 @@
     <div id="container">
         <span id="fps"></span>
         <input id="chat" />
-        <canvas id="fro-canvas" width="800" height="600" style="background:#F00;"></canvas>
+        <canvas id="fro-canvas" style="background:#F00;"></canvas>
     </div>
 </body>
 </html>
