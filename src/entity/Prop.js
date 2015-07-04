@@ -55,14 +55,6 @@ define([
     Prop.prototype = Object.create(Entity.prototype);
     Prop.prototype.constructor = Prop;
 
-    Prop.prototype.destroy = function() {
-        if (this.animateTimer) {
-            this.animateTimer.stop();
-        }
-
-        Entity.prototype.destroy.call(this);
-    };
-
     /** 
      * Our loaded state depends on the loaded texture.
      *
