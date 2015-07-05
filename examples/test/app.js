@@ -24,6 +24,11 @@ require([
                 backgroundColor2: '#FEF'
             }
         },
+        network: {
+            server: 'http://localhost:3000',
+            token: 'hi',
+            room: 'test'
+        },
         renderer: {
             canvas: document.getElementById('fro-canvas'),
             background: [145, 184, 101]
