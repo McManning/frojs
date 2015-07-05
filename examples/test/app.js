@@ -260,9 +260,15 @@ require([
     window.fro = instance;
 
     // Bind our input box to create coolio chat bubbles
-    document.getElementById('chat').addEventListener('keydown', function(evt) {
+    document.getElementById('chat-input').addEventListener('keydown', function(evt) {
         if (evt.keyCode === KeyEvent.DOM_VK_RETURN) {
             instance.player.actor.say(this.value);
+
+            var line = document.createElement('li');
+            line.appendChild(document.createTextNode(this.value));
+
+            document.getElementById('chat-output').appendChild(line);
+
             this.value = '';
         }
     });
