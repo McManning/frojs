@@ -52,25 +52,7 @@ define([
         this.thinkTimer.start();
 
         if (properties.hasOwnProperty('avatar')) {
-            var avatar = context.resources.load(properties.avatar);
-            
-            // If it needs to load external resources, hook for errors
-            if (!avatar.isLoaded()) {
-            
-                // Bind and wait for the image to be loaded
-                var self = this;
-                avatar
-                    .bind('onload', function() {
-                        self.setAvatar(avatar);
-                    })
-                    .bind('onerror', function() {
-                        // TODO: do something, revert, load default, etc.
-                        throw new Error('Failed to load prop image for [' + self.id + ']');
-                    });
-            } else {
-                // load in
-                this.setAvatar(avatar);
-            }
+            this.loadAvatar(properties.avatar);
         }
     }
 
@@ -95,6 +77,35 @@ define([
     Actor.prototype.setName = function(name) {
         this.name = name;
         this.fire('name', this);
+    };
+
+    /** 
+     * Load our avatar from JSON properties passed into the underlying
+     * Animation resource. 
+     * TODO: Better naming convention/pattern. load vs set is dumb.
+     * 
+     * @param {object} properties for an Animation
+     */
+    Actor.prototype.loadAvatar = function(properties) {
+        var avatar = this.context.resources.load(properties);
+        
+        // If it needs to load external resources, hook for errors
+        if (!avatar.isLoaded()) {
+        
+            // Bind and wait for the image to be loaded
+            var self = this;
+            avatar
+                .bind('onload', function() {
+                    self.setAvatar(avatar);
+                })
+                .bind('onerror', function() {
+                    // TODO: do something, revert, load default, etc.
+                    throw new Error('Failed to load prop image for [' + self.id + ']');
+                });
+        } else {
+            // load in
+            this.setAvatar(avatar);
+        }
     };
 
     /**
