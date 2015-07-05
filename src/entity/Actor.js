@@ -35,15 +35,15 @@ define([
         this.isRenderable = true; // Add this entity to the render queue
 
         this.step = 0;
-        this.action = properties.action;
-        this.speed = Enum.Speed.WALK;
-        this.direction = properties.direction;
+        this.action = properties.action || Enum.Action.IDLE;
+        this.speed = properties.speed || Enum.Speed.WALK;
+        this.direction = properties.direction || Enum.Direction.SOUTH;
         this.buffer = '';
 
         this.destination = vec3.create();
         this.directionNormal = vec3.create();
         
-        this.setPosition(properties.position);
+        this.setPosition(properties.position || [0, 0, 0]);
         this.setName(properties.name || '');
         
         // Create a think timer for this avatar
