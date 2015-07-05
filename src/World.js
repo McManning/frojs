@@ -124,10 +124,6 @@ define([
         // Call a loader based on entity type
         instance = new this.loaders[type](this.context, properties);
 
-        // Let listeners know a new entity instance has been created,
-        // but before it's actually added to the world. 
-        this.fire('new.entity', instance);
-        
         // Add it to the world
         this.add(instance);
 
@@ -179,6 +175,10 @@ define([
      * @param object entity
      */
     World.prototype.add = function(entity) {
+        
+        // Let listeners know a new entity instance has been created,
+        // but before it's actually added to the world. 
+        this.fire('new.entity', entity);
         
         if (entity.isRenderable) {
             this.renderableEntities.push(entity);
