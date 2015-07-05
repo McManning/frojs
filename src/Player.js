@@ -34,7 +34,7 @@ define([
         // Create a think timer for this avatar
         this.onThink = this.onThink.bind(this);
         this.thinkTimer = new Timer(this.onThink, THINK_INTERVAL_MS);
-        //this.thinkTimer.start();
+        this.thinkTimer.start();
     }
 
     Player.prototype.onThink = function() {
