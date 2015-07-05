@@ -17,167 +17,188 @@
  *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-"use strict";
+define([
+    'EventHooks',
+    'Utility',
+    'entity/Actor'
+], function(EventHooks, Util, Actor) {
 
-var PING_INTERVAL = 30*1000;
+    function Network(context, options) {
+        Util.extend(this, EventHooks); // Maybe?
 
-/**
- * Handles messages between clients and the server
- */
-fro.network = $.extend({
+        this.context = context;
+        this.server = options.server || null;
+        this.token = options.token || null;
+        this.room = options.room || null;
+        this.clientId = null; // Retrieved from the server
 
-    initialise : function() {
-        this.connected = false;
-    },
-    
-    /** 
-     * Creates a new WebSocket connection to our server, and sets up callbacks
-     */
-    connect : function(host) {
-        
-        // "ws://sornax.com:50007/universe"
-        var socket = new WebSocket(host);
-        
-        socket.onopen = function() {
-            fro.network._onOpen();
-        }
-        
-        socket.onclose = function(evt) {
-            fro.network._onClose(evt);
-        }
-        
-        socket.onerror = function(evt) {
-            fro.network._onError(evt);
-        }
-        
-        socket.onmessage = function(evt) {
-            fro.network._onMessage(evt);
-        }
-        
-        this.socket = socket;
+        // If we specified a server, start a SocketIO connection
+        if (this.server) {
 
-        this.bind('ping', function(evt) {
-        
-            // Respond with a pong
-            this.send({ id: 'pong' });
-        
-        }).bind('pong', function(evt) {
-        
-            // do nothing (for now, later it should flag a "we got it")
-            fro.log.debug('PONG ' + evt.now);
-            
-        });
-        
-    },
-    
-    _onOpen : function() {
-        
-        this.connected = true;
-        this.fire('open');
-        
-        // @todo only ping when necessary, and actually handle pings. 
-        // For now, this is just here to keep Firefox from closing ws
-        this.pingInterval = 
-            fro.timers.addInterval(this, this.ping, PING_INTERVAL);
-    },
-    
-    /**
-     * Validates message, converts JSON to an object, and sends to
-     *   event listeners, including entity event listeners if this packet
-     *   was configured for sending to entities
-     */
-    _onMessage : function(evt) {
-        
-        var packet;
-        
-        fro.log.debug(evt.data);
-        
-        try {
-            packet = JSON.parse(evt.data);
-        } catch (e) {
-            fro.log.warning('Invalid Message: ' + evt.data.toString());
-            return;
-        }
-        
-        // Fire again, this time as the new ID and data structure
-        this.fire(packet.id, packet);
-    },
-    
-    _onClose : function(evt) {
-        
-        // Notify listeners
-        this.connected = false;
-        this.fire('close', evt);
-        
-        this.socket = undefined;
-        
-        fro.log.warning('Socket closed');
-        fro.log.debug(evt);
-    },
-    
-    _onError : function(evt) {
-        
-        // Notify listeners
-        this.connected = false;
-        this.fire('error', evt);
-        
-        this.socket = undefined;
-        
-        fro.log.error('Socket Error');
-        fro.log.debug(evt);
-    },
-    
-    ping : function() {
-        
-        if (this.socket) {
-            this.socket.send('{"id":"ping"}');
-        }
-    },
-    
-    /**
-     * Converts the input data to JSON and sends over our open socket
-     */
-    send : function(packet) {
-    
-        if (this.socket) {
-            if (typeof packet.id == 'string' && packet.id.length > 0) {
-                
-                var msg = JSON.stringify(packet);
-                fro.log.debug(msg);
-                
-                this.socket.send(msg);
-            
-            } else {
-                
-                // @todo somehow track where this packet came from
-                fro.log.error('Invalid Packet');
+            // TODO: Check for socketIO support first
+
+            this.socket = window.io(this.server);
+
+            // bind handlers for socket events
+            var binds = {
+                connect: this.onConnect,
+                disconnect: this.onDisconnect,
+                error: this.onError,
+                auth: this.onAuth
+            };
+
+            for (var evt in binds) {
+                if (binds.hasOwnProperty(evt)) {
+                    this.socket.on(evt, binds[evt].bind(this));
+                }
             }
         }
-    },
-    
-    /**
-     * Converts the input data to JSON and sends via ajax to the defined host
-     */
-    ajax : function(host, data) {
-        
-        var json = JSON.stringify(data);
-        
-        $.ajax({
-            url: host,
-            data: { json: json },
-            success: function(data) {
-            
-                // Route ajax responses the same way as socket responses
-                this._onMessage(data);
-            },
-            error: function(request, status, error) {
-                
-                // @todo notification
-                fro.log.error('Request failed "' + error + '" for request ' + json);
-            }
-        });
-        
     }
-    
-}, EventHooks);
 
+    Network.prototype.onConnect = function() {
+
+        // connected, emit authentication
+        this.socket.emit('auth', {
+            token: this.token,
+            room: this.room,
+            name: 'Chase'
+        });
+    };
+
+    Network.prototype.onDisconnect = function() {
+        this.clientId = null;
+    };
+
+    /**
+     * Called when an error response is returned from the server.
+     * In most cases, this occurs whenever the client sends a 
+     * malformed message that cannot be accepted. 
+     * 
+     * @param {object} data `error` payload
+     */
+    Network.prototype.onError = function(data) {
+        // Payload: code, message, developerMessage
+
+        window.alert(data.message);
+        console.log(data);
+    };
+
+    /**
+     * Called when the server accepts our authentication.
+     * Server provides us our unique client ID and actual 
+     * room name. 
+     * 
+     * @param {object} data `auth` payload
+     */
+    Network.prototype.onAuth = function(data) {
+        // Payload: id, room
+
+        this.clientId = data.id;
+        this.room = data.room;
+    };
+
+    /**
+     * 
+     * 
+     * @param {object} data `join` payload
+     */
+    Network.prototype.onJoin = function(data) {
+        // Payload: id, name, avatar, position, action, direction
+        var actor;
+
+        if (data.id === this.clientId) {
+            // Ourself is joining, so setup our Actor and link to Player
+            
+            // TODO: Resolve better. Do we want to create the actor if it
+            // doesn't exist? Should we assume it exists? Should we verify
+            // it's linked to context.player? Etc. 
+            actor = this.context.world.find(data.id);
+            if (!(actor instanceof Actor)) {
+                throw new Error('Local actor does not exist');
+            }
+
+            actor.id = data.id;
+            actor.setName(data.name);
+            actor.setAvatar(data.avatar);
+            actor.setPosition(data.position);
+            actor.setAction(data.action);
+            actor.setDirection(data.direction);
+
+        } else {
+            // It's a remote user. Setup and associate an Actor
+            actor = this.context.world.find(data.id);
+
+            // Remote doesn't exist, create a new Actor
+            if (!actor) {
+                actor = new Actor(this.context, {
+                    id: data.id,
+                    name: data.name,
+                    avatar: data.avatar,
+                    position: data.position,
+                    action: data.action,
+                    direction: data.direction
+                });
+
+                this.context.world.add(actor);
+            } else {
+                // TODO: What do we do here? They shouldn't re-send a join
+                // if they already exist in our world. Update existing entity?
+                throw new Error('Duplicate `join` for remote [' + data.id + ']');
+            }
+        }
+    };
+
+    /**
+     * 
+     * 
+     * @param {object} data `leave` payload
+     */
+    Network.prototype.onLeave = function(data) {
+        // Payload: id
+
+        var actor = this.context.world.find(data.id);
+        if (!(actor instanceof Actor)) {
+            // TODO: Appropriate error handling
+            throw new Error('No Actor associated with remote [' + data.id + ']');
+        }
+
+        actor.destroy();
+    };
+
+    /**
+     * 
+     * 
+     * @param {object} data `say` payload
+     */
+    Network.prototype.onSay = function(data) {
+        // Payload: id, message
+
+        var actor = this.context.world.find(data.id);
+        if (!(actor instanceof Actor)) {
+            // TODO: Appropriate error handling
+            throw new Error('No Actor associated with remote [' + data.id + ']');
+        } 
+
+        actor.say(data.message);
+    };
+
+    /**
+     * 
+     * @param {object} data `move` payload
+     */
+    Network.prototype.onMove = function(data) {
+
+        var actor = this.context.world.find(data.id);
+        if (!(actor instanceof Actor)) {
+            // TODO: Appropriate error handling
+            throw new Error('No Actor associated with remote [' + data.id + ']');
+        } 
+
+        // TODO: I can add to the buffer, but I don't
+        // have a way to apply verifications. I'll need
+        // to work that back in somehow...
+    };
+
+
+    return Network;
+});
