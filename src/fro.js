@@ -26,10 +26,11 @@ define([
     'Input',
     'World',
     'Player',
+    'Network',
     'plugins/Nametag',
     'plugins/ChatBubble'
 ], function(Timer, Audio, Resources, Renderer, Camera, Input, 
-            World, Player, NametagPlugin, ChatBubblePlugin) {
+            World, Player, Network, NametagPlugin, ChatBubblePlugin) {
 
     var FRAMERATE = 1000/30;
 
@@ -70,6 +71,11 @@ define([
             if (options.plugins.hasOwnProperty('ChatBubble')) {
                 this.plugins.ChatBubble = new ChatBubblePlugin(this, options.plugins.ChatBubble);
             }
+        }
+
+        // If we specify network settings, connect us to a server
+        if (options.hasOwnProperty('network')) {
+            this.network = Network(this, options.network);
         }
     }
 
