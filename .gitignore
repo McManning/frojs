@@ -1,7 +1,0 @@
-*.diff
-*.patch
-.DS_Store
-.bower.json
-/dist
-/node_modules
-/nocommit
