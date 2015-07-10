@@ -1,8 +1,8 @@
 
 requirejs.config({
     paths: {
-        'fro': 'vendor/fro',
-        'Timer': 'vendor/fro', // Defined within the fro build
+        'fro': 'vendor/fro.min',
+        'Timer': 'vendor/fro.min', // Defined within the fro build
     }
 });
 
@@ -23,11 +23,11 @@ require([
                 backgroundColor2: '#FEF'
             }
         },
-        network: {
+        /*network: {
             server: 'http://localhost:3000',
             token: 'hi',
             room: 'test'
-        },
+        },*/
         renderer: {
             canvas: document.getElementById('fro-canvas'),
             background: [145, 184, 101]
