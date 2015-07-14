@@ -2,15 +2,16 @@
 requirejs.config({
     paths: {
         'fro': '../../dist/fro',
-        'Timer': '../../dist/fro', // Defined within the fro build
+        'Nametag': '../../src/plugins/Nametag'
     },
     //urlArgs: 'bust=' + Date.now()
 });
 
 require([
     'fro',
-    'MyPlugin'
-], function(fro, MyPlugin) {
+    'MyPlugin',
+    'Nametag'
+], function(fro, MyPlugin, NametagPlugin) {
 
     // In your application main, initialise fro
     var instance = new fro.World({
@@ -170,7 +171,7 @@ require([
     console.log('1.l - ', Object.keys(fro.plugins).length);
     console.log('1 - ', fro);
 
-    var plugin = new MyPlugin(instance);
+    //var plugin = new MyPlugin(instance);
 
 
     console.log('2.l - ', Object.keys(fro.plugins).length);
