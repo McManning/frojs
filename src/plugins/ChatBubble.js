@@ -290,11 +290,11 @@ define([
         this.onNewEntity = this.onNewEntity.bind(this);
         this.onSay = this.onSay.bind(this);
 
-        context.world.bind('add.entity', this.onNewEntity);
+        context.bind('add.entity', this.onNewEntity);
 
         // Also load for all existing actors
-        for (var i = 0; i < context.world.renderableEntities.length; i++) {
-            this.onNewEntity(context.world.renderableEntities[i]);
+        for (var i = 0; i < context.renderableEntities.length; i++) {
+            this.onNewEntity(context.renderableEntities[i]);
         }
     }
 
@@ -315,7 +315,7 @@ define([
         Util.extend(properties, this.options);
 
         var bubble = new ChatBubble(this.context, properties);
-        this.context.world.add(bubble);
+        this.context.add(bubble);
 
         // Destroy any previous bubble created by the actor
         var i = data.entity.children.length;

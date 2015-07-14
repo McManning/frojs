@@ -59,7 +59,7 @@ define([
         }
         
         // Nuke the entity itself
-        this.context.world.remove(this);
+        this.context.remove(this);
     };
 
     /**

@@ -145,12 +145,12 @@ define([
         this.options = options;
 
         this.onNewEntity = this.onNewEntity.bind(this);
-        context.world.bind('add.entity', this.onNewEntity);
+        context.bind('add.entity', this.onNewEntity);
 
         // Also load for all existing actors
-        var i = context.world.renderableEntities.length;
+        var i = context.renderableEntities.length;
         while (i--) {
-            this.onNewEntity(context.world.renderableEntities[i]);
+            this.onNewEntity(context.renderableEntities[i]);
         }
     }
 
@@ -164,7 +164,7 @@ define([
         if (entity instanceof Actor) {
             var nametag = new Nametag(this.context, this.options);
 
-            this.context.world.add(nametag);
+            this.context.add(nametag);
 
             // Connect the nametag as a child of the actor
             entity.addChild(nametag);

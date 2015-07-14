@@ -112,7 +112,7 @@ define([
             // TODO: Resolve better. Do we want to create the actor if it
             // doesn't exist? Should we assume it exists? Should we verify
             // it's linked to context.player? Etc. 
-            actor = this.context.world.find(data.id);
+            actor = this.context.find(data.id);
             if (!(actor instanceof Actor)) {
                 throw new Error('Local actor does not exist');
             }
@@ -126,7 +126,7 @@ define([
 
         } else {
             // It's a remote user. Setup and associate an Actor
-            actor = this.context.world.find(data.id);
+            actor = this.context.find(data.id);
 
             // Remote doesn't exist, create a new Actor
             if (!actor) {
@@ -139,7 +139,7 @@ define([
                     direction: data.direction
                 });
 
-                this.context.world.add(actor);
+                this.context.add(actor);
             } else {
                 // TODO: What do we do here? They shouldn't re-send a join
                 // if they already exist in our world. Update existing entity?
@@ -156,7 +156,7 @@ define([
     Network.prototype.onLeave = function(data) {
         // Payload: id
 
-        var actor = this.context.world.find(data.id);
+        var actor = this.context.find(data.id);
         if (!(actor instanceof Actor)) {
             // TODO: Appropriate error handling
             throw new Error('No Actor associated with remote [' + data.id + ']');
@@ -173,7 +173,7 @@ define([
     Network.prototype.onSay = function(data) {
         // Payload: id, message
 
-        var actor = this.context.world.find(data.id);
+        var actor = this.context.find(data.id);
         if (!(actor instanceof Actor)) {
             // TODO: Appropriate error handling
             throw new Error('No Actor associated with remote [' + data.id + ']');
@@ -188,7 +188,7 @@ define([
      */
     Network.prototype.onMove = function(data) {
 
-        var actor = this.context.world.find(data.id);
+        var actor = this.context.find(data.id);
         if (!(actor instanceof Actor)) {
             // TODO: Appropriate error handling
             throw new Error('No Actor associated with remote [' + data.id + ']');

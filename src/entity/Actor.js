@@ -177,7 +177,7 @@ define([
                     16, 16
                 ]);
         
-        return !(this.context.world.isRectBlocked(r, this));
+        return !(this.context.isRectBlocked(r, this));
     };
 
     /** 
@@ -415,7 +415,7 @@ define([
             this.avatar.next(true);
             
             // Get the map to queue a resort of objects
-            this.context.world.resort();
+            this.context.resort();
         }
         
         this.fire('move', this.position);
