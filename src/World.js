@@ -18,15 +18,42 @@
  */
 
 define([
+    'fro',
     'EventHooks',
     'Utility',
+    'Timer',
+    'Audio',
+    'Resources',
+    'Renderer',
+    'Camera',
+    'Input',
+    'Player',
+    'Network',
     'entity/Prop',
     'entity/Actor',
     'entity/Sound'
-], function(EventHooks, Util, Prop, Actor, Sound) {
+], function(fro, EventHooks, Util, Timer, Audio, Resources, Renderer, 
+            Camera, Input, Player, Network, Prop, Actor, Sound) {
 
-    function World(context, properties) {
+    console.log(fro);
+
+    function World(properties) {
         Util.extend(this, EventHooks);
+
+        // Set up properties to record framerates
+        this.framerates = [];
+        this.numFramerates = 10;
+        this.renderTime = -1;
+
+        // Initialise submodules
+        this.resources = new Resources(this);
+
+        this.audio = new Audio(this, properties.audio || {});
+        this.renderer = new Renderer(this, properties.renderer || {});
+        this.camera = new Camera(this, properties.camera || {});
+        this.input = new Input(this, properties.input || {});
+
+        this.player = new Player(this, properties.player);
 
         this.loaders = {
             prop: Prop,
@@ -36,13 +63,16 @@ define([
         };
         
         this.renderableEntities = [];
-        this.context = context;
         this.otherEntities = [];
-        this.id = properties.id || '';
-        this.templates = properties.templates || {};
+        this.id = properties.world.id || '';
+        this.templates = properties.world.templates || {};
 
-        this.loadEntities(properties.entities || []);
+        this.loadEntities(properties.world.entities || []);
 
+        // If we specify network settings, connect us to a server
+        if (properties.hasOwnProperty('network')) {
+            this.network = Network(this, properties.network);
+        }
         // Make sure we have a player entity
         // TODO: maybe this check BEFORE network initialisation? (To avoid false starts)
         //if (!this.getPlayerActor()) {
@@ -122,7 +152,7 @@ define([
         }
 
         // Call a loader based on entity type
-        instance = new this.loaders[type](this.context, properties);
+        instance = new this.loaders[type](this, properties);
 
         // Add it to the world
         this.add(instance);
