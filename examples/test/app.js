@@ -4,16 +4,16 @@ requirejs.config({
         'fro': '../../dist/fro',
         'Timer': '../../dist/fro', // Defined within the fro build
     },
-    urlArgs: 'bust=' + Date.now()
+    //urlArgs: 'bust=' + Date.now()
 });
 
 require([
     'fro',
-    'Timer'
-], function(fro, Timer) {
+    'MyPlugin'
+], function(fro, MyPlugin) {
 
     // In your application main, initialise fro
-    var instance = new fro({
+    var instance = new fro.World({
         plugins: {
             Nametag: {
                 fontSize: 14
@@ -24,11 +24,11 @@ require([
                 backgroundColor2: '#FEF'
             }
         },
-        network: {
+        /*network: {
             server: 'http://localhost:3000',
             token: 'hi',
             room: 'test'
-        },
+        },*/
         renderer: {
             canvas: document.getElementById('fro-canvas'),
             background: [145, 184, 101]
@@ -166,9 +166,19 @@ require([
         }
     });
 
+
+    console.log('1.l - ', Object.keys(fro.plugins).length);
+    console.log('1 - ', fro);
+
+    var plugin = new MyPlugin(instance);
+
+
+    console.log('2.l - ', Object.keys(fro.plugins).length);
+    console.log('2 - ', fro);
+
     // Test timers
-    var fpsTimer = new Timer(function() {
-        document.getElementById('fps').innerHTML = instance.getFramerate();
+    var fpsTimer = new fro.utils.Timer(function() {
+      //  document.getElementById('fps').innerHTML = instance.getFramerate();
     }, 1000);
 
     fpsTimer.start();
@@ -222,7 +232,7 @@ require([
             console.log('Camera moved to ' + vec3.str(position));
             console.log(this);
         });
-
+/*
     // Test resource loader (JSON)
     instance.resources
         .load({
@@ -252,17 +262,17 @@ require([
         .bind('onerror', function() {
             console.log('Failed to load sound resource');
         });
-
+*/
     instance.camera.setCenter([0, 0]);
-    instance.run();
+    //instance.run();
 
     //var nametag = new NametagPlugin(instance, {});
 
-    instance.player.actor = instance.world.find('test');
+    instance.player.actor = instance.find('test');
     //instance.camera.followEntity(instance.player.actor);
 
     // Attach to window so I can debug easier :/
-    window.fro = instance;
+    window.fro1 = instance;
 
     // Bind our input box to create coolio chat bubbles
     document.getElementById('chat-input').addEventListener('keydown', function(evt) {
@@ -279,3 +289,16 @@ require([
     });
 
 });
+
+
+
+require([
+    'fro'
+], function(instance2) {
+
+    console.log('req2.l - ', Object.keys(instance2.plugins).length);
+    console.log('req2 - ', instance2);
+
+    window.fro2 = instance2;
+});
+
