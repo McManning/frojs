@@ -22,6 +22,7 @@ define([
     'Utility',
     'Timer'
 ], function(EventHooks, Util, Timer) {
+    var rect = Util.rect;
 
     // Minimum allowed display time for each frame.
     var MINIMUM_FRAME_MS = 100;

@@ -17,8 +17,11 @@
  *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-define([], function() {
-
+define([
+    'Utility'
+], function(Util) {
+    var vec3 = Util.vec3;
+    
     /**
      * Common enumerations accessed throughout modules.
      */

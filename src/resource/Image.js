@@ -21,6 +21,7 @@ define([
     'EventHooks',
     'Utility'
 ], function(EventHooks, Util) {
+    var mat4 = Util.mat4;
 
     /**
      * Built-in image resource type.
@@ -191,7 +192,7 @@ define([
 
         // triangle strip form (since there's no GL_QUAD)
         gl.bufferData(gl.ARRAY_BUFFER, 
-            new glMatrixArrayType([
+            new window.glMatrixArrayType([
                 w, -h, // bottom right
                 w, h, // top right
                 -w, -h, // bottom left
@@ -219,7 +220,7 @@ define([
         h = this.height / this.getTextureHeight();
 
         gl.bufferData(gl.ARRAY_BUFFER, 
-                new glMatrixArrayType([
+                new window.glMatrixArrayType([
                     x+w, y,
                     x+w, y+h,
                     x, y,

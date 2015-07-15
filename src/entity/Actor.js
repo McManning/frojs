@@ -23,6 +23,8 @@ define([
     'Timer',
     'entity/Entity'
 ], function(Enum, Util, Timer, Entity) {
+    var vec3 = Util.vec3,
+        rect = Util.rect;
 
     var MOVEMENT_DISTANCE = 16;
 

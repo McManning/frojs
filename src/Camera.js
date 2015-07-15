@@ -21,6 +21,9 @@ define([
     'EventHooks',
     'Utility'
 ], function(EventHooks, Util) {
+    var vec3 = Util.vec3,
+        rect = Util.rect,
+        mat4 = Util.mat4;
 
     // TODO: Make the camera an entity child, so follow is done just by parenting.
     // As well, if the child entity is destroyed, don't destroy the camera and instead

@@ -21,6 +21,7 @@ define([
     'EventHooks',
     'Utility'
 ], function(EventHooks, Util) {
+    var vec3 = Util.vec3;
 
     /**
      * Base model for all entities in the world

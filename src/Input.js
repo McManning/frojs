@@ -21,7 +21,8 @@ define([
     'EventHooks',
     'Utility'
 ], function(EventHooks, Util) {
-
+    var vec3 = Util.vec3;
+    
     // Shim for KeyEvent. Currently supported in Firefox, but not Chrome. 
     // http://www.w3.org/TR/2001/WD-DOM-Level-3-Events-20010410/DOM3-Events.html#events-Events-KeyEvent
     if (typeof window.KeyEvent === "undefined") {

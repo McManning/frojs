@@ -18,8 +18,10 @@
  */
 
 define([
+    'Utility',
     'entity/Entity'
-], function(Entity) {
+], function(Util, Entity) {
+    var rect = Util.rect;
 
     function Prop(context, properties) {
         Entity.call(this, context, properties);

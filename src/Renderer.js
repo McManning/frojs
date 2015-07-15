@@ -18,9 +18,11 @@
  */
 
 define([
+    'Utility',
     'text!shaders/main.vs',
-    'text!shaders/main.fs',
-], function(vertexShaderSource, fragmentShaderSource) {
+    'text!shaders/main.fs'
+], function(Util, vertexShaderSource, fragmentShaderSource) {
+    var mat4 = Util.mat4; 
 
     function Renderer(context, options) {
 

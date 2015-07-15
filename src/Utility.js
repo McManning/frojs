@@ -20,7 +20,9 @@
 // Stuff that have no real home
 
 
-define([], function() {
+define([
+    'glMatrix'
+], function(glMatrix) {
 
     var htmlEntityMap = {
         "&": "&amp;",
@@ -32,6 +34,11 @@ define([], function() {
     };
 
     return {
+        rect: glMatrix.rect,
+        vec3: glMatrix.vec3,
+        mat3: glMatrix.mat3, 
+        mat4: glMatrix.mat4,
+        quat4: glMatrix.quat4,
 
         /**
          * Utility method to escape HTML content from strings (chat, nicknames, etc)

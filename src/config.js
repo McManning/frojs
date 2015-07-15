@@ -5,7 +5,7 @@
 requirejs.config({
     baseUrl: 'src',
     paths: {
-        jquery: '../external/jquery-1.7.2.min',
-        text: '../external/text'
+        text: 'vendor/text',
+        glMatrix: 'vendor/glMatrix'
     }
 });
