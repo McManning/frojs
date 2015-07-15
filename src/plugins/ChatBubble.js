@@ -218,7 +218,7 @@ define([
 
         // Load a new image resource from the canvas
         this.image = new Image(this.context, {
-            type: 'image',
+            type: 'Image',
             canvas: workerCanvas,
             width: this.width,
             height: this.height

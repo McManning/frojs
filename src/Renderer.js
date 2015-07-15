@@ -116,7 +116,7 @@ define([
 
         this.defaultShader = context.resources.load({
             id: 'shader:default',
-            type: 'shader',
+            type: 'Shader',
             vertex: vertexShaderSource,
             fragment: fragmentShaderSource,
             uniforms: [

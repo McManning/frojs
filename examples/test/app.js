@@ -13,6 +13,9 @@ require([
     'fro'
 ], function(fro) {
 
+    console.log('0.l - ', Object.keys(fro.plugins).length);
+    console.log('0 - ', fro);
+
     // In your application main, initialise fro
     var instance = new fro.World({
         plugins: {
@@ -41,10 +44,10 @@ require([
             templates: [
                 {
                     id: 'crate',
-                    type: 'prop',
+                    type: 'Prop',
                     image: {
                         id: 'crate',
-                        type: 'image',
+                        type: 'Image',
                         url: 'http://i.imgur.com/2LlSRc8.png',
                         fitToTexture: false,
                         width: 132,
@@ -55,7 +58,7 @@ require([
                 },
                 {
                     id: 'actorTest',
-                    type: 'actor',
+                    type: 'Actor',
                     // TODO: w/h is redundant if we have to define an image.
                     // I say, if left out, let's load it from image data.
                     //w: 560,
@@ -72,7 +75,7 @@ require([
                         // Reason being is that we share resource IDs between types. They need to *not* do that.
                     }*/
                     avatar: { // image: {
-                        type: 'animation',
+                        type: 'Animation',
                         url: "http://i.imgur.com/MAT9aD2.png", // Original frojs default avatar
                         autoplay: true,
                         width: 32,
