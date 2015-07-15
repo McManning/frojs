@@ -182,7 +182,7 @@ require([
 
     // Test timers
     var fpsTimer = new fro.Timer(function() {
-      //  document.getElementById('fps').innerHTML = instance.getFramerate();
+        document.getElementById('fps').innerHTML = instance.getFramerate();
     }, 1000);
 
     fpsTimer.start();
@@ -201,12 +201,12 @@ require([
             console.log(position);
 
             // Spawn a new crate!
-            instance.world.loadEntity({
+            instance.loadEntity({
                 template: 'crate',
                 position: position
             });
 
-            //instance.world.find('test').setDestination(destination);
+            //instance.find('test').setDestination(destination);
         })
         .bind('keydown', console, function(evt) {
             this.log('keydown: ' + evt.keyCode);
@@ -268,7 +268,7 @@ require([
         });
 */
     instance.camera.setCenter([0, 0]);
-    //instance.run();
+    instance.run();
 
     //var nametag = new NametagPlugin(instance, {});
 
