@@ -1,24 +1,22 @@
 
 requirejs.config({
     paths: {
-        'fro': '../../dist/fro',
-        'Timer': '../../dist/fro', // Defined within the fro build
+        'fro': '../../dist/fro'
     },
     urlArgs: 'bust=' + Date.now()
 });
 
 require([
-    'fro',
-    'Timer'
-], function(fro, Timer) {
+    'fro'
+], function(fro) {
 
     /**
      * Create a new cluster of Actor entities around the given position.
      *
-     * @param {Fro} fro
+     * @param {World} context
      * @param {vec3} position
      */
-    function spawnActorCluster(fro, position) {
+    function spawnActorCluster(context, position) {
         var radius = 100;
         var total = 20;
 
@@ -28,17 +26,17 @@ require([
             x = position[0] + Math.floor(Math.random() * radius * 2 - radius);
             y = position[1] + Math.floor(Math.random() * radius * 2 - radius);
 
-            fro.world.loadEntity({
+            context.loadEntity({
                 template: 'actorTest', //'crate',
                 position: [x, y, 0],
                 direction: Math.floor(Math.random() * 9 + 1),
-                name: 'Actor ' + fro.world.renderableEntities.length 
+                name: 'Actor ' + context.renderableEntities.length 
             });
         }
     }
 
     // In your application main, initialise fro
-    var instance = new fro({
+    var instance = new fro.World({
         plugins: {
             Nametag: {
                 fontSize: 14
@@ -60,9 +58,9 @@ require([
             templates: [
                 {
                     id: 'actorTest',
-                    type: 'actor',
+                    type: 'Actor',
                     avatar: { // image: {
-                        type: 'animation',
+                        type: 'Animation',
                         url: "http://i.imgur.com/MAT9aD2.png", // Original frojs default avatar
                         autoplay: true,
                         width: 32,
@@ -122,7 +120,7 @@ require([
     });
 
     // Test timers
-    var fpsTimer = new Timer(function() {
+    var fpsTimer = new fro.Timer(function() {
         document.getElementById('fps').innerHTML = instance.getFramerate();
     }, 1000);
 
@@ -155,7 +153,7 @@ require([
 
     //var nametag = new NametagPlugin(instance, {});
 
-    instance.player.actor = instance.world.find('test');
+    instance.player.actor = instance.find('test');
     //instance.camera.followEntity(instance.player.actor);
 
     // Attach to window so I can debug easier :/
