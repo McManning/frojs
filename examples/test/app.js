@@ -178,7 +178,7 @@ require([
     console.log('2 - ', fro);
 
     // Test timers
-    var fpsTimer = new fro.utils.Timer(function() {
+    var fpsTimer = new fro.Timer(function() {
       //  document.getElementById('fps').innerHTML = instance.getFramerate();
     }, 1000);
 

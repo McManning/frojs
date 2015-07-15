@@ -22,7 +22,11 @@ define(function(require) {
 
     // Public modules
     var World = require('World'),
-        Timer = require('Timer');
+        Timer = require('Timer'),
+        utils = require('Utility');
+
+        // Note: 'utils' naming is intentional since 
+        // it's an object literal, not a constructor.
 
     // Entity types
     var Entity = require('entity/Entity'),
@@ -42,9 +46,8 @@ define(function(require) {
     // Expose modules
     return {
         World: World,
-        utils: {
-            Timer: Timer
-        },
+        Timer: Timer,
+        utils: utils,
         entities: {
             Entity: Entity,
             Actor: Actor,
