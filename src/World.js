@@ -36,6 +36,10 @@ define([
     function World(properties) {
         Util.extend(this, EventHooks);
 
+        if (!properties.hasOwnProperty('world')) {
+            throw Error('What is a fro without a world? You need to specify world data.');
+        }
+
         // Set up properties to record framerates
         this.framerates = [];
         this.numFramerates = 10;
@@ -356,7 +360,7 @@ define([
 
     World.prototype.render = function() {
         this.camera.setupViewport();
-        
+
         // If we need to resort our renderables, do so
         if (this.needsResort) {
             this.needsResort = false;

@@ -9,19 +9,25 @@ require([
     'fro'
 ], function(fro) {
 
-    var froInstance1 = new fro({
-        canvas: document.getElementById('fro-canvas-1')
+    window.froInstance1 = new fro.World({
+        renderer: {
+            canvas: document.getElementById('fro-canvas-1'),
+            background: [255, 0, 0]
+        },
+        world: {}
     });
 
-    froInstance1.renderer.setClearColor(0,255,0);
     froInstance1.run();
 
     // Second instance of the client in the same closure
-    var froInstance2 = new fro({
-        canvas: document.getElementById('fro-canvas-2')
+    window.froInstance2 = new fro.World({
+        renderer: {
+            canvas: document.getElementById('fro-canvas-2'),
+            background: [0, 255, 0]
+        },
+        world: {}
     });
 
-    froInstance2.renderer.setClearColor(0,0,255);
     froInstance2.run();
 });
 
@@ -30,10 +36,13 @@ require([
     'fro'
 ], function(fro) {
 
-    var froInstance1 = new fro({
-        canvas: document.getElementById('fro-canvas-3')
+    window.froInstance3 = new fro.World({
+        renderer: {
+            canvas: document.getElementById('fro-canvas-3'),
+            background: [0, 0, 255]
+        },
+        world: {}
     });
 
-    froInstance1.renderer.setClearColor(0,255,255);
-    froInstance1.run();
+    froInstance3.run();
 });
