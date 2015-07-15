@@ -18,12 +18,15 @@
  */
 
 define([
-    'Utility',
-    'Timer',
-    'resource/Image',
-    'entity/Entity',
-    'entity/Actor'
-], function(Util, Timer, Image, Entity, Actor) {
+    'fro'
+], function(fro) {
+
+    // Shorthand things a bit
+    var Entity = fro.entities.Entity,
+        Actor = fro.entities.Actor,
+        Image = fro.resources.Image,
+        Util = fro.utils,
+        Timer = fro.Timer;
 
     // Create an internal worker canvas used to render textures
     var workerCanvas = document.createElement('canvas');
@@ -329,5 +332,7 @@ define([
         data.entity.addChild(bubble);
     };
 
+    fro.entities.ChatBubble = ChatBubble;
+    fro.plugins.ChatBubble = Plugin;
     return Plugin;
 });

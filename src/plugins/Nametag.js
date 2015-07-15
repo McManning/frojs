@@ -18,10 +18,24 @@
  */
 
 define([
-    'entity/Entity',
-    'entity/Actor',
-    'resource/FontImage'
-], function(Entity, Actor, FontImage) {
+    'fro'
+], function(fro) {
+    // Shorthand things a bit
+    var Entity = fro.entities.Entity,
+        Actor = fro.entities.Actor,
+        FontImage = fro.resources.FontImage;
+
+    if (typeof(Entity) !== 'function') {
+        throw Error('Missing Entity entity definition');
+    }
+
+    if (typeof(Actor) !== 'function') {
+        throw Error('Missing Actor entity definition');
+    }
+
+    if (typeof(FontImage) !== 'function') {
+        throw Error('Missing FontImage resource definition');
+    }
 
     var NICKNAME_ZORDER = 998; // TODO: global UI_ZORDER
     
@@ -171,5 +185,10 @@ define([
         }
     };
 
+    // Register Nametag entity
+    fro.entities.Nametag = Nametag;
+
+    // Register plugin
+    fro.plugins.Nametag = Plugin;
     return Plugin;
 });
