@@ -18,7 +18,6 @@
  */
 
 define([
-    'fro',
     'EventHooks',
     'Utility',
     'Timer',
@@ -28,14 +27,9 @@ define([
     'Camera',
     'Input',
     'Player',
-    'Network',
-    'entity/Prop',
-    'entity/Actor',
-    'entity/Sound'
-], function(fro, EventHooks, Util, Timer, Audio, Resources, Renderer, 
-            Camera, Input, Player, Network, Prop, Actor, Sound) {
-
-    console.log(fro);
+    'Network'
+], function(EventHooks, Util, Timer, Audio, Resources, 
+            Renderer, Camera, Input, Player, Network) {
 
     function World(properties) {
         Util.extend(this, EventHooks);
@@ -55,13 +49,6 @@ define([
 
         this.player = new Player(this, properties.player);
 
-        this.loaders = {
-            prop: Prop,
-            sound: Sound,
-            actor: Actor,
-            //player: this.loadPlayer,
-        };
-        
         this.renderableEntities = [];
         this.otherEntities = [];
         this.id = properties.world.id || '';
@@ -129,6 +116,9 @@ define([
      * @return object|null
      */
     World.prototype.loadEntity = function(properties) {
+        // Late-require fro so we don't get caught 
+        // in a dependency cycle on import
+        var fro = require('fro');
 
         var id = properties.id,
             instance = null,
@@ -143,16 +133,15 @@ define([
         // Defined after template injection so we can define types by template.
         type = properties.type;
 
-        // If we don't have a loader for this entity, but it's marked
-        // as required, throw an error that we couldn't load it. 
-        if (!(type in this.loaders) && properties.required) {
+        // If we don't have a loader for this entity, throw an error
+        if (!fro.entities.hasOwnProperty(type)) {
             throw new Error(
                 'Unknown type [' + type + '] for required entity [' + id + ']'
             );
         }
 
         // Call a loader based on entity type
-        instance = new this.loaders[type](this, properties);
+        instance = new fro.entities[type](this, properties);
 
         // Add it to the world
         this.add(instance);

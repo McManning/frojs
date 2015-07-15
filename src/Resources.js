@@ -19,14 +19,8 @@
 
 define([
     'EventHooks',
-    'Utility',
-    'resource/Image',
-    'resource/Sound',
-    'resource/Json',
-    'resource/Shader',
-    'resource/FontImage',
-    'resource/Animation'
-], function(EventHooks, Util, Image, Sound, Json, Shader, FontImage, Animation) {
+    'Utility'
+], function(EventHooks, Util) {
 
     // TODO: Rewrite a lot of this. I don't like the error list, I don't like how
     // the error handling works in general, etc. This can be a lot simpler, and a lot
@@ -34,16 +28,6 @@ define([
 
     function Resources(context) {
         Util.extend(this, EventHooks); // Allow events to be fired from resource manager
-
-        // Mapping type strings to class names
-        this.resourceTypes = {
-            'image': Image,
-            'sound': Sound,
-            'json': Json,
-            'shader': Shader,
-            'text': FontImage,
-            'animation': Animation
-        };
 
         this.context = context;
         this.loaded = {};
@@ -124,7 +108,10 @@ define([
      * wait until it has been fully loaded.
      */
     Resources.prototype.load = function(json) {
-        
+        // Late-require fro so we don't get caught 
+        // in a dependency cycle on import
+        var fro = require('fro');
+
         // Validate JSON properties
         // TODO: Better validators
         if (!json.hasOwnProperty('type')) {
@@ -138,7 +125,13 @@ define([
         var id = Util.hash(JSON.stringify(json));
         var type = json.type;
         
-        if (!this.resourceTypes.hasOwnProperty(type)) {
+        // If the resource can be shared between instances, and we already have it
+        // loaded, just return the original resource.
+        if (this.loaded.hasOwnProperty(id) && this.loaded[id].shareable) {
+            return this.loaded[id];
+        }
+
+        if (!fro.resources.hasOwnProperty(type)) {
             this.failed[id] = json;
             throw new Error(
                 'Cannot load [' + id + ']. No loader for type [' + 
@@ -146,21 +139,11 @@ define([
             );
         }
 
-        console.log(this.resourceTypes[type].shareable);
-
-        var shareable = this.resourceTypes[type].shareable;
-
-        // If the resource can be shared between instances, and we already have it
-        // loaded, just return the original resource.
-        if (shareable && this.loaded.hasOwnProperty(id)) {
-            return this.loaded[id];
-        }
-
-        var resource = new this.resourceTypes[type](this.context, json);
+        var resource = new fro.resources[type](this.context, json);
         resource._resourceId = id;
 
         // If we can share it between instances, cache the results.
-        if (shareable) {
+        if (resource.shareable) {
             this.loaded[id] = resource;
         }
         

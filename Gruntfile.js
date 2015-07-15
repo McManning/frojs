@@ -16,7 +16,8 @@ module.exports = function(grunt) {
                     document: false,
                     define: false,
                     requirejs: false,
-                    module: false
+                    module: false,
+                    require: false
                 },
                 curly: true,
                 eqeqeq: true,
