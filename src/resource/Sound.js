@@ -18,9 +18,8 @@
  */
 
 define([
-    'EventHooks',
-    'Utility',
-], function(EventHooks, Util) {
+    'resource/Resource'
+], function(Resource) {
 
     /**
      * Built-in sound resource type.
@@ -29,10 +28,9 @@ define([
      * does not attempt to determine support for track types. 
      */
     function Sound(context, properties) {
-        Util.extend(this, EventHooks);
+        Resource.call(this, context, properties);
 
         this.url = properties.url;
-        this.type = properties.type;
         this.buffer = null;
         
         var request = new window.XMLHttpRequest();
@@ -67,16 +65,39 @@ define([
         request.send();
     }
 
-    this.isLoaded = function() {
+    Sound.prototype = Object.create(Resource.prototype);
+    Sound.prototype.constructor = Sound;
+
+    /**
+     * Returns whether the input metadata schema is acceptable. 
+     *
+     * @param {Object} metadata
+     *
+     * @return {boolean}
+     */
+    Sound.prototype.validateMetadata = function(metadata) {
+        var requiredKeys = [
+            'url'
+        ];
+        
+        for (var i = 0; i < requiredKeys.length; i++) {
+            if (!metadata.hasOwnProperty(requiredKeys[i])) {
+                return false;
+            }
+        }
+
+        return true;
+    };
+
+    Sound.isLoaded = function() {
+
         return !!this.buffer;
     };
 
-    this.getBuffer = function() {
+    Sound.getBuffer = function() {
+
         return this.buffer;
     };
-
-    // Resource can be cached and reused
-    Sound.shareable = true;
 
     return Sound;
 });

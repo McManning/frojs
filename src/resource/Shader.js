@@ -18,15 +18,15 @@
  */
 
 define([
-    'EventHooks',
+    'resource/Resource',
     'Utility'
-], function(EventHooks, Util) {
+], function(Resource, Util) {
 
     /**
      * Built-in shader resource type.
      */
     function Shader(context, properties) {
-        Util.extend(this, EventHooks);
+        Resource.call(this, context, properties);
 
         /*
             Expected JSON parameters:
@@ -41,9 +41,6 @@ define([
             ]
         */
         
-        this.id = properties.id;
-        this.type = properties.type;
-        this.context = context;
         this.program = null;
         
         // Add some values expected of all shaders
@@ -72,6 +69,30 @@ define([
         // TODO: move this?
         this.context.renderer.attachShader(this);
     }
+
+    Shader.prototype = Object.create(Resource.prototype);
+    Shader.prototype.constructor = Shader;
+
+    /**
+     * Returns whether the input metadata schema is acceptable. 
+     *
+     * @param {Object} metadata
+     *
+     * @return {boolean}
+     */
+    Shader.prototype.validateMetadata = function(metadata) {
+        var requiredKeys = [
+            'id', 'vertex', 'fragment'
+        ];
+        
+        for (var i = 0; i < requiredKeys.length; i++) {
+            if (!metadata.hasOwnProperty(requiredKeys[i])) {
+                return false;
+            }
+        }
+
+        return true;
+    };
 
     /**
      * Loads uniforms and attribute locations from the shader program
@@ -150,6 +171,7 @@ define([
     };
 
     Shader.prototype.isLoaded = function() {
+        
         return true;
     };
 
@@ -183,9 +205,6 @@ define([
         gl.bindTexture(gl.TEXTURE_2D, texture);
         gl.uniform1i(this.getUniform(uniform), 0);
     };
-
-    // Resource can be cached and reused
-    Shader.shareable = true;
 
     return Shader;
 });

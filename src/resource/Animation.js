@@ -18,10 +18,10 @@
  */
 
 define([
-    'EventHooks',
+    'resource/Resource',
     'Utility',
     'Timer'
-], function(EventHooks, Util, Timer) {
+], function(Resource, Util, Timer) {
     var rect = Util.rect;
 
     // Minimum allowed display time for each frame.
@@ -32,14 +32,10 @@ define([
      * Handles setting framesets, animation timing, looping, etc. 
      */
     function Animation(context, properties) {
-        Util.extend(this, EventHooks);
+        Resource.call(this, context, properties);
 
-        if (!this.validateMetadata(properties)) {
-            // TODO: better error handling
-            throw new Error('Malformed Animation metadata');
-        }
-
-        this.context = context;
+        this.shareable = false; // CANNOT be cached/reused as 
+                                // each instance has a unique state.
         this.url = properties.url;
         this.width = properties.width;
         this.height = properties.height;
@@ -55,7 +51,7 @@ define([
         // as a sub-resource so that we can load cached images
         // if another Animation instance already uses the same source.
         this.image = context.resources.load({
-            type: 'image',
+            type: 'Image',
             url: properties.url,
             width: properties.width,
             height: properties.height,
@@ -78,6 +74,9 @@ define([
             this.onImageReady();
         }
     }
+
+    Animation.prototype = Object.create(Resource.prototype);
+    Animation.prototype.constructor = Animation;
 
     /**
      * Returns whether the input metadata schema is acceptable. 
@@ -169,6 +168,7 @@ define([
      * @return {boolean}
      */
     Animation.prototype.hasKeyframe = function(key) {
+
         return this.keyframes.hasOwnProperty(key);
     };
 
@@ -208,6 +208,7 @@ define([
      * @return {boolean}
      */
     Animation.prototype.isLoaded = function() {
+
         return this.image.isLoaded();
     };
 
@@ -262,17 +263,14 @@ define([
      * Stop playback of the current keyframe animation.
      */
     Animation.prototype.stop = function() {
+
         this.animateTimer.stop();
     };
     
     Animation.prototype.isPlaying = function() {
+
         return this.animateTimer.running;
     };
-
-    // Since each animation has an internal state, it can't be shared
-    // among other resources (otherwise they'll all play the same 
-    // frames simultaneously. And that gets boring :P)
-    Animation.shareable = false;
 
     return Animation;
 });

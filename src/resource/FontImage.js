@@ -18,9 +18,9 @@
  */
 
 define([
-    'Utility',
-    'resource/Image'
-], function(Util, Image) {
+    'resource/Image',
+    'Utility'
+], function(Image, Util) {
 
     // Create an internal worker canvas used to render text to textures
     var workerCanvas = document.createElement('canvas');
@@ -32,8 +32,8 @@ define([
         // TODO: Image tries to load an image source if properties.url.
         // Maybe stop that from being defined?
 
-        this.fitToTexture = false; 
-        this.text = properties.text || '';
+        this.fitToTexture = false;
+        this.text = properties.text;
         this.width = 0;
         this.height = 0;
         this.maxWidth = properties.maxWidth || 0;
@@ -49,6 +49,29 @@ define([
 
     FontImage.prototype = Object.create(Image.prototype);
     FontImage.prototype.constructor = FontImage;
+
+    /**
+     * Returns whether the input metadata schema is acceptable. 
+     *
+     * @param {Object} metadata
+     *
+     * @return {boolean}
+     */
+    FontImage.prototype.validateMetadata = function(metadata) {
+
+        // TODO: More validation rules!
+        var requiredKeys = [
+            'text'
+        ];
+        
+        for (var i = 0; i < requiredKeys.length; i++) {
+            if (!metadata.hasOwnProperty(requiredKeys[i])) {
+                return false;
+            }
+        }
+
+        return true;
+    };
 
     FontImage.prototype.generateFontTexture = function() {
 
@@ -112,14 +135,17 @@ define([
     };
 
     FontImage.prototype.getTextureWidth = function() {
+
         return this.width;
     };
 
     FontImage.prototype.getTextureHeight = function() {
+
         return this.height;
     };
 
     FontImage.prototype.isLoaded = function() {
+        // Always instantly loaded
         return true;
     };
 

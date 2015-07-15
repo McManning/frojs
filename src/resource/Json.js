@@ -18,9 +18,8 @@
  */
 
 define([
-    'EventHooks',
-    'Utility'
-], function(EventHooks, Util) {
+    'resource/Resource'
+], function(Resource) {
 
     /**
      * Built-in JSON resource type.
@@ -29,13 +28,9 @@ define([
      */
 
     function Json(context, properties) {
-        Util.extend(this, EventHooks);
-
-        // jshint unused:false
-        // TODO: Use or drop context param
+        Resource.call(this, context, properties);
 
         this.url = properties.url;
-        this.type = properties.type;
         
         var request = new window.XMLHttpRequest();
         request.open('GET', this.url, true);
@@ -59,6 +54,30 @@ define([
         request.send();
     }
 
+    Json.prototype = Object.create(Resource.prototype);
+    Json.prototype.constructor = Json;
+
+    /**
+     * Returns whether the input metadata schema is acceptable. 
+     *
+     * @param {Object} metadata
+     *
+     * @return {boolean}
+     */
+    Json.prototype.validateMetadata = function(metadata) {
+        var requiredKeys = [
+            'url'
+        ];
+        
+        for (var i = 0; i < requiredKeys.length; i++) {
+            if (!metadata.hasOwnProperty(requiredKeys[i])) {
+                return false;
+            }
+        }
+
+        return true;
+    };
+
     Json.prototype.isLoaded = function() {
         return typeof this.json === 'object';
     };
@@ -66,9 +85,6 @@ define([
     Json.prototype.getJson = function() {
         return this.json;
     };
-
-    // Resource can be cached and reused
-    Json.shareable = true;
 
     return Json;
 });

@@ -18,33 +18,24 @@
  */
 
 define([
-    'EventHooks',
+    'resource/Resource',
     'Utility'
-], function(EventHooks, Util) {
+], function(Resource, Util) {
     var mat4 = Util.mat4;
 
     /**
      * Built-in image resource type.
      */
     function Image(context, properties) {
-        Util.extend(this, EventHooks);
-
+        Resource.call(this, context, properties);
         /*
             Expected JSON parameters:
-                id - resource identifier
-                url - image url
+                url (optional) - image url
                 width - texture dimensions
                 height - texture dimensions
-                shader - shader resource ID applied while rendering
-                fitToTexture - whether the width/height should change based on the loaded texture dimensions
+                shader (optional) - shader resource ID applied while rendering
+                fitToTexture (optional) - whether the width/height should change based on the loaded texture dimensions
         */
-
-        this.type = properties.type;
-
-        //this.vbuf = 
-        //this.tbuf = 
-        //this.texture = 
-        this.context = context;
 
         this.width = properties.width;
         this.height = properties.height;
@@ -88,6 +79,30 @@ define([
         }
     }
     
+    Image.prototype = Object.create(Resource.prototype);
+    Image.prototype.constructor = Image;
+
+    /**
+     * Returns whether the input metadata schema is acceptable. 
+     *
+     * @param {Object} metadata
+     *
+     * @return {boolean}
+     */
+    Image.prototype.validateMetadata = function(metadata) {
+        var requiredKeys = [
+            'width', 'height'
+        ];
+        
+        for (var i = 0; i < requiredKeys.length; i++) {
+            if (!metadata.hasOwnProperty(requiredKeys[i])) {
+                return false;
+            }
+        }
+
+        return true;
+    };
+
     /**
      * Construct this.texture from this.img Image resource
      * and resource properties
@@ -249,8 +264,5 @@ define([
         }
     };
 
-    // Resource can be cached and reused
-    Image.shareable = true; 
-    
     return Image;
 });
