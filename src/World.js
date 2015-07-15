@@ -31,6 +31,8 @@ define([
 ], function(EventHooks, Util, Timer, Audio, Resources, 
             Renderer, Camera, Input, Player, Network) {
 
+    var FRAMERATE = 1000/30;
+
     function World(properties) {
         Util.extend(this, EventHooks);
 
@@ -298,7 +300,62 @@ define([
         });
     };
 
+    World.prototype.run = function() {
+        
+        this.lastTime = this.startTime = Date.now();
+        this.heartbeat();
+    };
+
+    World.prototype.heartbeat = function() {
+        window.requestAnimationFrame(this.heartbeat.bind(this));
+
+        var now = Date.now();
+        var delta = now - this.lastTime;
+
+        if (delta > FRAMERATE) {
+            this.render();
+            this.snapshot();
+
+            this.lastTime = now - (delta % FRAMERATE);
+        }
+    };
+
+    World.prototype.snapshot = function() {
+    
+        if (this.renderTime < 0) {
+            this.renderTime = new Date().getTime();
+        } else {
+            var newTime = new Date().getTime();
+            var t = newTime - this.renderTime;
+            
+            if (t === 0) {
+                return;
+            }
+
+            var framerate = 1000/t;
+            this.framerates.push(framerate);
+            while (this.framerates.length > this.numFramerates) {
+                this.framerates.shift();
+            }
+
+            this.renderTime = newTime;
+        }
+    };
+    
+    World.prototype.getFramerate = function() {
+        var tot = 0;
+        for (var i = 0; i < this.framerates.length; ++i) {
+            tot += this.framerates[i];
+        }
+
+        var framerate = tot / this.framerates.length;
+        framerate = Math.round(framerate);
+        
+        return framerate;
+    };
+
     World.prototype.render = function() {
+        this.camera.setupViewport();
         
         // If we need to resort our renderables, do so
         if (this.needsResort) {
