@@ -4,7 +4,11 @@ module.exports = function(grunt) {
     grunt.initConfig({
         pkg: grunt.file.readJSON('package.json'),
         jshint: {
-            files: ['Gruntfile.js', 'src/**/*.js'],
+            files: [
+                'Gruntfile.js', 
+                'src/**/*.js', 
+                '!src/vendor/**/*.js', // Ignore vendor scripts
+            ],
             options: {
                 globals: {
                     console: false,
@@ -12,12 +16,7 @@ module.exports = function(grunt) {
                     document: false,
                     define: false,
                     requirejs: false,
-                    module: false,
-                    // TODO: Build glMatrix as well
-                    glMatrixArrayType: false,
-                    vec3: false,
-                    rect: false,
-                    mat4: false
+                    module: false
                 },
                 curly: true,
                 eqeqeq: true,
@@ -39,10 +38,7 @@ module.exports = function(grunt) {
                     wrap: true,
                     name: 'fro',
                     optimize: 'none', // going to do this as a separate task
-                    out: 'dist/fro.js',
-                    exclude: [
-                        'jquery'
-                    ]
+                    out: 'dist/fro.js'
                 }
             }
         },

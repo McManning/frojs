@@ -26,13 +26,15 @@
  *    distribution.
  */
 
+define([], function() {
+
 // Fallback for systems that don't support WebGL
-if(typeof Float32Array != 'undefined') {
-	glMatrixArrayType = Float32Array;
-} else if(typeof WebGLFloatArray != 'undefined') {
-	glMatrixArrayType = WebGLFloatArray; // This is officially deprecated and should dissapear in future revisions.
+if (typeof window.Float32Array !== 'undefined') {
+	window.window.glMatrixArrayType = window.Float32Array;
+} else if (typeof window.WebGLFloatArray !== 'undefined') {
+	window.window.glMatrixArrayType = window.WebGLFloatArray; // This is officially deprecated and should dissapear in future revisions.
 } else {
-	glMatrixArrayType = Array;
+	window.window.glMatrixArrayType = Array;
 }
 
 /*
@@ -41,7 +43,7 @@ if(typeof Float32Array != 'undefined') {
 var rect = {};
 
 rect.create = function(r) {
-	var dest = new glMatrixArrayType(4);
+	var dest = new window.glMatrixArrayType(4);
 	
 	if (r) {
 		dest[0] = r[0];
@@ -115,7 +117,7 @@ var vec3 = {};
  * New vec3
  */
 vec3.create = function(vec) {
-	var dest = new glMatrixArrayType(3);
+	var dest = new window.glMatrixArrayType(3);
 	
 	if(vec) {
 		dest[0] = vec[0];
@@ -429,7 +431,7 @@ var mat3 = {};
  * New mat3
  */
 mat3.create = function(mat) {
-	var dest = new glMatrixArrayType(9);
+	var dest = new window.glMatrixArrayType(9);
 	
 	if(mat) {
 		dest[0] = mat[0];
@@ -601,7 +603,7 @@ var mat4 = {};
  * New mat4
  */
 mat4.create = function(mat) {
-	var dest = new glMatrixArrayType(16);
+	var dest = new window.glMatrixArrayType(16);
 	
 	if(mat) {
 		dest[0] = mat[0];
@@ -1545,7 +1547,7 @@ quat4 = {};
  * New quat4
  */
 quat4.create = function(quat) {
-	var dest = new glMatrixArrayType(4);
+	var dest = new window.glMatrixArrayType(4);
 	
 	if(quat) {
 		dest[0] = quat[0];
@@ -1902,3 +1904,11 @@ quat4.str = function(quat) {
 	return '[' + quat[0] + ', ' + quat[1] + ', ' + quat[2] + ', ' + quat[3] + ']'; 
 }
 
+	return {
+	    rect: rect,
+	    vec3: vec3,
+	    mat3: mat3, 
+	    mat4: mat4,
+	    quat4: quat4
+	};
+});
