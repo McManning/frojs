@@ -2,16 +2,16 @@
 requirejs.config({
     paths: {
         'fro': '../../dist/fro',
-        'Nametag': '../../src/plugins/Nametag'
+        //'Nametag': 'plugins/Nametag'
     },
+    //baseUrl: '../../src',
+    //plugins: '../../examples/test'
     //urlArgs: 'bust=' + Date.now()
 });
 
 require([
-    'fro',
-    'MyPlugin',
-    'Nametag'
-], function(fro, MyPlugin, NametagPlugin) {
+    'fro'
+], function(fro) {
 
     // In your application main, initialise fro
     var instance = new fro.World({
@@ -230,7 +230,7 @@ require([
     // Test camera events
     instance.camera
         .bind('move', function(position) {
-            console.log('Camera moved to ' + vec3.str(position));
+            console.log('Camera moved to ' + fro.utils.vec3.str(position));
             console.log(this);
         });
 /*
