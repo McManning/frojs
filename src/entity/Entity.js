@@ -29,7 +29,7 @@ define([
     function Entity(context, properties) {
         Util.extend(this, EventHooks);
 
-        this.id = properties.id;
+        this.id = properties.id || null;
         this.isRenderable = false;
         this.visible = true; // Whether or not we should draw this entity for specific frames
         this.position = vec3.create();
