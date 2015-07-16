@@ -35,7 +35,7 @@ define(function(require) {
             Entity: require('entity/Entity'),
             Actor: require('entity/Actor'),
             Prop: require('entity/Prop'),
-            RemotePlayer: require('entity/RemotePlayer'),
+            RemoteActor: require('entity/RemoteActor'),
             Sound: require('entity/Sound')
         },
 
