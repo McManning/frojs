@@ -52,16 +52,7 @@ Documentation for current usage and formats is slowly being built up on the [wik
 
 Roadmap
 ======
-- **DOCUMENT EVERYTHING**. Network messages, world and entity data structures, avatar data structures, etc. 
-- Trash the old network code and switch to Socket.IO so we're no longer reinventing the wheel
-- Add (probably as a separate project) a node.js implemention of the server. 
- - Original server was written in Tornado (4.2). We are going to switch over to something that is more friendly for Javascript developers to get their hands into. 
-- ~~Re-evaluate WebGL implementation. If it doesn't work on current browsers, make it work.~~
-- Look into completing the canvas renderer fallback, and whether or not it's even needed.
-- ~~Standardize the library structure a little more. Maybe with RequireJS, and with a proper (read: modern) build process~~
-- ~~Remove dependencies that are no longer required~~
- - ~~Particularly, remove jQuery as an internal dependency and only use it for the wrapper plugin. I believe it's only really utilized for AJAX?~~
-- Create better example patterns for writing custom plugins
+Roadmap is being tracked as [labeled tickets](https://github.com/McManning/frojs/labels/roadmap).
 
 License
 ======
