@@ -18,28 +18,65 @@
  */
 
 define([
+    'entity/Actor',
     'Enum',
     'Timer'
-], function(Enum, Timer) {
+], function(Actor, Enum, Timer) {
      
-    var THINK_INTERVAL_MS = 50;
+    // Duration we allow the action buffer to fill up before
+    // sending to the network. Remote clients will see our 
+    // actions with roughly the same delay specified here. 
+    var SEND_BUFFER_INTERVAL_MS = 2000;
 
     function Player(context, properties) {
-        // jshint unused: false
+        Actor.call(this, context, properties);
+
         this.networkBuffer = '';
 
-        this.context = context;
-
-
-        // Create a think timer for this avatar
-        this.onThink = this.onThink.bind(this);
-        this.thinkTimer = new Timer(this.onThink, THINK_INTERVAL_MS);
-        this.thinkTimer.start();
+        // If our context has a network connection, start a timer
+        // to transmit our network buffer
+        // TODO: Player is initialized before network, so this will
+        // always be false. But I don't want player after network
+        // because we need to guarantee Player is setup for auth.
+        // Better idea would be to just integrate into onThink,
+        // rather than using a new timer. 
+        //if (context.network) {
+        this.onBufferTimer = this.onBufferTimer.bind(this);
+        this.bufferTimer = new Timer(this.onBufferTimer, SEND_BUFFER_INTERVAL_MS);
+        this.bufferTimer.start();
+        //}
     }
+
+    Player.prototype = Object.create(Actor.prototype);
+    Player.prototype.constructor = Player;
+
+    Player.prototype.destroy = function() {
+        if (this.bufferTimer) {
+            this.bufferTimer.stop();
+        }
+
+        Actor.prototype.destroy.call(this);
+    };
 
     Player.prototype.onThink = function() {
 
         this.checkInput();
+        Actor.prototype.onThink.call(this);
+    };
+
+    Player.prototype.onBufferTimer = function() {
+
+        if (this.networkBuffer.length > 0) {
+            this.context.network.emit('move', {
+                buffer: this.networkBuffer,
+                position: this.position,
+                direction: this.direction,
+                action: this.action
+            });
+
+            // Clear buffer to load another payload
+            this.networkBuffer = '';
+        }
     };
 
     Player.prototype.checkInput = function() {
@@ -49,12 +86,9 @@ define([
             dir = Enum.Direction.NONE,
             north, east, south, west;
         
-        // Don't process additional actions if we have no actor, or are still moving
-        if (!this.actor || this.actor.isMoving()) {
-            return;
-        }
-
-        if (!input.hasFocus()) {
+        // Don't process additional actions if we are still moving
+        // or the context is out of focus
+        if (this.isMoving() || !input.hasFocus()) {
             return;
         }
 
@@ -116,21 +150,21 @@ define([
             if (input.isKeyDown(window.KeyEvent.DOM_VK_C) || input.isKeyDown(window.KeyEvent.DOM_VK_CONTROL)) {
                 
                 // Only accept if it's not the exact same action+direction
-                if (this.actor.action !== Enum.Action.SIT || this.actor.direction !== dir) {
+                if (this.action !== Enum.Action.SIT || this.direction !== dir) {
                     buffer += 's' + Enum.Direction.toChar(dir);
                 }
             } else {
 
                 // We want to move, check if we can actually do it
-                if (this.actor.canMove(dir)) {
+                if (this.canMove(dir)) {
 
                     // We can move, so check for a speed modifier first
                     if (input.isKeyDown(window.KeyEvent.DOM_VK_SHIFT)) {
-                        if (this.actor.speed !== Enum.Speed.RUN) {
+                        if (this.speed !== Enum.Speed.RUN) {
                             buffer += 'r';
                         }
                     } else {
-                        if (this.actor.speed !== Enum.Speed.WALK) {
+                        if (this.speed !== Enum.Speed.WALK) {
                             buffer += 'w';
                         }
                     }
@@ -140,7 +174,7 @@ define([
 
                 } else {
                     // Can't move, if we're not already facing that way, face that way.
-                    if (this.actor.direction !== dir) {
+                    if (this.direction !== dir) {
                         buffer += 't' + Enum.Direction.toChar(dir);
                     }
                 }
@@ -148,11 +182,60 @@ define([
         }
 
         if (buffer.length > 0) {
-            // Queue up the buffer to be sent to the network
-            this.networkBuffer += buffer;
+            this.addToActionBuffer(buffer);
+        }
+    };
 
-            // Also move our linked actor
-            this.actor.addToActionBuffer(buffer);
+    /**
+     * Override of Actor.addToActionBuffer to queue up the new
+     * buffer to be sent to the network next tick.
+     *
+     * @param {string} buffer
+     */
+    Player.prototype.addToActionBuffer = function(buffer) {
+
+        // Queue up the buffer to be sent to the network
+        // TODO: Obvious timing issue, we add to the buffer
+        // and if we send immediately, before the buffer is
+        // even processed, the actor state will be incorrect.
+        // (will send with the state before buffer processing).
+        if (this.context.network) {
+            this.networkBuffer += buffer;
+        }
+
+        Actor.prototype.addToActionBuffer.call(this, buffer);
+    };
+
+    /**
+     * Override of Actor.say to send the message to the
+     * network, if we're connected.
+     *
+     * @param {string} message
+     */
+    Player.prototype.say = function(message) {
+        
+        if (this.context.network) {
+            this.context.network.emit('say', {
+                message: message
+            });
+        }
+
+        Actor.prototype.say.call(this, message);
+    };
+
+    Player.prototype.setName = function(name) {
+
+        // If we're connected to a server, name changes must
+        // be validated by the server before being applied.
+        if (this.context.network) {
+
+            this.context.network.emit('name', {
+                name: name
+            });
+
+        } else {
+            // Pass directly to the Actor
+            Actor.prototype.setName.call(this, name);
         }
     };
 

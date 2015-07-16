@@ -40,6 +40,11 @@ define([
             throw Error('What is a fro without a world? You need to specify world data.');
         }
 
+        this.id = properties.world.id || '';
+        this.renderableEntities = [];
+        this.otherEntities = [];
+        this.templates = properties.world.templates || {};
+
         // Set up properties to record framerates
         this.framerates = [];
         this.numFramerates = 10;
@@ -53,31 +58,32 @@ define([
         this.camera = new Camera(this, properties.camera || {});
         this.input = new Input(this, properties.input || {});
 
-        this.player = new Player(this, properties.player);
-
-        this.renderableEntities = [];
-        this.otherEntities = [];
-        this.id = properties.world.id || '';
-        this.templates = properties.world.templates || {};
-
+        this.loadPlayer(properties.player);
         this.loadEntities(properties.world.entities || []);
 
         // If we specify network settings, connect us to a server
         if (properties.hasOwnProperty('network')) {
-            this.network = Network(this, properties.network);
+            this.network = new Network(this, properties.network);
         }
-        // Make sure we have a player entity
-        // TODO: maybe this check BEFORE network initialisation? (To avoid false starts)
-        //if (!this.getPlayerActor()) {
-        //   throw new Error('Player Actor was not loaded with World');
-        //}
     }
+
+    World.prototype.loadPlayer = function(properties) {
+
+        // If this entity has an associated template 
+        // (or a default template has been defined), merge
+        // properties from the template into this entity instance
+        var template = this.getTemplate(properties.template || 'default');
+        Util.extend(properties, template);
+
+        this.player = new Player(this, properties);
+        this.add(this.player);
+    };
 
     /** 
      * Retrieve an entity template by ID. If one does not exist,
      * this will return an empty object. 
      *
-     * @param string id 
+     * @param {string} id 
      *
      * @return object
      */
@@ -96,9 +102,9 @@ define([
      * Shorthand to load multiple entities from an array.
      * Returns an array of all entity instances successfully loaded.
      * 
-     * @param array entities An array of entity objects to load.
+     * @param {array} entities An array of entity objects to load.
      *
-     * @return array
+     * @return {array}
      */
     World.prototype.loadEntities = function(entities) {
         var instances = [],
@@ -117,9 +123,9 @@ define([
     /**
      * 
      *
-     * @param object entity a single entity object to load.
+     * @param {object} entity a single entity object to load.
      *
-     * @return object|null
+     * @return {object|null}
      */
     World.prototype.loadEntity = function(properties) {
         // Late-require fro so we don't get caught 
@@ -159,7 +165,7 @@ define([
      * Returns true if any entities on the map are still loading,  
      * and demand for the map to wait for them to finish.
      *   
-     * @return boolean
+     * @return {boolean}
      */
     World.prototype.isLoading = function() {
         // TODO: isLoading
@@ -170,7 +176,9 @@ define([
      * Search the world for an entity by ID and return the 
      * matching entity, or null if one does not exist. 
      *
-     * @return object|null
+     * @param {string} id unique entity ID to find.
+     * 
+     * @return {object|null}
      */
     World.prototype.find = function(id) {
         
@@ -197,7 +205,7 @@ define([
      * Based on the isRenderable flag, this will either add the entity
      * to the render list, or to the other entities list for optimization.
      *
-     * @param object entity
+     * @param {object} entity
      */
     World.prototype.add = function(entity) {
         
@@ -222,7 +230,7 @@ define([
      * Returns true if the entity was removed successfully, or false if 
      * it could not be found in the world. 
      * 
-     * @param object entity
+     * @param {object} entity
      */
     World.prototype.remove = function(entity) {
 
@@ -378,9 +386,9 @@ define([
     /** 
      * Returns true if there's a solid entity between start and end vectors
      *
-     * @param vec3 start
-     * @param vec3 end
-     * @return boolean
+     * @param {vec3} start
+     * @param {vec3} end
+     * @return {boolean}
      */
     World.prototype.isPathBlocked = function(start, end) {
         // jshint unused:false
@@ -391,10 +399,10 @@ define([
     /**
      * Returns true if an entity collides with the specified world rect.
      *
-     * @param rect r
-     * @param entity excluding If supplied, this entity will be ignored
+     * @param {rect} r
+     * @param {entity} excluding If supplied, this entity will be ignored
      *
-     * @return boolean
+     * @return {boolean}
      */
     World.prototype.isRectBlocked = function(r, excluding) {
 
