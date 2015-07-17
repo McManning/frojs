@@ -3,6 +3,7 @@ requirejs.config({
     paths: {
         'fro': '../../dist/fro',
         //'Nametag': 'plugins/Nametag'
+        'plugins': '../../src/plugins'
     },
     //baseUrl: '../../src',
     //plugins: '../../examples/test'
@@ -10,8 +11,10 @@ requirejs.config({
 });
 
 require([
-    'fro'
-], function(fro) {
+    'fro',
+    'plugins/Nametag',
+    'plugins/ChatBubble'
+], function(fro, Nametag, ChatBubble) {
 
     console.log('0.l - ', Object.keys(fro.plugins).length);
     console.log('0 - ', fro);
