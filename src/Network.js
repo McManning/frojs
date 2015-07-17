@@ -20,45 +20,66 @@
 define([
     'EventHooks',
     'Utility',
-    'entity/Actor'
-], function(EventHooks, Util, Actor) {
+    'entity/Actor',
+    'Player'
+], function(EventHooks, Util, Actor, Player) {
 
     function Network(context, options) {
         Util.extend(this, EventHooks); // Maybe?
 
+        // Lazily check for socket.io support
+        if (!window.io) {
+            throw Error('No socket.io support. :(');
+        }
+
+        if (!options.hasOwnProperty('server')) {
+            throw Error('No server URI specified.');
+        }
+
         this.context = context;
-        this.server = options.server || null;
+        this.server = options.server;
         this.token = options.token || null;
         this.room = options.room || null;
         this.clientId = null; // Retrieved from the server
 
-        // If we specified a server, start a SocketIO connection
-        if (this.server) {
+        this.socket = window.io(this.server);
 
-            // TODO: Check for socketIO support first
+        // bind handlers for socket events
+        var binds = {
+            connect: this.onConnect,
+            disconnect: this.onDisconnect,
+            err: this.onErr,
+            auth: this.onAuth,
+            join: this.onJoin,
+            leave: this.onLeave,
+            say: this.onSay,
+            move: this.onMove,
+            name: this.onName,
+            avatar: this.onAvatar
+        };
 
-            this.socket = window.io(this.server);
-
-            // bind handlers for socket events
-            var binds = {
-                connect: this.onConnect,
-                disconnect: this.onDisconnect,
-                error: this.onError,
-                auth: this.onAuth
-            };
-
-            for (var evt in binds) {
-                if (binds.hasOwnProperty(evt)) {
-                    this.socket.on(evt, binds[evt].bind(this));
-                }
+        for (var evt in binds) {
+            if (binds.hasOwnProperty(evt)) {
+                this.socket.on(evt, binds[evt].bind(this));
             }
         }
     }
 
+    /**
+     * Wrapper around `socket.emit` for logging/overloading.
+     *
+     * @param {string} id 
+     * @param {object} payload
+     */
+    Network.prototype.emit = function(id, payload) {
+
+        this.socket.emit(id, payload);
+    };
+
     Network.prototype.onConnect = function() {
 
         // connected, emit authentication
-        this.socket.emit('auth', {
+        this.emit('auth', {
             token: this.token,
             room: this.room,
             name: 'Chase'
@@ -66,6 +87,7 @@ define([
     };
 
     Network.prototype.onDisconnect = function() {
+
         this.clientId = null;
     };
 
@@ -74,10 +96,10 @@ define([
      * In most cases, this occurs whenever the client sends a 
      * malformed message that cannot be accepted. 
      * 
-     * @param {object} data `error` payload
+     * @param {object} data `err` payload
      */
-    Network.prototype.onError = function(data) {
-        // Payload: code, message, developerMessage
+    Network.prototype.onErr = function(data) {
+        // Payload: responseTo, message, developerMessage
 
         window.alert(data.message);
         console.log(data);
@@ -95,6 +117,9 @@ define([
 
         this.clientId = data.id;
         this.room = data.room;
+
+        // Update our local player's entity ID to match
+        this.context.player.id = data.id;
     };
 
     /**
@@ -104,7 +129,6 @@ define([
      */
     Network.prototype.onJoin = function(data) {
         // Payload: id, name, avatar, position, action, direction
-        var actor;
 
         if (data.id === this.clientId) {
             // Ourself is joining, so setup our Actor and link to Player
@@ -112,24 +136,32 @@ define([
             // TODO: Resolve better. Do we want to create the actor if it
             // doesn't exist? Should we assume it exists? Should we verify
             // it's linked to context.player? Etc. 
-            actor = this.context.find(data.id);
-            if (!(actor instanceof Actor)) {
-                throw new Error('Local actor does not exist');
+            
+            var player = this.context.player;
+
+            if (!(player instanceof Player)) {
+                throw new Error('Local Player instance does not exist');
             }
 
+            /* TODO: Maybe set these? Or set if they differ
+                from what we already have. (Because any could be
+                overridden by the server, but we don't want to 
+                trigger a reload if it's the same as what we have)
             actor.id = data.id;
             actor.setName(data.name);
             actor.setAvatar(data.avatar);
             actor.setPosition(data.position);
             actor.setAction(data.action);
             actor.setDirection(data.direction);
+            */
 
         } else {
             // It's a remote user. Setup and associate an Actor
-            actor = this.context.find(data.id);
+            var actor = this.context.find(data.id);
 
             // Remote doesn't exist, create a new Actor
             if (!actor) {
+                // TODO: Support other things like template inheritance?
                 actor = new Actor(this.context, {
                     id: data.id,
                     name: data.name,
@@ -179,7 +211,11 @@ define([
             throw new Error('No Actor associated with remote [' + data.id + ']');
         } 
 
-        actor.say(data.message);
+        // Call the underlying Actor.say for the entity.
+        // Primarily because Player.say doesn't set, but 
+        // sends the request to the server (to get this response).
+        // TODO: Probably should make this ... make more sense.
+        Actor.prototype.say.call(actor, data.message);
     };
 
     /**
@@ -197,8 +233,51 @@ define([
         // TODO: I can add to the buffer, but I don't
         // have a way to apply verifications. I'll need
         // to work that back in somehow...
+
+        // Call the underlying Actor.addToActionBuffer for the entity.
+        // Primarily because Player.addToActionBuffer doesn't set, but 
+        // sends the request to the server (to get this response).
+        // TODO: Probably should make this ... make more sense.
+        Actor.prototype.addToActionBuffer.call(actor, data.buffer);
+    };
+ 
+    /**
+     * 
+     * @param {object} data `name` payload
+     */
+    Network.prototype.onName = function(data) {
+
+        var actor = this.context.find(data.id);
+        if (!(actor instanceof Actor)) {
+            // TODO: Appropriate error handling
+            throw new Error('No Actor associated with remote [' + data.id + ']');
+        } 
+
+        // Call the underlying Actor.setName for the entity.
+        // Primarily because Player.setName doesn't set, but 
+        // sends the request to the server (to get this response).
+        // TODO: Probably should make this ... make more sense.
+        Actor.prototype.setName.call(actor, data.name);
     };
 
+    /**
+     * 
+     * @param {object} data `avatar` payload
+     */
+    Network.prototype.onAvatar = function(data) {
+
+        var actor = this.context.find(data.id);
+        if (!(actor instanceof Actor)) {
+            // TODO: Appropriate error handling
+            throw new Error('No Actor associated with remote [' + data.id + ']');
+        } 
+
+        // Call the underlying Actor.loadAvatar for the entity.
+        // Primarily because Player.loadAvatar doesn't set, but 
+        // sends the request to the server (to get this response).
+        // TODO: Probably should make this ... make more sense.
+        Actor.prototype.loadAvatar.call(actor, data.metadata);
+    };
 
     return Network;
 });

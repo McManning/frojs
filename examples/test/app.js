@@ -28,11 +28,11 @@ require([
                 backgroundColor2: '#FEF'
             }
         },
-        /*network: {
-            server: 'http://localhost:3000',
+        network: {
+            server: 'http://localhost:3000/universe',
             token: 'hi',
             room: 'test'
-        },*/
+        },
         renderer: {
             canvas: document.getElementById('fro-canvas'),
             background: [145, 184, 101]
@@ -136,14 +136,6 @@ require([
                 },
                 {
                     template: 'actorTest',
-                    id: 'test',
-                    position: [0, 0, 0],
-                    name: 'Test 1',
-                    direction: 2, // south
-                    action: 0 // idle
-                },
-                {
-                    template: 'actorTest',
                     id: 'test2',
                     position: [50, 50, 0],
                     name: 'Test 2',
@@ -167,6 +159,14 @@ require([
                     action: 2 // sit
                 }
             ]
+        },
+        player: {
+            template: 'actorTest',
+            id: 'player',
+            position: [0, 0, 0],
+            name: 'Local Player',
+            direction: 2, // south
+            action: 0 // idle
         }
     });
 
@@ -272,7 +272,6 @@ require([
 
     //var nametag = new NametagPlugin(instance, {});
 
-    instance.player.actor = instance.find('test');
     //instance.camera.followEntity(instance.player.actor);
 
     // Attach to window so I can debug easier :/
@@ -281,7 +280,7 @@ require([
     // Bind our input box to create coolio chat bubbles
     document.getElementById('chat-input').addEventListener('keydown', function(evt) {
         if (evt.keyCode === KeyEvent.DOM_VK_RETURN) {
-            instance.player.actor.say(this.value);
+            instance.player.say(this.value);
 
             var line = document.createElement('li');
             line.appendChild(document.createTextNode(this.value));
