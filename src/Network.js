@@ -78,11 +78,21 @@ define([
 
     Network.prototype.onConnect = function() {
 
+        var player = this.context.player;
+
+        // TODO: I don't like the way it accesses player here.
+        // And I hacked in a save for avatarJson. Come up
+        // with a better solution.
+
         // connected, emit authentication
         this.emit('auth', {
             token: this.token,
             room: this.room,
-            name: 'Chase'
+            name: 'Chase',
+            position: player.position,
+            action: player.action,
+            direction: player.direction,
+            avatar: player.avatarJson
         });
     };
 
@@ -154,6 +164,10 @@ define([
             actor.setAction(data.action);
             actor.setDirection(data.direction);
             */
+            Actor.prototype.setName.call(player, data.name);
+            Actor.prototype.setPosition.call(player, data.position);
+            Actor.prototype.setAction.call(player, data.action);
+            Actor.prototype.setDirection.call(player, data.direction);
 
         } else {
             // It's a remote user. Setup and associate an Actor
@@ -214,7 +228,6 @@ define([
         // Call the underlying Actor.say for the entity.
         // Primarily because Player.say doesn't set, but 
         // sends the request to the server (to get this response).
-        // TODO: Probably should make this ... make more sense.
         Actor.prototype.say.call(actor, data.message);
     };
 
@@ -237,7 +250,6 @@ define([
         // Call the underlying Actor.addToActionBuffer for the entity.
         // Primarily because Player.addToActionBuffer doesn't set, but 
         // sends the request to the server (to get this response).
-        // TODO: Probably should make this ... make more sense.
         Actor.prototype.addToActionBuffer.call(actor, data.buffer);
     };
  
@@ -256,7 +268,6 @@ define([
         // Call the underlying Actor.setName for the entity.
         // Primarily because Player.setName doesn't set, but 
         // sends the request to the server (to get this response).
-        // TODO: Probably should make this ... make more sense.
         Actor.prototype.setName.call(actor, data.name);
     };
 
@@ -272,11 +283,10 @@ define([
             throw new Error('No Actor associated with remote [' + data.id + ']');
         } 
 
-        // Call the underlying Actor.loadAvatar for the entity.
-        // Primarily because Player.loadAvatar doesn't set, but 
+        // Call the underlying Actor.setAvatar for the entity.
+        // Primarily because Player.setAvatar doesn't set, but 
         // sends the request to the server (to get this response).
-        // TODO: Probably should make this ... make more sense.
-        Actor.prototype.loadAvatar.call(actor, data.metadata);
+        Actor.prototype.setAvatar.call(actor, data.metadata);
     };
 
     return Network;
