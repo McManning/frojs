@@ -41,6 +41,7 @@ define([
         }
 
         this.id = properties.world.id || '';
+        this.plugins = {};
         this.renderableEntities = [];
         this.otherEntities = [];
         this.templates = properties.world.templates || {};
@@ -64,6 +65,25 @@ define([
         // If we specify network settings, connect us to a server
         if (properties.hasOwnProperty('network')) {
             this.network = new Network(this, properties.network);
+        }
+
+        // Load plugins, if any are specified
+        var fro = require('fro');
+        if (properties.hasOwnProperty('plugins')) {
+            for (var name in properties.plugins) {
+                if (properties.plugins.hasOwnProperty(name)) {
+
+                    // Check if the plugin method exists
+                    if (!fro.plugins.hasOwnProperty(name)) {
+                        throw new Error('Plugin [' + name + '] is not registered.');
+                    }
+
+                    this.plugins[name] = new fro.plugins[name](
+                        this, 
+                        properties.plugins[name]
+                    );
+                }
+            }
         }
     }
 
