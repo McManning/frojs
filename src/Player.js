@@ -31,6 +31,7 @@ define([
     function Player(context, properties) {
         Actor.call(this, context, properties);
 
+        this.avatarJson = properties.avatar;
         this.networkBuffer = '';
 
         // If our context has a network connection, start a timer
@@ -236,6 +237,23 @@ define([
         } else {
             // Pass directly to the Actor
             Actor.prototype.setName.call(this, name);
+        }
+    };
+
+    /**
+     * Override of Actor.setAvatar to send the message to the
+     * network, if we're connected.
+     *
+     * @param {object} properties of an avatar Animation
+     */
+    Player.prototype.setAvatar = function(properties) {
+
+        if (this.context.network) {
+            this.context.network.emit('avatar', {
+                metadata: properties
+            });
+        } else {
+            Actor.prototype.setAvatar.call(this, properties);
         }
     };
 

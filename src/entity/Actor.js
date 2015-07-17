@@ -54,7 +54,7 @@ define([
         this.thinkTimer.start();
 
         if (properties.hasOwnProperty('avatar')) {
-            this.loadAvatar(properties.avatar);
+            this.setAvatar(properties.avatar);
         }
     }
 
@@ -82,13 +82,12 @@ define([
     };
 
     /** 
-     * Load our avatar from JSON properties passed into the underlying
-     * Animation resource. 
-     * TODO: Better naming convention/pattern. load vs set is dumb.
-     * 
+     * Set our avatar from JSON properties passed into
+     * an underlying Animation resource. 
+     *
      * @param {object} properties for an Animation
      */
-    Actor.prototype.loadAvatar = function(properties) {
+    Actor.prototype.setAvatar = function(properties) {
         var avatar = this.context.resources.load(properties);
         
         // If it needs to load external resources, hook for errors
@@ -98,7 +97,7 @@ define([
             var self = this;
             avatar
                 .bind('onload', function() {
-                    self.setAvatar(avatar);
+                    self.setAvatarFromAnimation(avatar);
                 })
                 .bind('onerror', function() {
                     // TODO: do something, revert, load default, etc.
@@ -106,7 +105,7 @@ define([
                 });
         } else {
             // load in
-            this.setAvatar(avatar);
+            this.setAvatarFromAnimation(avatar);
         }
     };
 
@@ -116,7 +115,7 @@ define([
      *
      * @param {Animation} animation to use as an avatar
      */
-    Actor.prototype.setAvatar = function(animation) {
+    Actor.prototype.setAvatarFromAnimation = function(animation) {
         this.avatar = animation;
         
         this.offset[1] = this.avatar.height * 0.5;
