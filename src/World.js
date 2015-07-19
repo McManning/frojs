@@ -78,10 +78,17 @@ define([
                         throw new Error('Plugin [' + name + '] is not registered.');
                     }
 
-                    this.plugins[name] = new fro.plugins[name](
-                        this, 
-                        properties.plugins[name]
-                    );
+                    // If a plugin has just a boolean for enable, default properties to {}
+                    if (properties.plugins[name] === true) {
+                        properties.plugin[name] = {};
+                    }
+
+                    if (properties.plugins[name] !== false) {
+                        this.plugins[name] = new fro.plugins[name](
+                            this, 
+                            properties.plugins[name]
+                        ); 
+                    }
                 }
             }
         }
