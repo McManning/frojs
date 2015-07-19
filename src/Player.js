@@ -68,11 +68,19 @@ define([
     Player.prototype.onBufferTimer = function() {
 
         if (this.networkBuffer.length > 0) {
+
+            // Serialize our current state into 5-tuple
+            var state = [
+                this.position[0],
+                this.position[1],
+                this.position[2],
+                this.direction,
+                this.action
+            ];
+
             this.context.network.emit('move', {
                 buffer: this.networkBuffer,
-                position: this.position,
-                direction: this.direction,
-                action: this.action
+                state: state
             });
 
             // Clear buffer to load another payload
