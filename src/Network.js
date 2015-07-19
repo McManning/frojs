@@ -97,7 +97,7 @@ define([
         this.emit('auth', {
             token: this.token,
             room: this.room,
-            name: 'Chase'
+            name: player.name,
             avatar: player.avatarJson,
             state: state
         });
