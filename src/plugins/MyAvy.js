@@ -70,15 +70,133 @@ define([
         context.player.bind('avatar', this.onChangeAvatar);
     }
 
+    Plugin.prototype.createPickerHtml = function() {
+        var MAX_AVATARS_PER_PAGE = 5;
+
+        var html = 
+            '<div class="myavy-picker">' +
+                '<a href="#" class="back">Back</a>' +
+                '<ul>';
+
+        // Add thumbnails/links for each avatar in our options
+        for (var i = 0; i < this.pickerOptions.length; i++) {
+            if (i + 1 % MAX_AVATARS_PER_PAGE === 0) {
+                // Start a new page
+                html += '</ul><ul class="hide">';
+            }
+
+            // Add a thumbnail and link for the avatar
+            // TODO: Both of those things here.
+            html += '<li><a href="#"><img src="#" /></a></li>';
+        }
+
+        html += '</ul>';
+        
+        // If we had pages, add pagination buttons
+        if (this.pickerOptions.length > MAX_AVATARS_PER_PAGE) {
+            html += '<a href="#" class="prev-picker-page">Prev</a>' +
+                    '<a href="#" class="next-picker-page">Next</a>';
+        }
+
+        html += '</div>';
+        return html;
+    };
+
+    Plugin.prototype.createCurrentHtml = function() {
+
+        var html = 
+            '<div class="myavy-current">' +
+                '<a href="#" class="back">Back</a>' +
+                '<input class="current-avatar" readonly="readonly" />' +
+            '</div>';
+
+        return html;
+    };
+
+    Plugin.prototype.createUploaderHtml = function() {
+
+        var html = 
+            '<div class="myavy-uploader">' +
+                '<a href="#" class="back">Back</a>' +
+                '<form>' +
+                    '<input name="upload" type="file" />' +
+                    '<div class="upload-response"></div>' +
+                    '<button type="submit">upload</button>' +
+                '</form>' +
+            '</div>';
+
+        return html;
+    };
+
+    Plugin.prototype.createLoadUrlHtml = function() {
+
+        var html = 
+            '<div class="myavy-url hide">' +
+                '<a href="#" class="back">Back</a>' +
+                '<form>' +
+                    '<input name="upload" type="file" />' +
+                    '<div class="upload-response"></div>' +
+                    '<button type="submit">upload</button>' +
+                '</form>' +
+            '</div>';
+
+        return html;
+    };
+
+    Plugin.prototype.createMainMenuHtml = function() {
+
+        var html = '<div class="myavy-options">';
+
+        if (this.enablePicker) {
+            html += '<a href="#" class="show-picker">Pick an avatar</a>';
+        }
+
+        if (this.enableUrls) {
+            html += '<a href="#" class="show-url">Use Url</a>';
+        }
+
+        if (this.enableUploads) {
+            html += '<a href="#" class="show-uploader">Upload</a>';
+        }
+
+        html += '<a href="#" class="show-current">View current avatar url</a>';
+
+        html += '</div>';
+
+        return html;
+    };
+
     /**
      * Generate the html for our plugin dialog. 
      */
     Plugin.prototype.createDialogHtml = function() {
 
-        // TODO: JQuery-it-up (or just DOM, honestly) and build
-        // an interface to upload avatars. Actually, jQuery is 
-        // easier due to $.ajax, but whichever. I can get around
-        // it, or fallback if jQ isn't available on window.
+        var html = '<div class="myavy-dialog">';
+
+        html += this.createMainMenuHtml();
+
+        if (this.enablePicker) {
+            html += this.createPickerHtml();
+        }
+
+        if (this.enableUploads) {
+            html += this.createUploaderHtml();
+        }
+
+        if (this.enableUrls) {
+            html += this.createLoadUrlHtml();
+        }
+
+        html += '</div>';
+
+        return html;
+    };
+
+    /** 
+     * Add jQuery event listeners to our various components
+     */
+    Plugin.prototype.bindEvents = function() {
+
     };
 
     /**
