@@ -27,8 +27,9 @@ define(function(require) {
         World: require('World'),
         Timer: require('Timer'),
         utils: require('Utility'),
-        // Note: utils naming convention is intentional since
-        // it's an object literal, not a constructor.
+        enum: require('Enum'),
+        // Note: utils/enum naming conventions are intentional since
+        // they're object literals, not constructor.
 
         // Expose entity types
         entities: {

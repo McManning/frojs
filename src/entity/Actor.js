@@ -272,6 +272,37 @@ define([
         this.recalculateAvatarRow();
     };
 
+    /**
+     * Shortcut to set the entire actor state from a 5-tuple
+     *
+     * @param {array} state 5-tuple
+     */
+    Actor.prototype.setState = function(state) {
+        if (!Array.isArray(state) || state.length < 5) {
+            throw Error('Invalid 5-tuple for Actor.setState()');
+        }
+
+        this.setPosition(state.splice(0, 3));
+        this.setDirection(state[3]);
+        this.setAction(state[4]);
+    };
+
+    /**
+     * Retrieve a 5-tuple representing the actor state 
+     * (x, y, z, direction, action)
+     *
+     * @return {array}
+     */
+    Actor.prototype.getState = function() {
+        return [
+            this.position[0], 
+            this.position[1], 
+            this.position[2],
+            this.direction,
+            this.action
+        ];
+    };
+    
     Actor.prototype.onThink = function() {
 
         // Check for new actions on our buffer

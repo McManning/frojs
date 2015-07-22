@@ -84,22 +84,13 @@ define([
         // And I hacked in a save for avatarJson. Come up
         // with a better solution.
 
-        // Serialize state into a 5-tuple
-        var state = [
-            player.position[0], 
-            player.position[1], 
-            player.position[2],
-            player.direction,
-            player.action
-        ];
-
         // connected, emit authentication
         this.emit('auth', {
             token: this.token,
             room: this.room,
-            name: 'Chase'
+            name: player.name,
             avatar: player.avatarJson,
-            state: state
+            state: player.getState()
         });
     };
 
@@ -172,9 +163,7 @@ define([
             actor.setDirection(data.direction);
             */
             Actor.prototype.setName.call(player, data.name);
-            Actor.prototype.setPosition.call(player, data.state.slice(0, 3));
-            Actor.prototype.setDirection.call(player, data.state[3]);
-            Actor.prototype.setAction.call(player, data.state[4]);
+            Actor.prototype.setState.call(player, data.state);
 
         } else {
             // It's a remote user. Setup and associate an Actor
