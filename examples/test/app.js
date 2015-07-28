@@ -3,7 +3,9 @@ requirejs.config({
     paths: {
         'fro': '../../dist/fro',
         //'Nametag': 'plugins/Nametag'
-        'plugins': '../../src/plugins'
+        'plugins': '../../src/plugins',
+        'frochat': '../../../frochat/src/frochat',
+        'emojify': '../../../frochat/src/vendor/emojify.min'
     },
     //baseUrl: '../../src',
     //plugins: '../../examples/test'
@@ -13,8 +15,10 @@ requirejs.config({
 require([
     'fro',
     'plugins/Nametag',
-    'plugins/ChatBubble'
-], function(fro, Nametag, ChatBubble) {
+    'plugins/ChatBubble',
+    'frochat',
+    'emojify'
+], function(fro, Nametag, ChatBubble, Frochat, emojify) {
 
     console.log('0.l - ', Object.keys(fro.plugins).length);
     console.log('0 - ', fro);
@@ -29,6 +33,14 @@ require([
                 fontSize: 14,
                 backgroundColor1: '#CAC',
                 backgroundColor2: '#FEF'
+            },
+            Frochat: {
+                element: document.getElementById('chatbox'),
+                placeholder: 'Send a message ...', 
+                minWidth: 200,
+                minHeight: 100,
+                maxHistory: 100,
+                maxMessageLength: 140
             }
         },
         network: {
@@ -279,20 +291,6 @@ require([
 
     // Attach to window so I can debug easier :/
     window.fro1 = instance;
-
-    // Bind our input box to create coolio chat bubbles
-    document.getElementById('chat-input').addEventListener('keydown', function(evt) {
-        if (evt.keyCode === KeyEvent.DOM_VK_RETURN) {
-            instance.player.say(this.value);
-
-            var line = document.createElement('li');
-            line.appendChild(document.createTextNode(this.value));
-
-            document.getElementById('chat-output').appendChild(line);
-
-            this.value = '';
-        }
-    });
 
 });
 

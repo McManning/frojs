@@ -78,18 +78,19 @@ define([
 
     Network.prototype.onConnect = function() {
 
-        var player = this.context.player;
+        var player = this.context.player,
+            avatar = null;
 
-        // TODO: I don't like the way it accesses player here.
-        // And I hacked in a save for avatarJson. Come up
-        // with a better solution.
+        if (player.avatar) {
+            avatar = player.avatar.properties;
+        }
 
         // connected, emit authentication
         this.emit('auth', {
             token: this.token,
             room: this.room,
             name: player.name,
-            avatar: player.avatarJson,
+            avatar: avatar,
             state: player.getState()
         });
     };

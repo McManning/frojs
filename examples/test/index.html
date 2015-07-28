@@ -1,6 +1,10 @@
 <!DOCTYPE HTML>
 <html lang="en-us">
 <head>
+
+    <link type="text/css" rel="stylesheet" href="../../../frochat/dist/css/frochat.css" media="screen,projection"/>
+    <link type="text/css" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/emojify.js/0.9.5/emojify.min.css" />
+
     <!--script src="https://cdn.socket.io/socket.io-1.3.5.js"></script-->
     <script src="../../external/socket.io-1.3.5.js"></script>
     <script data-main="app.js" src="../../node_modules/requirejs/require.js"></script>
@@ -38,21 +42,6 @@
             height: 100%;
         }
 
-        #chat {
-            position: absolute;
-            bottom: 0;
-            width: 100%;
-        }
-
-        #chat-output {
-            height: 200px;
-            background: rgba(0,0,0,0.3);
-        }
-
-        #chat-input {
-
-        }
-
     </style>
 </head>
 <body>
@@ -62,10 +51,7 @@
             FPS <span id="fps"></span>
         </div>
 
-        <div id="chat">
-            <ul id="chat-output"></ul>
-            <input id="chat-input" />
-        </div>
+        <div id="chatbox"></div>
         <canvas id="fro-canvas" style="background:#F00;"></canvas>
     </div>
 </body>
