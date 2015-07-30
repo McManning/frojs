@@ -53,7 +53,7 @@ define([
 
         // Ensure that there's picker options specified
         if (this.enablePicker && 
-            (typeof this.pickerOptions !== 'array' ||
+            (!(this.pickerOptions instanceof 'array') ||
             this.pickerOptions.length < 1)) {
 
             throw Error(
@@ -205,7 +205,9 @@ define([
      * an associated metadata URI.
      */
     Plugin.prototype.onChangeAvatar = function(actor) {
+        // jshint unused:false
         var avatar = actor.avatar;
+        
 
         // TODO: Grab input, update it with the avatar if it
         // has an attached URI.
