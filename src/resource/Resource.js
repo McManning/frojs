@@ -35,6 +35,7 @@ define([
 
         this.shareable = true;
         this.context = context;
+        this.properties = properties;
     }
 
     /**

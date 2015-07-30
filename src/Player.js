@@ -31,7 +31,6 @@ define([
     function Player(context, properties) {
         Actor.call(this, context, properties);
 
-        this.avatarJson = properties.avatar;
         this.networkBuffer = '';
 
         // If our context has a network connection, start a timer
@@ -217,7 +216,8 @@ define([
 
     /**
      * Override of Actor.say to send the message to the
-     * network, if we're connected.
+     * network, if we're connected. Regardless if we are or not,
+     * this will still fire Actor.say (and the `say` event).
      *
      * @param {string} message
      */

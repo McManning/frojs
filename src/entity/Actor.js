@@ -54,7 +54,9 @@ define([
         this.thinkTimer = new Timer(this.onThink, THINK_INTERVAL_MS);
         this.thinkTimer.start();
 
-        if (properties.hasOwnProperty('avatar')) {
+        if (properties.hasOwnProperty('avatar') && 
+            Object.keys(properties.avatar).length > 0) {
+
             this.setAvatar(properties.avatar);
         }
     }
@@ -90,6 +92,8 @@ define([
      */
     Actor.prototype.setAvatar = function(properties) {
         var avatar = this.context.resources.load(properties);
+
+        console.log('Set Avatar for ' + this.name);
         
         // If it needs to load external resources, hook for errors
         if (!avatar.isLoaded()) {
