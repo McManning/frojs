@@ -319,7 +319,7 @@ define([
         // start moving, process the actual movement. 
         if (this.isMoving()) {
             // Stop autoplay for the avatar, we'll let stepping handle it.
-            if (this.avatar typeof Animation) {
+            if (this.avatar instanceof Animation) {
                 this.avatar.stop();    
             }
             this.processMovement();
@@ -330,7 +330,7 @@ define([
                 this.setAction(Enum.Action.IDLE);
                 
                 // Start autoplaying the avatar again, if it's animated
-                if (this.avatar typeof Animation) {
+                if (this.avatar instanceof Animation) {
                     this.avatar.play();
                 }
             }
@@ -453,7 +453,7 @@ define([
         } else {
             this.step = 0;
             
-            if (this.avatar typeof Animation) {
+            if (this.avatar instanceof Animation) {
                 this.avatar.next(true);
             }
             
@@ -472,7 +472,7 @@ define([
         var row;
 
         // If it's not an Animation, don't worry about this
-        if (!(this.avatar typeof Animation)) {
+        if (!(this.avatar instanceof Animation)) {
             return;
         }
         
