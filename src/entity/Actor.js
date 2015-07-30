@@ -21,8 +21,9 @@ define([
     'Enum',
     'Utility',
     'Timer',
-    'entity/Entity'
-], function(Enum, Util, Timer, Entity) {
+    'entity/Entity',
+    'resource/Animation'
+], function(Enum, Util, Timer, Entity, Animation) {
     var vec3 = Util.vec3,
         rect = Util.rect;
 
@@ -97,7 +98,7 @@ define([
             var self = this;
             avatar
                 .bind('onload', function() {
-                    self.setAvatarFromAnimation(avatar);
+                    self.setAvatarFromResource(avatar);
                 })
                 .bind('onerror', function() {
                     // TODO: do something, revert, load default, etc.
@@ -105,18 +106,18 @@ define([
                 });
         } else {
             // load in
-            this.setAvatarFromAnimation(avatar);
+            this.setAvatarFromResource(avatar);
         }
     };
 
     /**
-     * Sets this.avatar to the new Animation object, and reconfigures
+     * Sets this.avatar to the new Animation or Image object, and reconfigures
      * the actor's properties as appropriate (resize, animation reset, etc)
      *
-     * @param {Animation} animation to use as an avatar
+     * @param {Animation|Image} resource to use as an avatar
      */
-    Actor.prototype.setAvatarFromAnimation = function(animation) {
-        this.avatar = animation;
+    Actor.prototype.setAvatarFromResource = function(resource) {
+        this.avatar = resource;
         
         this.offset[1] = this.avatar.height * 0.5;
         this.updateTranslation();
@@ -314,8 +315,9 @@ define([
         // start moving, process the actual movement. 
         if (this.isMoving()) {
             // Stop autoplay for the avatar, we'll let stepping handle it.
-            this.avatar.stop(); 
-
+            if (this.avatar typeof Animation) {
+                this.avatar.stop();    
+            }
             this.processMovement();
         } else {
 
@@ -324,7 +326,9 @@ define([
                 this.setAction(Enum.Action.IDLE);
                 
                 // Start autoplaying the avatar again, if it's animated
-                this.avatar.play();
+                if (this.avatar typeof Animation) {
+                    this.avatar.play();
+                }
             }
         }
     };
@@ -444,7 +448,10 @@ define([
             this.step++;
         } else {
             this.step = 0;
-            this.avatar.next(true);
+            
+            if (this.avatar typeof Animation) {
+                this.avatar.next(true);
+            }
             
             // Get the map to queue a resort of objects
             this.context.resort();
@@ -459,6 +466,11 @@ define([
      */
     Actor.prototype.recalculateAvatarRow = function() {
         var row;
+
+        // If it's not an Animation, don't worry about this
+        if (!(this.avatar typeof Animation)) {
+            return;
+        }
         
         if (this.direction === Enum.Direction.NORTH ||
             this.direction === Enum.Direction.NORTHEAST ||
