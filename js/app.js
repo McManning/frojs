@@ -2,29 +2,41 @@
 requirejs.config({
     paths: {
         'fro': 'vendor/fro.min',
-        'Timer': 'vendor/fro.min', // Defined within the fro build
-    }
+        //'Nametag': 'plugins/Nametag'
+        //'plugins': '../../src/plugins',
+        //'frochat': '../../../frochat/src/frochat',
+        //'emojify': '../../../frochat/src/vendor/emojify.min'
+    },
+    //baseUrl: '../../src',
+    //plugins: '../../examples/test'
+    //urlArgs: 'bust=' + Date.now()
 });
 
 require([
     'fro',
-    'Timer'
-], function(fro, Timer) {
+], function(fro) {
 
-    // In your application main, initialise fro
-    var instance = new fro({
+    var instance = new fro.World({
         plugins: {
-            Nametag: {
+            /*Nametag: {
                 fontSize: 14
             },
             ChatBubble: {
                 fontSize: 14,
                 backgroundColor1: '#CAC',
                 backgroundColor2: '#FEF'
-            }
+            },
+            Frochat: {
+                element: document.getElementById('chatbox'),
+                placeholder: 'Send a message ...', 
+                minWidth: 200,
+                minHeight: 100,
+                maxHistory: 100,
+                maxMessageLength: 140
+            }*/
         },
         /*network: {
-            server: 'http://localhost:3000',
+            server: 'http://localhost:3000/universe',
             token: 'hi',
             room: 'test'
         },*/
@@ -39,10 +51,10 @@ require([
             templates: [
                 {
                     id: 'crate',
-                    type: 'prop',
+                    type: 'Prop',
                     image: {
                         id: 'crate',
-                        type: 'image',
+                        type: 'Image',
                         url: 'http://i.imgur.com/2LlSRc8.png',
                         fitToTexture: false,
                         width: 132,
@@ -53,24 +65,9 @@ require([
                 },
                 {
                     id: 'actorTest',
-                    type: 'actor',
-                    // TODO: w/h is redundant if we have to define an image.
-                    // I say, if left out, let's load it from image data.
-                    //w: 560,
-                    //h: 415, 
-                    /*image: {
-                        id: 'carl',
-                        type: 'image',
-                        //url: 'https://placeholdit.imgix.net/~text?txtsize=24&txt=256%C3%97256&w=256&h=256',
-                        url: 'http://i.imgur.com/N8JjF8V.jpg',
-                        fitToTexture: false,
-                        width: 560,
-                        height: 415,
-                        shader: 'shader:default' // TODO: This scoping for the default shader name is crap. 
-                        // Reason being is that we share resource IDs between types. They need to *not* do that.
-                    }*/
-                    avatar: { // image: {
-                        type: 'animation',
+                    type: 'Actor',
+                    avatar: {
+                        type: 'Animation',
                         url: "http://i.imgur.com/MAT9aD2.png", // Original frojs default avatar
                         autoplay: true,
                         width: 32,
@@ -131,14 +128,6 @@ require([
                 },
                 {
                     template: 'actorTest',
-                    id: 'test',
-                    position: [0, 0, 0],
-                    name: 'Test 1',
-                    direction: 2, // south
-                    action: 0 // idle
-                },
-                {
-                    template: 'actorTest',
                     id: 'test2',
                     position: [50, 50, 0],
                     name: 'Test 2',
@@ -162,19 +151,23 @@ require([
                     action: 2 // sit
                 }
             ]
+        },
+        player: {
+            template: 'actorTest',
+            id: 'player',
+            position: [0, 0, 0],
+            name: 'Local Player',
+            direction: 2, // south
+            action: 0 // idle
         }
     });
 
-    // Test timers
-    var fpsTimer = new Timer(function() {
+    var fpsTimer = new fro.Timer(function() {
         document.getElementById('fps').innerHTML = instance.getFramerate();
     }, 1000);
 
-    fpsTimer.start();
-
     instance.camera.setCenter([0, 0]);
     instance.run();
-
-    instance.player.actor = instance.world.find('test');
-    instance.camera.followEntity(instance.player.actor);
+    fpsTimer.start();
 });
+

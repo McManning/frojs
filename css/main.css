@@ -1,12 +1,13 @@
 html, body {
   height: 100%;
   font-size: 100%;
+  margin: 0;
 }
 
 #container {
   position: relative;
   width: 100%;
-  height: 100%;
+  height: 300px;
 }
 
 #fps-container {
@@ -26,17 +27,6 @@ html, body {
 #fro-canvas {
   width: 100%;
   height: 100%;
-}
-
-#chat {
-  position: absolute;
-  bottom: 0;
-  width: 100%;
-}
-
-#chat-output {
-  height: 200px;
-  background: rgba(0, 0, 0, 0.3);
 }
 
 /*# sourceMappingURL=main.css.map */
