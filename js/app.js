@@ -13,7 +13,7 @@ requirejs.config({
 });
 
 require([
-    'fro',
+    'fro'
 ], function(fro) {
 
     var instance = new fro.World({
@@ -169,5 +169,10 @@ require([
     instance.camera.setCenter([0, 0]);
     instance.run();
     fpsTimer.start();
+
+    // Was going to force focus on the canvas, but that's a terrible idea
+    // (prevents highlighting and whatnot on the rest of the page).
+    // Maybe an option for the engine to listen to events globally?
+    //$('#fro-canvas').focus().blur(function() { $(this).focus(); });
 });
 

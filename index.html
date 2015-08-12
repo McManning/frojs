@@ -9,18 +9,29 @@
 <body>
 <header>
     <div id="fro-container">    
-        <h1>Frojs</h1>
+        <h1><img src="img/frojs.svg"/> Frojs</h1>
         <h2>Visual chatrooms</h2>
         <div id="fps-container">
             FPS <span id="fps"></span>
+        </div>
+        <div id="controls-hint">
+            <div class="keyboard-row">
+                <div class="keyboard-key">W</div>
+            </div>
+            <div class="keyboard-row">
+                <div class="keyboard-key">A</div>
+                <div class="keyboard-key">S</div>
+                <div class="keyboard-key">D</div>
+            </div>
+            
         </div>
         <canvas id="fro-canvas" style="background:#F00;"></canvas>
     </div>
     <nav>
         <div class="nav-wrapper">
-            <a href="#!" class="brand-logo">Logo</a>
+            <a href="#!" class="brand-logo"><img src="img/frojs.svg" /></a>
             <ul class="right hide-on-med-and-down">
-                <li><a href="sass.html"><i class="material-icons left">file_download</i>Downloads</a></li>
+                <li><a href="sass.html"><i class="material-icons left">extension</i>Plugins</a></li>
                 <li><a href="badges.html"><i class="material-icons left">build</i>Developer Guides</a></li>
                 <li><a href="badges.html"><i class="material-icons left">public</i>Creating Worlds</a></li>
             </ul>
@@ -54,6 +65,58 @@
                 <p>
                     Mauris eget molestie turpis. Fusce a luctus odio. Etiam turpis ligula, efficitur eget diam eu, consectetur malesuada dui. Curabitur gravida scelerisque dui, sit amet euismod arcu auctor et. Praesent quis finibus neque. Aliquam aliquet porta commodo. Duis venenatis ullamcorper sapien non ultrices. 
                 </p>
+
+In your <code>site.html</code>:
+<pre><code class="language-markup">
+&lt;!DOCTYPE html>
+&lt;html>
+&lt;head>
+    ... your head content ...
+&lt;/head>
+&lt;body>
+    ... your body content ...
+    
+    &lt;canvas id="fro-canvas" style="width: 800px; height: 600px">&lt;/canvas> 
+
+    ... other body content ...
+
+    &lt;script data-main="app.js" src="path/to/require.js">&lt;/script>
+&lt;/body>
+&lt;/html>
+</code></pre>
+
+In your <code>app.js</code>:
+<pre><code class="language-javascript">
+require([
+    'fro'
+], function(fro) {
+
+    var instance = new fro.World({
+        plugins: {
+            // ... your configuration of plugins here ...
+            // See http://frojs.com/plugins for details
+        },
+        renderer: {
+            canvas: document.getElementById('fro-canvas'),
+            background: [145, 184, 101]
+        },
+        camera: {
+            bounds: [-800, -600, 800, 600]
+        },
+        world: {
+            // ... your world configuration here ...
+            // See http://frojs.com/creating-worlds for details
+        },
+        player: {
+            // ... your player configuration here ...
+            // See http://frojs.com/developers for details
+        }
+    });
+
+    instance.camera.setCenter([0, 0]);
+    instance.run();
+});
+</code></pre>
             </div>
         </div>
     </div> <!-- .container -->
