@@ -48,15 +48,21 @@
             </div>
             <div id="download" class="col s12">
                 
-                <a class="waves-effect waves-light btn-large green darken-1">Minified <span class="download-size">(20 KB)</span><i class="material-icons right">file_download</i></a>
-                <a class="waves-effect waves-light btn-large indigo">Source <span class="download-size">(20 KB)</span><i class="material-icons right">file_download</i></a>
+                <a class="waves-effect waves-light btn-large green darken-1">Minified <span class="download-size">(68 KB)</span><i class="material-icons right">file_download</i></a>
+                <a class="waves-effect waves-light btn-large indigo">Source <span class="download-size">(226 KB)</span><i class="material-icons right">file_download</i></a>
                 <a class="waves-effect waves-light btn-large indigo github"><img src="img/github.svg" /></a>
             </div>
 
             <div class="col s12">
                 <h3>Requirements</h3>
                 <p>
-                    Mauris eget molestie turpis. Fusce a luctus odio. Etiam turpis ligula, efficitur eget diam eu, consectetur malesuada dui. Curabitur gravida scelerisque dui, sit amet euismod arcu auctor et. Praesent quis finibus neque. Aliquam aliquet porta commodo. Duis venenatis ullamcorper sapien non ultrices. 
+                    Frojs and it's plugins are built for use with AMD loaders, primarily with <a href="http://requirejs.org/" target="_BLANK">RequireJS</a>. If you do not wish to use RequireJS and modular JavaScript (although it is <strong>highly</strong> recommended), you can utilize a library like <a href="https://github.com/jrburke/almond" target="_BLANK">Almond</a> as a lightweight loader.
+                </p>
+                <p>
+                    For multiplayer support, Frojs will automatically utilize <a href="http://socket.io/" target="_BLANK">Socket.IO</a> if it is included on the page before <code>fro.js</code>. Note that in order to use multiplayer features, you must declare the <code>network</code> section of your world configuration, and point your <code>network.server</code> to a Frojs-compliant server address.
+                </p>
+                <p>
+                    If you wish to run your own server instance, the <a href="https://github.com/McManning/frojs-server" target="_BLANK">frojs-server</a> project on GitHub is a lightweight server implemented in <a href="https://nodejs.org/" target="_BLANK">Node.js</a>. 
                 </p>
             </div>
 
