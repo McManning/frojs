@@ -170,6 +170,19 @@ require([
     instance.run();
     fpsTimer.start();
 
+    // Toggle help text on input blur
+    instance.input
+        .bind('canvasblur', function() {
+            $('#controls-hint').hide();
+            $('#focus-hint').show();
+        })
+        .bind('canvasfocus', function() {
+            $('#controls-hint').show();
+            $('#focus-hint').hide();
+        });
+
+    instance.renderer.canvas.focus();
+
     // Was going to force focus on the canvas, but that's a terrible idea
     // (prevents highlighting and whatnot on the rest of the page).
     // Maybe an option for the engine to listen to events globally?

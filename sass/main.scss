@@ -28,6 +28,11 @@ nav .brand-logo img {
     padding: 10px;
 }
 
+.clickthrough {
+    pointer-events: none;
+    // TODO: IE support crap
+}
+
 #fro-container {
     position: relative;
     width: 100%;
@@ -82,7 +87,7 @@ nav .brand-logo img {
     #controls-hint {
         position: absolute;
         right: 10px;
-        top: 150px;
+        bottom: 10px;
 
         .keyboard-row {
             text-align: center;
@@ -100,6 +105,17 @@ nav .brand-logo img {
             color: #FFFFFF;
             margin: 0.25rem;
         }
+    }
+
+    #focus-hint {
+        position: absolute;
+        right: 10px;
+        bottom: 10px;
+        line-height: 24px;
+        vertical-align: top;
+        background: rgba(0, 0, 0, 0.6);
+        padding: 0.5rem;
+        padding-bottom: 0;
     }
 }
 

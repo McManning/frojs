@@ -9,12 +9,12 @@
 <body>
 <header>
     <div id="fro-container">    
-        <h1><img src="img/frojs.svg"/> Frojs</h1>
-        <h2>Visual chatrooms</h2>
-        <div id="fps-container">
+        <h1 class="clickthrough"><img src="img/frojs.svg"/> Frojs</h1>
+        <h2 class="clickthrough">Visual chatrooms</h2>
+        <div id="fps-container" class="clickthrough">
             FPS <span id="fps"></span>
         </div>
-        <div id="controls-hint">
+        <div id="controls-hint" class="clickthrough">
             <div class="keyboard-row">
                 <div class="keyboard-key">W</div>
             </div>
@@ -23,8 +23,13 @@
                 <div class="keyboard-key">S</div>
                 <div class="keyboard-key">D</div>
             </div>
-            
         </div>
+        <div id="focus-hint" style="display:none" class="clickthrough">
+            <i class="material-icons">gamepad</i> Click here to interact with the world
+        </div>
+        <!--div id="say-message" class="clickthrouxgh">
+            <input type="text" placeholder="Press tab to say hi" />
+        </div-->
         <canvas id="fro-canvas" style="background:#F00;"></canvas>
     </div>
     <nav>
@@ -119,7 +124,10 @@ require([
         }
     });
 
+    // Set a fixed camera centered on (0, 0)
     instance.camera.setCenter([0, 0]);
+
+    // Start the main render loop
     instance.run();
 });
 </code></pre>
