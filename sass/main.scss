@@ -28,6 +28,14 @@ nav .brand-logo img {
     padding: 10px;
 }
 
+ul.table-of-contents {
+    padding-left: 1rem;
+    a.active {
+        color: #e0e0e0;
+    }
+}
+
+
 .clickthrough {
     pointer-events: none;
     // TODO: IE support crap

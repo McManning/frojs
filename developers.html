@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel="stylesheet" type="text/css" href="css/main.css" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+
+</head>
+<body>
+<header>
+    <nav>
+        <div class="nav-wrapper">
+            <a href="index.html" class="brand-logo"><img src="img/frojs.svg" /></a>
+            <ul class="right hide-on-med-and-down">
+                <li class="active"><a href="configuration.html"><i class="material-icons left">build</i>Developers Guide</a></li>
+                <li><a href="creating-worlds.html"><i class="material-icons left">public</i>Creating Worlds</a></li>
+                <li><a href="plugins.html"><i class="material-icons left">extension</i>Plugins</a></li>
+            </ul>
+        </div>
+    </nav>
+</header>
+
+<main>
+    <div class="row">
+
+        <div class="col hide-on-small-only m3 l2">
+            <ul class="section table-of-contents">
+                <li><a href="#introduction">Configuration</a></li>
+                <li><a href="#structure">Structure</a></li>
+                <li><a href="#initialization">Intialization</a></li>
+            </ul>
+        </div>
+
+        <div class="col s12 m9 l10">
+
+            <div id="introduction" class="section scrollspy">
+                <h3>Configuration</h3>
+                <p>
+                    <code>fro.World</code> accepts a number of configuration options for each module (<code>network, renderer, camera, etc</code>). The following is a quick description of each configurable module in detail, followed by a complete list of available options.
+                </p>
+                <h4>Renderer</h4>
+                <p>Controls the actual display of content and which features or optimizations to toggle.</p>
+                <table class="">
+                    <thead>
+                        <tr>
+                            <th>Option</th>
+                            <th>Default</th>
+                            <th>Type</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="required">
+                            <td><code>canvas</code></td>
+                            <td></td>
+                            <td>HTMLCanvasElement</td>
+                            <td>&lt;canvas> element for rendering Frojs content</td>
+                        </tr>
+                        <tr>
+                            <td><code>usesWebGL</td></td>
+                            <td><code>true</code></td>
+                            <td>boolean</td>
+                            <td>Whether the client will try to use WebGL when available</td>
+                        </tr>
+                        <tr>
+                            <td><code>background</code></td>
+                            <td><code>[0, 0, 0]</code></td>
+                            <td>array of integers</td>
+                            <td>Canvas background color, as RGB [0-255]</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+
+            </div>
+        </div>
+
+    </div> <!-- .row -->
+</main>
+
+<footer class="page-footer">
+    <div class="footer-copyright">
+        <div class="container">
+            &copy; <script>document.write(new Date().getFullYear())</script> Chase McManning
+            <a class="grey-text text-lighten-4 right" href="#!">More Links</a>
+        </div>
+    </div>
+</footer>
+
+<script type="text/javascript" src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+<script type="text/javascript" src="js/vendor/materialize.min.js"></script>
+<script type="text/javascript" src="js/vendor/prism.js"></script>
+
+<!--script src="https://cdn.socket.io/socket.io-1.3.5.js"></script-->
+<script data-main="js/developers.js" src="js/vendor/require.min.js"></script>
+</body>
+</html>
