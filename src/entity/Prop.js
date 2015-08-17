@@ -30,6 +30,7 @@ define([
         this.height = properties.h;
         this.isRenderable = true; // Add this entity to the render queue
         this.collisions = [];
+        this.collisionOffset = [0, 0];
 
         if (properties.hasOwnProperty('collisions')) {
             this.loadCollisions(properties.collisions);
@@ -97,14 +98,14 @@ define([
         
         // @todo z-axis cube?
         
-        r[0] = this.position[0] + this.offset[0];
-        r[1] = this.position[1] + this.offset[1];
+        r[0] = this.translation[0];
+        r[1] = this.translation[0];
         r[2] = this.width;
         r[3] = this.height;
     };
 
     /**
-     * @param {rect} r
+     * @param {rect} r rectangle in world space to test
      * @return {boolean}
      */
     Prop.prototype.collides = function(r) {
@@ -112,15 +113,23 @@ define([
         // @todo solidity flag for the optional "collides with me but 
         // I'm not solid, so it's a trigger collide" or something... ?
         
-        // offset r based on our map position, since each collision rectangle
-        // is relative to this entity instance's location
-        
+        /*
+            Collision rectangles are relative to this.collisionOffset,
+            where, by default (0, 0) points to the top left corner of 
+            the entity's AABB. A rectangle [0, 0, this.width, this.height]
+            indicates that the entire AABB of the entity is considered solid.
+            Whereas, if the entity mimics an Actor and it's offset is 
+            set to [w/2, h], and collisionOffset = [w/2, h], then
+            a rectangle of [-8, -8, 16, 16] wraps the entity's world space
+            coordinates in a 16x16 collision box. Or, if collisioOffset is
+            left unchanged, [w/2 - 8, h - 8, 16, 16] does the same work.
+        */
+
         // @todo factor in z-axis
         
         var nr = rect.create(r);
-        var pos = this.getPosition();
-        nr[0] -= pos[0];
-        nr[1] -= pos[1];
+        nr[0] = nr[0] - this.translation[0] + this.collisionOffset[0];
+        nr[1] = nr[1] - this.translation[1] + this.collisionOffset[1];
 
         var collisions = this.collisions;
         if (collisions) {
