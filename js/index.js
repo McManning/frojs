@@ -53,7 +53,6 @@ require([
                     id: 'crate',
                     type: 'Prop',
                     image: {
-                        id: 'crate',
                         type: 'Image',
                         url: 'http://i.imgur.com/2LlSRc8.png',
                         fitToTexture: false,

@@ -10587,6 +10587,9 @@ nav .brand-logo img {
 ul.table-of-contents {
   padding-left: 1rem;
 }
+ul.table-of-contents a {
+  vertical-align: top;
+}
 ul.table-of-contents a.active {
   color: #e0e0e0;
 }

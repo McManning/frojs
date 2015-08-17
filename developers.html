@@ -7,10 +7,14 @@
 
 </head>
 <body>
+
+<div class="frojs-logo pinned">
+    <a href="index.html"><img src="img/frojs.svg" /></a>
+</div>
+
 <header>
     <nav>
         <div class="nav-wrapper">
-            <a href="index.html" class="brand-logo"><img src="img/frojs.svg" /></a>
             <ul class="right hide-on-med-and-down">
                 <li class="active"><a href="configuration.html"><i class="material-icons left">build</i>Developers Guide</a></li>
                 <li><a href="creating-worlds.html"><i class="material-icons left">public</i>Creating Worlds</a></li>
@@ -24,29 +28,145 @@
     <div class="row">
 
         <div class="col hide-on-small-only m3 l2">
-            <ul class="section table-of-contents">
-                <li><a href="#introduction">Configuration</a></li>
-                <li><a href="#structure">Structure</a></li>
-                <li><a href="#initialization">Intialization</a></li>
+            <ul class="section table-of-contents pinned">
+                <li><a href="#configuration">Configuration</a></li>
+                <li><a href="#configuration-camera"><i class="material-icons">chevron_right</i> camera</a></li>
+                <li><a href="#configuration-network"><i class="material-icons">chevron_right</i> network</a></li>
+                <li><a href="#configuration-player"><i class="material-icons">chevron_right</i> player</a></li>
+                <li><a href="#configuration-plugins"><i class="material-icons">chevron_right</i> plugins</a></li>
+                <li><a href="#configuration-renderer"><i class="material-icons">chevron_right</i> renderer</a></li>
+                <li><a href="#configuration-world"><i class="material-icons">chevron_right</i> world</a></li>
+                <li><a href="#configuration-example">Configuration Example</a></li>
+                <li><a href="#events">Events</a></li>
+                <li><a href="#interfaces">Interfaces</a></li>
+                <li><a href="#interface-timer"><i class="material-icons">chevron_right</i> Timer</a></li>
+                <li><a href="#interface-world"><i class="material-icons">chevron_right</i> World</a></li>
             </ul>
+            <div style="height:1px"></div>
         </div>
 
-        <div class="col s12 m9 l10">
+        <div class="col s12 m9 l8">
 
-            <div id="introduction" class="section scrollspy">
+            <div id="configuration" class="section scrollspy">
                 <h3>Configuration</h3>
                 <p>
-                    <code>fro.World</code> accepts a number of configuration options for each module (<code>network, renderer, camera, etc</code>). The following is a quick description of each configurable module in detail, followed by a complete list of available options.
+                    <code>fro.World</code> accepts a number of configuration options for each module (<code>network, renderer, camera, etc</code>). The following is a quick description of each configurable module in detail, followed by a <a href="#configuration-example">complete example</a> of available options.
                 </p>
+            </div>
+
+            <div id="configuration-camera" class="section scrollspy">
+                <h4>Camera</h4>
+                <p>Controls default camera behavior.</p>
+                <table class="">
+                    <thead>
+                        <tr>
+                            <th width="10%">Option</th>
+                            <th width="20%">Default</th>
+                            <th width="20%">Type</th>
+                            <th width="50%">Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>bounds</code></td>
+                            <td><code>null</code></td>
+                            <td>array of 4 integers</td>
+                            <td>Bounding box that the camera will always stay within (in pixels) [top, left, right, bottom]. Note that this must be larger than the canvas size</td>
+                        </tr>
+                        <tr>
+                            <td><code>trackPlayer</code></td>
+                            <td><code>true</code></td>
+                            <td>boolean</td>
+                            <td>Whether the camera should automatically follow our Actor as it moves. If this option is <code>true</code>, the <code>position</code> option is ignored</td>
+                        </tr>
+                        <tr>
+                            <td><code>position</code></td>
+                            <td><code>null</code></td>
+                            <td>array of 2 integers</td>
+                            <td>[x, y] position of the camera, in pixels. If trackPlayer is <code>true</code>, this option is ignored</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div id="configuration-network" class="section scrollspy">
+                <h4>Network</h4>
+                <p>Options for connecting to a Frojs-compliant server for multiplayer functionality. For networking to work, <a href="http://socket.io" target="_BLANK">socket.io</a> must be available at the global scope (specifically, <code>window.io</code>)</p>
+                <table class="">
+                    <thead>
+                        <tr>
+                            <th width="10%">Option</th>
+                            <th width="20%">Default</th>
+                            <th width="20%">Type</th>
+                            <th width="50%">Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="required"><code>server</code></td>
+                            <td></td>
+                            <td>string</td>
+                            <td>Url that points to a Frojs-compliant server.</td>
+                        </tr>
+                        <tr>
+                            <td><code>token</code></td>
+                            <td><code>null</code></td>
+                            <td>string</td>
+                            <td>Value that can be used to verify the client's identity on the server after connection. The way this is used depends on the specific server implementation</td>
+                        </tr>
+                        <tr>
+                            <td><code>room</code></td>
+                            <td><code>null</code></td>
+                            <td>string</td>
+                            <td>Room to join after successful authentication. This allows servers to support multiple client groups simultaneously on one instance. Note that the actual room the client is put in is up to the specific server implementation, and may differ from the original request</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div id="configuration-player" class="section scrollspy">
+                <h4>Player</h4>
+                <p>Configurations specific to the user's own entity instance. This includes setting the avatar, default position/state, display name, etc.
+                </p>
+                <table class="">
+                    <thead>
+                        <tr>
+                            <th width="10%">Option</th>
+                            <th width="20%">Default</th>
+                            <th width="20%">Type</th>
+                            <th width="50%">Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>template</code></td>
+                            <td><code>null</code></td>
+                            <td>string</td>
+                            <td>ID of the template to inherit for the Actor's configuration. If not specified, you must define all required properties of the client's Actor here.</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <p>
+                For additional options specific to configuring the client's Actor (such as <code>avatar</code> and <code>position</code>), check out the Actors section of the <a href="creating-worlds.html">Creating Worlds guide</a>.
+                </p>
+            </div>
+
+            <div id="configuration-plugins" class="section scrollspy">
+
+                <h4>Plugins</h4>
+                <p>TODO!</p>
+            </div>
+
+            <div id="configuration-renderer" class="section scrollspy">
                 <h4>Renderer</h4>
                 <p>Controls the actual display of content and which features or optimizations to toggle.</p>
                 <table class="">
                     <thead>
                         <tr>
-                            <th>Option</th>
-                            <th>Default</th>
-                            <th>Type</th>
-                            <th>Description</th>
+                            <th width="10%">Option</th>
+                            <th width="20%">Default</th>
+                            <th width="20%">Type</th>
+                            <th width="50%">Description</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -57,7 +177,7 @@
                             <td>&lt;canvas> element for rendering Frojs content</td>
                         </tr>
                         <tr>
-                            <td><code>usesWebGL</td></td>
+                            <td><code>usesWebGL</code></td></td>
                             <td><code>true</code></td>
                             <td>boolean</td>
                             <td>Whether the client will try to use WebGL when available</td>
@@ -65,13 +185,143 @@
                         <tr>
                             <td><code>background</code></td>
                             <td><code>[0, 0, 0]</code></td>
-                            <td>array of integers</td>
+                            <td>array of 3 integers</td>
                             <td>Canvas background color, as RGB [0-255]</td>
                         </tr>
                     </tbody>
                 </table>
+            </div>
+
+            <div id="configuration-world" class="section scrollspy">
+                <h4>World</h4>
+                <p>Configuration for the loaded world itself, including entity definitions and interactions.</p>
+                <p>For a complete guide on how to create this world configuration, visit the <a href="creating-worlds.html">Creating Worlds guide</a>.</p>
+                <table class="">
+                    <thead>
+                        <tr>
+                            <th width="10%">Option</th>
+                            <th width="20%">Default</th>
+                            <th width="20%">Type</th>
+                            <th width="50%">Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>templates</code></td>
+                            <td><code>null</code></td>
+                            <td>array of objects</td>
+                            <td>Templates that define default options that can be shared among different entity instances</td>
+                        </tr>
+                        <tr>
+                            <td><code>entities</code></td>
+                            <td><code>null</code></td>
+                            <td>array of objects</td>
+                            <td>Entity instances that will be loaded with the world including props, actors, sounds, etc</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
 
 
+            <div id="configuration-example" class="section scrollspy">
+                <h3>Configuration Example</h3>
+                <p>
+                    Complete <code>fro.World</code> configuration example:
+                </p>
+<pre><code class="language-javascript">
+{
+    camera: {
+        bounds: [-800, -600, 800, 600],
+        trackPlayer: true,
+        position: null // Using trackPlayer instead
+    },
+    network: {
+        server: 'http://universe.frojs.com',
+        token: 'MySecretToken',
+        room: 'examples'
+    },
+    player: {
+        avatar: {
+            type: 'Animation',
+            url: "http://i.imgur.com/MAT9aD2.png",
+            autoplay: true,
+            width: 32,
+            height: 64,
+            keyframes: {
+                move_2: {
+                    loop: true,
+                    frames: [0, 1000, 1, 1000]
+                },
+                move_8: {
+                    loop: true,
+                    frames: [3, 1000, 4, 1000]
+                },
+                move_4: {
+                    loop: true,
+                    frames: [6, 1000, 7, 1000]
+                },
+                move_6: {
+                    loop: true,
+                    frames: [9, 1000, 10, 1000]
+                },
+            }
+        },
+        position: [0, 0, 0],
+        name: 'Example Player',
+        direction: 2, // facing south
+        action: 0 // idle
+    },
+    plugins: {},
+    renderer: {
+        canvas: document.getElementById('fro-canvas'),
+        background: [0, 0, 0]
+    },
+    world: {
+        templates: [
+            {
+                id: 'crate',
+                type: 'Prop',
+                image: {
+                    type: 'Image',
+                    url: 'http://i.imgur.com/2LlSRc8.png',
+                    fitToTexture: false,
+                    width: 132,
+                    height: 143
+                },
+                offset: [0, -24],
+                collisions: [-66, -95, 132, 98]
+            }
+        ],
+        entities: [
+            {
+                template: 'crate',
+                position: [0, 0, 0]
+            }
+        ]
+    }
+}
+</code></pre>
+            </div>
+
+
+            <div id="events" class="section scrollspy">
+                <h3>Events</h3>
+                <p>TODO!</p>
+            </div>
+
+            <div id="interfaces" class="section scrollspy">
+                <h3>Interfaces</h3>
+                <p>TODO!</p>
+            </div>
+
+            <div id="interface-timer" class="section scrollspy">
+                <h3>Timer</h3>
+                <p>TODO!</p>
+            </div>
+
+            <div id="interface-world" class="section scrollspy">
+                <h3>World</h3>
+                <p>TODO!</p>
             </div>
         </div>
 

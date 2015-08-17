@@ -30,8 +30,11 @@ nav .brand-logo img {
 
 ul.table-of-contents {
     padding-left: 1rem;
-    a.active {
-        color: #e0e0e0;
+    a {
+        vertical-align: top;
+        &.active {
+            color: #e0e0e0;
+        }
     }
 }
 
