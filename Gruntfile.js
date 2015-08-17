@@ -29,7 +29,8 @@ module.exports = function(grunt) {
             dist: {
                 files: {
                     'js/index.min.js': ['js/index.js'],
-                    'js/developers.min.js': ['js/developers.js']
+                    'js/developers.min.js': ['js/developers.js'],
+                    'js/creating-worlds.min.js': ['js/creating-worlds.js']
                 }
             }
         },
