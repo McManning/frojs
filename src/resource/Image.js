@@ -199,8 +199,8 @@ define([
             gl.deleteBuffer(this.vbuf);
         }
         
-        var w = this.width * 0.5;
-        var h = this.height * 0.5;
+        var w = this.width;
+        var h = this.height;
 
         this.vbuf = gl.createBuffer();
         gl.bindBuffer(gl.ARRAY_BUFFER, this.vbuf);
@@ -208,10 +208,10 @@ define([
         // triangle strip form (since there's no GL_QUAD)
         gl.bufferData(gl.ARRAY_BUFFER, 
             new window.glMatrixArrayType([
-                w, -h, // bottom right
-                w, h, // top right
-                -w, -h, // bottom left
-                -w, h // top left
+                w, h, //w, -h, // bottom right
+                w, 0, //w, h, // top right
+                0, h, //-w, -h, // bottom left
+                0, 0 //-w, h // top left
             ]), gl.STATIC_DRAW);
             
         this.vbuf.itemSize = 2;

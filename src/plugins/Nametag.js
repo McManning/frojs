@@ -59,7 +59,7 @@ define([
         this.position[2] = NICKNAME_ZORDER;
         
         this.updateText = this.updateText.bind(this);
-        this.updatePosition = this.updatePosition.bind(this);
+        this.updateOffset = this.updateOffset.bind(this);
     }
 
     Nametag.prototype = Object.create(Entity.prototype);
@@ -76,10 +76,10 @@ define([
         if (entity) {
             entity
                 .bind('name.Nametag', this.updateText)
-                .bind('move.Nametag, avatar.Nametag', this.updatePosition);
+                .bind('move.Nametag, avatar.Nametag', this.updateOffset);
 
             this.updateText(entity.name);
-            this.updatePosition();
+            this.updateOffset();
         }
     };
 
@@ -100,24 +100,19 @@ define([
                 fontSize: this.fontSize
             });
         
-            this.updatePosition();
+            this.updateOffset();
         }
     };
 
     /**
-     * Update position to remain overhead the parent. This may be 
+     * Update offset to remain overhead the parent. This may be 
      * called when the parent's avatar changes dimensions. 
      */
-    Nametag.prototype.updatePosition = function() {
-        this.position[0] = 0;
-        this.position[1] = 0;
-
-        // If the parent actor has an avatar, 
-        // move the nametag above it. 
-        if (this.parent.avatar) {
-            this.position[1] = this.parent.avatar.height + 10;
-        } else {
-            this.position[1] = 0;
+    Nametag.prototype.updateOffset = function() {
+        if (this.parent) {
+            var parentOffset = this.parent.getOffset();
+            this.offset[0] = this.image.width * 0.5;
+            this.offset[1] = parentOffset[1] + this.image.height + 10;
         }
 
         this.updateTranslation();

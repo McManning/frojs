@@ -123,7 +123,8 @@ define([
     Actor.prototype.setAvatarFromResource = function(resource) {
         this.avatar = resource;
         
-        this.offset[1] = this.avatar.height * 0.5;
+        this.offset[0] = this.avatar.width * 0.5;
+        this.offset[1] = this.avatar.height;
         this.updateTranslation();
         
         this.recalculateAvatarRow();
@@ -210,13 +211,13 @@ define([
         var pos = this.position;
 
         if (this.avatar) {
-            r[0] = pos[0];
-            r[1] = pos[1] + this.avatar.height * 0.5;
+            r[0] = pos[0] - this.offset[0];
+            r[1] = pos[1] - this.offset[1];
             r[2] = this.avatar.width;
             r[3] = this.avatar.height;
         } else {
-            r[0] = pos[0];
-            r[1] = pos[1];
+            r[0] = pos[0] - this.offset[0];
+            r[1] = pos[1] - this.offset[1];
             r[2] = 0;
             r[3] = 0;
         }

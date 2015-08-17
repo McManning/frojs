@@ -32,9 +32,9 @@ define([
         this.id = properties.id || null;
         this.isRenderable = false;
         this.visible = true; // Whether or not we should draw this entity for specific frames
-        this.position = vec3.create();
-        this.offset = vec3.create();
-        this.translation = vec3.create();
+        this.position = vec3.create(); // entity position, in world space
+        this.offset = vec3.create(); // offset of translation from position
+        this.translation = vec3.create(); // top left corner of the entity
         this.context = context;
 
         this.children = [];
@@ -173,7 +173,7 @@ define([
         // update world render translation appropriately
         var pos = this.getWorldPosition();
         
-        vec3.add(pos, this.offset);
+        vec3.subtract(pos, this.offset);
 
         // If translation changes, update translation of children as well
         if (!vec3.equals(pos, this.translation)) {

@@ -65,7 +65,7 @@ define([
         // Move our Z-order up to the UI layer
         this.position[2] = BUBBLE_ZORDER;
         
-        this.updatePosition = this.updatePosition.bind(this);
+        this.updateOffset = this.updateOffset.bind(this);
 
         // Create the actual bubble texture
         this.generateTexture();
@@ -236,10 +236,10 @@ define([
         if (entity) {
             entity.bind(
                 'move.ChatBubble, avatar.ChatBubble', 
-                this.updatePosition
+                this.updateOffset
             );
 
-            this.updatePosition();
+            this.updateOffset();
         }
     };
 
@@ -247,20 +247,13 @@ define([
      * Update position to remain overhead the parent. This may be 
      * called when the parent's avatar changes dimensions. 
      */
-    ChatBubble.prototype.updatePosition = function() {
-        this.position[0] = 0;
-        this.position[1] = 0;
-
-        this.offset[1] = this.height * 0.5;
-
-        // If the parent actor has an avatar, 
-        // move the ChatBubble above it. 
-        if (this.parent && this.parent.avatar) {
-            this.position[1] = this.parent.avatar.height + 10;
-        } else {
-            this.position[1] = 0;
+    ChatBubble.prototype.updateOffset = function() {
+        if (this.parent) {
+            var parentOffset = this.parent.getOffset();
+            this.offset[0] = this.width * 0.5;
+            this.offset[1] = parentOffset[1] + this.height + 10;
         }
-
+        
         this.updateTranslation();
     };
 
