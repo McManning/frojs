@@ -179,9 +179,9 @@ define([
         // Collision rectangle is a 16x16 (@todo generate into this.collisions?)
         // TODO: optimize rect creation
         var r = rect.create([
-                    this.position[0] + normal[0] - 8,
-                    this.position[1] + normal[1],
-                    16, 16
+                    this.position[0] + normal[0] - 4,
+                    this.position[1] + normal[1] - 8,
+                    8, 8
                 ]);
         
         return !(this.context.isRectBlocked(r, this));
