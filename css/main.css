@@ -10584,6 +10584,24 @@ nav .brand-logo img {
   padding: 10px;
 }
 
+#frojs-logo {
+  position: fixed;
+  z-index: 1000;
+}
+#frojs-logo img {
+  -webkit-transition: all 0.3s;
+  -moz-transition: all 0.3s;
+  -o-transition: all 0.3s;
+  -ms-transition: all 0.3s;
+  transition: all 0.3s;
+  padding: 10px;
+  max-height: 64px;
+}
+#frojs-logo.large img {
+  max-height: 80px;
+  margin: 10px;
+}
+
 ul.table-of-contents {
   padding-left: 1rem;
 }
