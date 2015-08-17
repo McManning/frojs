@@ -56,11 +56,13 @@ define([
 
         this.audio = new Audio(this, properties.audio || {});
         this.renderer = new Renderer(this, properties.renderer || {});
-        this.camera = new Camera(this, properties.camera || {});
         this.input = new Input(this, properties.input || {});
 
         this.loadPlayer(properties.player);
         this.loadEntities(properties.world.entities || []);
+
+        // Load after player/entities, in case we want to track an entity
+        this.camera = new Camera(this, properties.camera || {});
 
         // If we specify network settings, connect us to a server
         if (properties.hasOwnProperty('network')) {
