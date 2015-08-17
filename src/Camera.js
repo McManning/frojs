@@ -201,7 +201,8 @@ define([
         // TODO: reduce these equations
         // TODO: Equations are screwed. Resolve. 
         position[0] = Math.floor((position[0] - gl.viewportWidth * 0.5) * this.zoom + this.position[0]);
-        position[1] = Math.floor((gl.viewportHeight - position[1] - gl.viewportHeight * 0.5 ) * this.zoom + this.position[1]);
+        position[1] = Math.floor((position[1] - gl.viewportHeight * 0.5) * this.zoom + this.position[1]);
+        //position[1] = Math.floor((gl.viewportHeight - position[1] - gl.viewportHeight * 0.5 ) * this.zoom + this.position[1]);
     
         // off by 400 300 when zoom = 0.5
         // off by 200 150 REAL pixels when zoom = 2  (0.5x zoom)

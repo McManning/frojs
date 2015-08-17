@@ -327,12 +327,12 @@ define([
             
             // left is lower (therefore in front of right & higher indexed)
             if (pl[1] < pr[1]) {
-                return 1;
+                return -1;
             }
                     
             // Right is lower (therefore in front of left & higher indexed)
             if (pl[1] > pr[1]) {
-                return -1;
+                return 1;
             }
                 
             return 0;

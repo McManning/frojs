@@ -80,12 +80,12 @@ define([
                 var v = [0, 0];
 
                 switch (direction) {
-                    case this.NORTH: v = [0, 1]; break;
-                    case this.NORTHEAST: v = [1, 1]; break;
-                    case this.NORTHWEST: v = [-1, 1]; break;
-                    case this.SOUTH: v = [0, -1]; break;
-                    case this.SOUTHEAST: v = [1, -1]; break;
-                    case this.SOUTHWEST: v = [-1, -1]; break;
+                    case this.NORTH: v = [0, -1]; break;
+                    case this.NORTHEAST: v = [1, -1]; break;
+                    case this.NORTHWEST: v = [-1, -1]; break;
+                    case this.SOUTH: v = [0, 1]; break;
+                    case this.SOUTHEAST: v = [1, 1]; break;
+                    case this.SOUTHWEST: v = [-1, 1]; break;
                     case this.EAST: v = [1, 0]; break;
                     case this.WEST: v = [-1, 0]; break;
                 }
@@ -107,7 +107,7 @@ define([
 
                 vec3.normalize(vec, normal);
 
-                if (normal[1] > 0) {
+                if (normal[1] < 0) {
                     if (normal[0] > 0) {
                         dir = Enum.Direction.NORTHEAST;
                     } else if (normal[0] < 0) {
@@ -115,7 +115,7 @@ define([
                     } else {
                         dir = Enum.Direction.NORTH;
                     }
-                } else if (normal[1] < 0) {
+                } else if (normal[1] > 0) {
                     if (normal[0] > 0) {
                         dir = Enum.Direction.SOUTHEAST;
                     } else if (normal[0] < 0) {

@@ -14,8 +14,8 @@ void main(void) {
     vWorldCoord = uMVMatrix * vec4(aVertexPosition, 1.0);
     vTextureCoord = aTextureCoord;
 
-    gl_Position = uPMatrix * vWorldCoord;
-    
+    gl_Position = uPMatrix * vWorldCoord * vec4(1, -1, 0, 1);
+
     /*
         gl_Position is absolute screen position [0, 1] (ie: @ screen x = 800, gl_Position.x = 1)
         uMVMatrix * aVertexPos = is screen position in pixels (ie: x = (0, 800))
