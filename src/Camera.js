@@ -179,6 +179,9 @@ define([
         if (this.trackedEntity) {
         
             var epos = this.trackedEntity.getPosition();
+               
+            // Ignore z-order
+            epos[2] = 0;
             
             // If the entity moved since last we checked, move the camera
             if (!vec3.equals(this.lastTrackedPosition, epos)) {
@@ -187,10 +190,7 @@ define([
         
                 // Update camera position
                 vec3.set(epos, this.position);
-                
-                // @todo maybe clean this up a little better?
-                this.position[1] += epos[2]; // Factor in entity Z-order
-                
+
                 //vec3.scale(this._position, this.this.zoom);
                 
                 this.applyBounds();
