@@ -241,20 +241,11 @@ define([
     };
     
     Input.prototype.updateCursorPosition = function(e) {
-        var pos = this.cursorPosition;
         var canvas = this.context.renderer.getCanvas();
+        var r = canvas.getBoundingClientRect();
         
-        // Recalculate cursor position and store
-        if (e.pageX || e.pageY) {
-            pos[0] = e.pageX;
-            pos[1] = e.pageY;
-        } else {
-            pos[0] = e.clientX + document.body.scrollLeft + document.documentElement.scrollLeft; 
-            pos[1] = e.clientY + document.body.scrollTop + document.documentElement.scrollTop; 
-        }
-        
-        pos[0] -= canvas.offsetLeft;
-        pos[1] -= canvas.offsetTop;
+        this.cursorPosition[0] = e.clientX - r.left;
+        this.cursorPosition[1] = e.clientY - r.top;
     };
     
     /**
