@@ -33,18 +33,24 @@ define([
         Util.extend(this, EventHooks); // Allow events to be fired from the camera
         // jshint unused:false
         // temp hint for options until I move init code over here.
-
-        this.followedEntity = false;
-        this.position = vec3.create(); // Our position would be the same as the canvas
+        this.trackedEntity = null;
+        this.position = options.position || vec3.create();
         this.zoom = 1.0; // Factor to this.zoom the viewport. TODO: disable (or implement?!) for canvas mode
-        this.lastFollowedPosition = vec3.create();
+        this.lastTrackedPosition = vec3.create();
         this.translation = vec3.create();
         this.bounds = rect.create();
         this.context = context;
 
+        if (options.hasOwnProperty('trackedEntity')) {
+            var entity = this.context.find(options.trackedEntity);
+            this.trackedEntity = entity;
+        }
+        
         if (options.hasOwnProperty('bounds')) {
             this.setBounds(options.bounds);
         }
+
+        this.updateTranslation();
     }
 
     Camera.prototype.setupViewport = function() {
@@ -104,22 +110,22 @@ define([
      * Orders this camera to remain centered on a specific entity 
      * (Entity is defined as any object with a getPosition() method)
      */
-    Camera.prototype.followEntity = function(entity) {
+    Camera.prototype.trackEntity = function(entity) {
         
         if (typeof entity.getPosition !== 'function') {
             throw 'Followed entity must have a getPosition() method.';
         }
 
-        this.followedEntity = entity;
+        this.trackedEntity = entity;
         this.fire('follow', entity);
     };
 
     /** 
      * @return object|null
      */
-    Camera.prototype.getFollowedEntity = function() {
+    Camera.prototype.getTrackedEntity = function() {
 
-        return this.followedEntity;
+        return this.trackedEntity;
     };
 
     /** 
@@ -138,13 +144,13 @@ define([
 
     /**
      * Sets the center of this camera to the point defined
-     * and unsets getFollowedEntity()
+     * and unsets getTrackedEntity()
      *
      * @param {vec3} position (z-axis is ignored)
      */
     Camera.prototype.setCenter = function(position) {
         
-        this.followedEntity = null;
+        this.trackedEntity = null;
 
         this.position[0] = position[0];
         this.position[1] = position[1];
@@ -170,14 +176,14 @@ define([
     Camera.prototype.update = function() {
         
         // If we're following an entity...
-        if (this.followedEntity) {
+        if (this.trackedEntity) {
         
-            var epos = this.followedEntity.getPosition();
+            var epos = this.trackedEntity.getPosition();
             
             // If the entity moved since last we checked, move the camera
-            if (!vec3.equals(this.lastFollowedPosition, epos)) {
+            if (!vec3.equals(this.lastTrackedPosition, epos)) {
                 
-                vec3.set(epos, this.lastFollowedPosition);
+                vec3.set(epos, this.lastTrackedPosition);
         
                 // Update camera position
                 vec3.set(epos, this.position);
