@@ -10616,6 +10616,24 @@ ul.table-of-contents a.active {
   pointer-events: none;
 }
 
+#fro-canvas {
+  -webkit-transition: all 0.3s;
+  -moz-transition: all 0.3s;
+  -o-transition: all 0.3s;
+  -ms-transition: all 0.3s;
+  transition: all 0.3s;
+  outline: none;
+}
+#fro-canvas:focus {
+  outline: none;
+}
+#fro-canvas.outline {
+  outline: 1px solid black;
+}
+#fro-canvas.outline:focus {
+  outline: 1px solid rgba(46, 125, 50, 0.5);
+}
+
 #fro-container {
   position: relative;
   width: 100%;

@@ -60,6 +60,23 @@ ul.table-of-contents {
     // TODO: IE support crap
 }
 
+#fro-canvas {
+    @include transition(all 0.3s);
+    outline: none;
+
+    &:focus {
+        outline: none;
+    }
+
+    &.outline {
+        outline: 1px solid black;
+
+        &:focus {
+            outline: 1px solid rgba(46, 125, 50, 0.5);
+        }
+    }
+}
+
 #fro-container {
     position: relative;
     width: 100%;
