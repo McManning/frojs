@@ -30,8 +30,7 @@ define([
 
     // Create an internal worker canvas used to render textures
     var workerCanvas = document.createElement('canvas');
-    document.querySelector('body').appendChild(workerCanvas);
-
+    
     var BUBBLE_ZORDER = 999; // TODO: global UI_ZORDER
     
     // Default minimum time to live (in MS) for each bubble entity
