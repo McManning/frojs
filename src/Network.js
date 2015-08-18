@@ -81,8 +81,10 @@ define([
         var player = this.context.player,
             avatar = null;
 
-        if (player.avatar) {
-            avatar = player.avatar.properties;
+        if (player.hasOwnProperty('avatarForNetwork')) {
+            avatar = player.avatarForNetwork;
+        } else {
+            throw new Error('Network onConnect without an avatar!');
         }
 
         // connected, emit authentication
@@ -165,6 +167,7 @@ define([
             */
             Actor.prototype.setName.call(player, data.name);
             Actor.prototype.setState.call(player, data.state);
+            Actor.prototype.setAvatar.call(player, data.avatar);
 
         } else {
             // It's a remote user. Setup and associate an Actor

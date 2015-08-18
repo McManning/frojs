@@ -29,8 +29,6 @@ define([
     var SEND_BUFFER_INTERVAL_MS = 2000;
 
     function Player(context, properties) {
-        Actor.call(this, context, properties);
-
         this.networkBuffer = '';
 
         // If our context has a network connection, start a timer
@@ -40,11 +38,18 @@ define([
         // because we need to guarantee Player is setup for auth.
         // Better idea would be to just integrate into onThink,
         // rather than using a new timer. 
-        //if (context.network) {
-        this.onBufferTimer = this.onBufferTimer.bind(this);
-        this.bufferTimer = new Timer(this.onBufferTimer, SEND_BUFFER_INTERVAL_MS);
-        this.bufferTimer.start();
-        //}
+        if (context.network) {
+            this.onBufferTimer = this.onBufferTimer.bind(this);
+            this.bufferTimer = new Timer(this.onBufferTimer, SEND_BUFFER_INTERVAL_MS);
+            this.bufferTimer.start();
+
+            // If we are looking to join a server, cache the player avatar
+            // and don't load it until the server gives the go-ahead.
+            this.avatarForNetwork = properties.avatar;
+            delete properties.avatar; 
+        }
+
+        Actor.call(this, context, properties);
     }
 
     Player.prototype = Object.create(Actor.prototype);

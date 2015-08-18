@@ -58,7 +58,6 @@ define([
         this.renderer = new Renderer(this, properties.renderer || {});
         this.input = new Input(this, properties.input || {});
 
-        this.loadPlayer(properties.player);
         this.loadEntities(properties.world.entities || []);
 
         // Load after player/entities, in case we want to track an entity
@@ -69,6 +68,8 @@ define([
             this.network = new Network(this, properties.network);
         }
 
+        this.loadPlayer(properties.player);
+        
         // Load plugins, if any are specified
         var fro = require('fro');
         if (properties.hasOwnProperty('plugins')) {
