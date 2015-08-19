@@ -1,0 +1,134 @@
+
+$highlight-color: #673ab7
+$greentext-color: #789922
+$font-family: 'Arial'
+
+
+.frojs-chat
+    position: absolute
+    z-index: 1000
+    width: 400px
+    height: 200px
+    font-family: $font-family
+
+    .header
+        margin: 0
+        height: 1.5em
+        background-color: #FFF
+        border-bottom: 1px solid #EEE
+        border-top: 1px solid #EEE
+        cursor: move
+        border-top-left-radius: 4px
+        border-top-right-radius: 4px
+        box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.2), 0 4px 10px 0 rgba(0, 0, 0, 0.2)
+
+    .input-container-wrap
+        height: 2.25em
+        position: relative
+        background-color: #FFF
+        border-top: 1px solid #EEE
+        border-bottom-left-radius: 4px
+        border-bottom-right-radius: 4px
+        box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.2), 0 4px 10px 0 rgba(0, 0, 0, 0.2)
+
+        .input-container
+            padding: 0.5em 1em
+
+        input
+            font-size: 100%
+            margin: 0
+            outline: none
+            color: #000
+            background: none
+            display: inline-block
+            width: 100%
+            border: none
+            border-bottom: 1px solid #CCC
+            transition: all .3s
+            height: 1.25em
+
+            &:focus
+                border-bottom: 2px solid lighten($highlight-color, 30%)
+
+    .output-container
+        width: 100%
+        height: 100%
+        overflow-y: scroll
+        overflow-x: hidden
+        background-color: rgba(255, 255, 255, 0.3)
+
+        p
+            color: #000
+            margin: 0
+            line-height: 1.5em
+            padding: 0 0.25em
+
+        // Emoji styles, if we have support
+        span.emoji
+            height: 1.5em
+            width: 1.5em
+            display: inline-block
+            background-size: contain
+            vertical-align: bottom
+
+        span.timestamp
+            color: #999
+
+        span.greentext
+            color: $greentext-color
+
+        span.actor-name
+            color: darken($highlight-color, 20%)
+
+        a
+            color: $highlight-color
+            text-decoration: none
+
+            &:hover, &:active
+                text-decoration: none
+                color: lighten($highlight-color, 20%)
+
+    .resizer
+        position: absolute
+        bottom: 0
+        right: 0
+        cursor: se-resize
+        width: 14px
+        height: 14px
+        border-top-left-radius: 14px
+        background: repeating-linear-gradient( 135deg, transparent, transparent 3px, #CCC 5px, #CCC 1px )
+
+
+    // Dark theme variation on our UI
+    &.dark
+        .header
+            background-color: #263237
+            border-color: #37474f
+
+        .input-container-wrap
+            background-color: #263238
+            border-color: #37474f
+
+            input
+                color: #FFF
+                border-color: #607d8b
+
+                &:focus
+                    border-color: #ffab40
+
+        .output-container
+            background-color: rgba(0, 0, 0, 0.5)
+
+            p
+                color: #FFF
+            span.timestamp
+                color: #CCC
+            span.actor-name
+                color: #ffab40
+            a
+                color: #ffb74d
+                &:hover, &:active
+                    color: #ffcc80
+
+        .resizer
+            background: repeating-linear-gradient( 135deg, transparent, transparent 3px, #90a4ae 5px, #90a4ae 1px )
