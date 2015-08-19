@@ -2774,15 +2774,12 @@ ul.staggered-list li {
 
 footer.page-footer {
   margin-top: 20px;
-  padding-top: 20px;
   background-color: #2E7D32;
 }
 footer.page-footer .footer-copyright {
   overflow: hidden;
   height: 50px;
   line-height: 50px;
-  color: rgba(255, 255, 255, 0.8);
-  background-color: rgba(51, 51, 51, 0.08);
 }
 
 table, th, td {
@@ -10561,6 +10558,136 @@ pre[class*="language-"] {
   border-bottom: 1px solid;
 }
 
+.frojs-chat {
+  position: absolute;
+  z-index: 1000;
+  width: 400px;
+  height: 200px;
+  font-family: "Arial";
+}
+.frojs-chat .header {
+  margin: 0;
+  height: 1.5em;
+  background-color: #FFF;
+  border-bottom: 1px solid #EEE;
+  border-top: 1px solid #EEE;
+  cursor: move;
+  border-top-left-radius: 4px;
+  border-top-right-radius: 4px;
+  box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.2), 0 4px 10px 0 rgba(0, 0, 0, 0.2);
+}
+.frojs-chat .input-container-wrap {
+  height: 2.25em;
+  position: relative;
+  background-color: #FFF;
+  border-top: 1px solid #EEE;
+  border-bottom-left-radius: 4px;
+  border-bottom-right-radius: 4px;
+  box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.2), 0 4px 10px 0 rgba(0, 0, 0, 0.2);
+}
+.frojs-chat .input-container-wrap .input-container {
+  padding: 0.5em 1em;
+}
+.frojs-chat .input-container-wrap input {
+  font-size: 100%;
+  margin: 0;
+  outline: none;
+  color: #000;
+  background: none;
+  display: inline-block;
+  width: 100%;
+  border: none;
+  border-bottom: 1px solid #CCC;
+  transition: all 0.3s;
+  height: 1.25em;
+}
+.frojs-chat .input-container-wrap input:focus {
+  border-bottom: 2px solid #bda7e3;
+}
+.frojs-chat .output-container {
+  width: 100%;
+  height: 100%;
+  overflow-y: scroll;
+  overflow-x: hidden;
+  background-color: rgba(255, 255, 255, 0.3);
+}
+.frojs-chat .output-container p {
+  color: #000;
+  margin: 0;
+  line-height: 1.5em;
+  padding: 0 0.25em;
+}
+.frojs-chat .output-container span.emoji {
+  height: 1.5em;
+  width: 1.5em;
+  display: inline-block;
+  background-size: contain;
+  vertical-align: bottom;
+}
+.frojs-chat .output-container span.timestamp {
+  color: #999;
+}
+.frojs-chat .output-container span.greentext {
+  color: #789922;
+}
+.frojs-chat .output-container span.actor-name {
+  color: #3b216a;
+}
+.frojs-chat .output-container a {
+  color: #673ab7;
+  text-decoration: none;
+}
+.frojs-chat .output-container a:hover, .frojs-chat .output-container a:active {
+  text-decoration: none;
+  color: #9f80d7;
+}
+.frojs-chat .resizer {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  cursor: se-resize;
+  width: 14px;
+  height: 14px;
+  border-top-left-radius: 14px;
+  background: repeating-linear-gradient(135deg, transparent, transparent 3px, #CCC 5px, #CCC 1px);
+}
+.frojs-chat.dark .header {
+  background-color: #263237;
+  border-color: #37474f;
+}
+.frojs-chat.dark .input-container-wrap {
+  background-color: #263238;
+  border-color: #37474f;
+}
+.frojs-chat.dark .input-container-wrap input {
+  color: #FFF;
+  border-color: #607d8b;
+}
+.frojs-chat.dark .input-container-wrap input:focus {
+  border-color: #ffab40;
+}
+.frojs-chat.dark .output-container {
+  background-color: rgba(0, 0, 0, 0.5);
+}
+.frojs-chat.dark .output-container p {
+  color: #FFF;
+}
+.frojs-chat.dark .output-container span.timestamp {
+  color: #CCC;
+}
+.frojs-chat.dark .output-container span.actor-name {
+  color: #ffab40;
+}
+.frojs-chat.dark .output-container a {
+  color: #ffb74d;
+}
+.frojs-chat.dark .output-container a:hover, .frojs-chat.dark .output-container a:active {
+  color: #ffcc80;
+}
+.frojs-chat.dark .resizer {
+  background: repeating-linear-gradient(135deg, transparent, transparent 3px, #90a4ae 5px, #90a4ae 1px);
+}
+
 html, body {
   height: 100%;
   font-size: 100%;
@@ -10582,6 +10709,10 @@ main {
 nav .brand-logo img {
   max-height: 64px;
   padding: 10px;
+}
+
+a i.material-icons {
+  vertical-align: middle;
 }
 
 #frojs-logo {
@@ -10736,6 +10867,43 @@ ul.table-of-contents a.active {
   #download .btn-large i.material-icons {
     display: none;
   }
+}
+
+.frojs-chat .header {
+  background-color: #2E7D32;
+  border-color: #37474f;
+}
+.frojs-chat .input-container-wrap {
+  background-color: #2E7D32;
+  border-color: #2E7732;
+}
+.frojs-chat .input-container-wrap input {
+  color: #FFF;
+  border-color: #607d8b;
+}
+.frojs-chat .input-container-wrap input:focus {
+  border-color: #ffab40;
+}
+.frojs-chat .output-container {
+  background-color: rgba(0, 0, 0, 0.5);
+}
+.frojs-chat .output-container p {
+  color: #FFF;
+}
+.frojs-chat .output-container span.timestamp {
+  color: #CCC;
+}
+.frojs-chat .output-container span.actor-name {
+  color: #ffab40;
+}
+.frojs-chat .output-container a {
+  color: #039be5;
+}
+.frojs-chat .output-container a:hover, .frojs-chat .output-container a:active {
+  color: #1fb4fc;
+}
+.frojs-chat .resizer {
+  background: repeating-linear-gradient(135deg, transparent, transparent 3px, #90a4ae 5px, #90a4ae 1px);
 }
 
 /*# sourceMappingURL=main.css.map */

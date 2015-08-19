@@ -2,10 +2,9 @@
 requirejs.config({
     paths: {
         'fro': '../../frojs/dist/fro', // 'vendor/fro'
-        //'Nametag': 'plugins/Nametag'
-        //'plugins': '../../src/plugins',
-        //'frochat': '../../../frochat/src/frochat',
-        //'emojify': '../../../frochat/src/vendor/emojify.min'
+        'plugins': '../../frojs/src/plugins',
+        'Chat': '../../frojs-chat/src/frojs.chat',
+        'emojify': '../../frojs-chat/src/vendor/emojify.min'
     },
     //baseUrl: '../../src',
     //plugins: '../../examples/test'
@@ -13,7 +12,11 @@ requirejs.config({
 });
 
 require([
-    'fro'
+    'fro',
+    'plugins/Nametag',
+    'plugins/ChatBubble',
+    'Chat',
+    'emojify' // note this has to be 'emojify' for frojs.chat to pick it up
 ], function(fro) {
 
     // Configuration for Club Dis
@@ -164,20 +167,19 @@ require([
         plugins: {
             /*Nametag: {
                 fontSize: 14
-            },
+            },*/
             ChatBubble: {
                 fontSize: 14,
                 backgroundColor1: '#CAC',
                 backgroundColor2: '#FEF'
             },
-            Frochat: {
+            Chat: {
                 element: document.getElementById('chatbox'),
-                placeholder: 'Send a message ...', 
-                minWidth: 200,
-                minHeight: 100,
-                maxHistory: 100,
-                maxMessageLength: 140
-            }*/
+                placeholder: 'Click to start typing ...', // Input placeholder
+                minWidth: 200, // Minimum dimensions when resizing
+                minHeight: 100, // Minimum dimensions when resizing
+                maxHistory: 10
+            }
         },
         network: {
             server: 'http://localhost:3000/universe',

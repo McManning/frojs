@@ -3,6 +3,9 @@
 @import "vendor/materialize";
 @import "vendor/prism";
 
+// Add our custom build of frojs.chat.sass
+@import "frojs.chat";
+
 html, body {
     height: 100%;
     font-size: 100%;
@@ -26,6 +29,10 @@ main {
 nav .brand-logo img {
     max-height: 64px;
     padding: 10px;
+}
+
+a i.material-icons {
+    vertical-align: middle;
 }
 
 #frojs-logo {
@@ -197,5 +204,51 @@ ul.table-of-contents {
         .btn-large i.material-icons {
             display: none;
         }
+    }
+}
+
+// Custom chat theme to match the frojs site
+.frojs-chat {
+    .header {
+        background-color: #2E7D32;
+        border-color: #37474f;
+    }
+
+    .input-container-wrap {
+        background-color: #2E7D32;
+        border-color: #2E7732;
+
+        input {
+            color: #FFF;
+            border-color: #607d8b;
+
+            &:focus {
+                border-color: #ffab40;
+            }
+        }
+    }
+
+    .output-container {
+        background-color: rgba(0, 0, 0, 0.5);
+
+        p {
+            color: #FFF;
+        }
+        span.timestamp {
+            color: #CCC;
+        }
+        span.actor-name {
+            color: #ffab40;
+        }
+        a {
+            color: #039be5;
+            &:hover, &:active {
+                color: lighten(#039be5, 10%);
+            }
+        }
+    }
+
+    .resizer {
+        background: repeating-linear-gradient( 135deg, transparent, transparent 3px, #90a4ae 5px, #90a4ae 1px );
     }
 }
