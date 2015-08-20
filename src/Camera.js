@@ -41,9 +41,8 @@ define([
         this.bounds = rect.create();
         this.context = context;
 
-        if (options.hasOwnProperty('trackedEntity')) {
-            var entity = this.context.find(options.trackedEntity);
-            this.trackedEntity = entity;
+        if (options.trackPlayer === true) {
+            this.trackedEntity = this.context.player;
         }
         
         if (options.hasOwnProperty('bounds')) {
