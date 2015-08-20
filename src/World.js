@@ -27,9 +27,10 @@ define([
     'Camera',
     'Input',
     'Player',
-    'Network'
+    'Network',
+    'entity/RemoteActor'
 ], function(EventHooks, Util, Timer, Audio, Resources, 
-            Renderer, Camera, Input, Player, Network) {
+            Renderer, Camera, Input, Player, Network, RemoteActor) {
 
     var FRAMERATE = 1000/30;
 
@@ -284,6 +285,26 @@ define([
         return false;
     };
 
+    /**
+     * Removes all RemoteActor entities from this world. This would
+     * be called when a disconnect from the server happens and we
+     * need to clean up all players that were managed remotely. 
+     */
+    World.prototype.removeRemoteActors = function() {
+
+        var i, entities = [], len = this.renderableEntities.length;
+        for (i = 0; i < len; i++) {
+            if (this.renderableEntities[i] instanceof RemoteActor) {
+                entities.push(this.renderableEntities[i]);
+            }
+        }
+
+        len = entities.length;
+        for (i = 0; i < len; i++) {
+            entities[i].destroy();
+        }
+    };
+
     /** 
      * Flag a resort of the renderable entities. 
      * Usually called whenever an entity changes position or Z-order.
@@ -405,7 +426,8 @@ define([
         }
         
         // Doodle some props
-        for (var i = 0; i < this.renderableEntities.length; i++) {
+        var len = this.renderableEntities.length;
+        for (var i = 0; i < len; i++) {
             if (this.renderableEntities[i].visible) {
                 this.renderableEntities[i].render();
             }

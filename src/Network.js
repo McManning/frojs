@@ -26,7 +26,7 @@ define([
 ], function(EventHooks, Util, Actor, RemoteActor, Player) {
 
     function Network(context, options) {
-        Util.extend(this, EventHooks); // Maybe?
+        Util.extend(this, EventHooks);
 
         // Lazily check for socket.io support
         if (!window.io) {
@@ -102,6 +102,11 @@ define([
         console.log(reason);
         this.clientId = null;
         this.fire('disconnect', reason);
+
+        // Note; this is done here because onLeave also performs destroy().
+        // it may be better to listen to disconnect() from World and call
+        // it there...
+        this.context.removeRemoteActors();
     };
 
     /**
@@ -162,17 +167,6 @@ define([
                 throw new Error('Local Player instance does not exist');
             }
 
-            /* TODO: Maybe set these? Or set if they differ
-                from what we already have. (Because any could be
-                overridden by the server, but we don't want to 
-                trigger a reload if it's the same as what we have)
-            actor.id = data.id;
-            actor.setName(data.name);
-            actor.setAvatar(data.avatar);
-            actor.setPosition(data.position);
-            actor.setAction(data.action);
-            actor.setDirection(data.direction);
-            */
             Actor.prototype.setName.call(player, data.name);
             Actor.prototype.setState.call(player, data.state);
             Actor.prototype.setAvatar.call(player, data.avatar);
