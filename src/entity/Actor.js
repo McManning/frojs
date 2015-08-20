@@ -289,8 +289,8 @@ define([
         }
 
         this.setPosition(state.splice(0, 3));
-        this.setDirection(state[3]);
-        this.setAction(state[4]);
+        this.setDirection(state[0]);
+        this.setAction(state[1]);
     };
 
     /**
