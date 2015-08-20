@@ -27,7 +27,6 @@ define([
      */
     function RemoteActor(context, properties) {
         Actor.call(this, context, properties);
-
     }
 
     RemoteActor.prototype = Object.create(Actor.prototype);

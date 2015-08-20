@@ -21,8 +21,9 @@ define([
     'EventHooks',
     'Utility',
     'entity/Actor',
+    'entity/RemoteActor',
     'Player'
-], function(EventHooks, Util, Actor, Player) {
+], function(EventHooks, Util, Actor, RemoteActor, Player) {
 
     function Network(context, options) {
         Util.extend(this, EventHooks); // Maybe?
@@ -97,9 +98,10 @@ define([
         });
     };
 
-    Network.prototype.onDisconnect = function() {
-
+    Network.prototype.onDisconnect = function(reason) {
+        console.log(reason);
         this.clientId = null;
+        this.fire('disconnect', reason);
     };
 
     /**
@@ -114,6 +116,7 @@ define([
 
         window.alert(data.message);
         console.log(data);
+        this.fire('error', data);
     };
 
     /**
@@ -131,6 +134,11 @@ define([
 
         // Update our local player's entity ID to match
         this.context.player.id = data.id;
+
+        this.fire('authenticated', {
+            id: data.id,
+            room: data.room
+        });
     };
 
     /**
@@ -176,7 +184,7 @@ define([
             // Remote doesn't exist, create a new Actor
             if (!actor) {
                 // TODO: Support other things like template inheritance?
-                actor = new Actor(this.context, {
+                actor = new RemoteActor(this.context, {
                     id: data.id,
                     name: data.name,
                     avatar: data.avatar,
@@ -186,6 +194,9 @@ define([
                 });
 
                 this.context.add(actor);
+                this.fire('remote.join', {
+                    actor: actor
+                });
             } else {
                 // TODO: What do we do here? They shouldn't re-send a join
                 // if they already exist in our world. Update existing entity?
@@ -203,11 +214,14 @@ define([
         // Payload: id
 
         var actor = this.context.find(data.id);
-        if (!(actor instanceof Actor)) {
+        if (!(actor instanceof RemoteActor)) {
             // TODO: Appropriate error handling
             throw new Error('No Actor associated with remote [' + data.id + ']');
         }
 
+        this.fire('remote.leave', {
+            actor: actor
+        });
         actor.destroy();
     };
 
@@ -220,15 +234,23 @@ define([
         // Payload: id, message
 
         var actor = this.context.find(data.id);
-        if (!(actor instanceof Actor)) {
+        if (actor instanceof Player) {
+            // Because Player.say doesn't set, but sends the 
+            // request to the server (to get this response),
+            // we instead call the underlying Actor.say()
+            Actor.prototype.say.call(actor, data.message);
+
+        } else if (actor instanceof RemoteActor) {
+            this.fire('remote.say', {
+                actor: actor,
+                message: data.message
+            });
+            actor.say(data.message);
+
+        } else {
             // TODO: Appropriate error handling
             throw new Error('No Actor associated with remote [' + data.id + ']');
         } 
-
-        // Call the underlying Actor.say for the entity.
-        // Primarily because Player.say doesn't set, but 
-        // sends the request to the server (to get this response).
-        Actor.prototype.say.call(actor, data.message);
     };
 
     /**
@@ -238,7 +260,17 @@ define([
     Network.prototype.onMove = function(data) {
 
         var actor = this.context.find(data.id);
-        if (!(actor instanceof Actor)) {
+        if (actor instanceof Player) {
+            Actor.prototype.addToActionBuffer.call(actor, data.buffer);
+
+        } else if (actor instanceof RemoteActor) {
+            this.fire('remote.say', {
+                actor: actor,
+                message: data.message
+            });
+            actor.addToActionBuffer(data.buffer);
+
+        } else {
             // TODO: Appropriate error handling
             throw new Error('No Actor associated with remote [' + data.id + ']');
         } 
@@ -246,11 +278,6 @@ define([
         // TODO: I can add to the buffer, but I don't
         // have a way to apply verifications. I'll need
         // to work that back in somehow...
-
-        // Call the underlying Actor.addToActionBuffer for the entity.
-        // Primarily because Player.addToActionBuffer doesn't set, but 
-        // sends the request to the server (to get this response).
-        Actor.prototype.addToActionBuffer.call(actor, data.buffer);
     };
  
     /**
@@ -260,15 +287,20 @@ define([
     Network.prototype.onName = function(data) {
 
         var actor = this.context.find(data.id);
-        if (!(actor instanceof Actor)) {
+        if (actor instanceof Player) {
+            Actor.prototype.setName.call(actor, data.name);
+
+        } else if (actor instanceof RemoteActor) {
+            this.fire('remote.name', {
+                actor: actor,
+                name: data.name
+            });
+            actor.setName(data.name);
+
+        } else {
             // TODO: Appropriate error handling
             throw new Error('No Actor associated with remote [' + data.id + ']');
         } 
-
-        // Call the underlying Actor.setName for the entity.
-        // Primarily because Player.setName doesn't set, but 
-        // sends the request to the server (to get this response).
-        Actor.prototype.setName.call(actor, data.name);
     };
 
     /**
@@ -278,15 +310,20 @@ define([
     Network.prototype.onAvatar = function(data) {
 
         var actor = this.context.find(data.id);
-        if (!(actor instanceof Actor)) {
+        if (actor instanceof Player) {
+            Actor.prototype.setAvatar.call(actor, data.metadata);
+
+        } else if (actor instanceof RemoteActor) {
+            this.fire('remote.avatar', {
+                actor: actor,
+                metadata: data.metadata
+            });
+            actor.setAvatar(data.metadata);
+
+        } else {
             // TODO: Appropriate error handling
             throw new Error('No Actor associated with remote [' + data.id + ']');
         } 
-
-        // Call the underlying Actor.setAvatar for the entity.
-        // Primarily because Player.setAvatar doesn't set, but 
-        // sends the request to the server (to get this response).
-        Actor.prototype.setAvatar.call(actor, data.metadata);
     };
 
     return Network;
