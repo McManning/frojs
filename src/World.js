@@ -58,18 +58,17 @@ define([
         this.renderer = new Renderer(this, properties.renderer || {});
         this.input = new Input(this, properties.input || {});
 
-        this.loadEntities(properties.world.entities || []);
-
-        // Load after player/entities, in case we want to track an entity
-        this.camera = new Camera(this, properties.camera || {});
-
         // If we specify network settings, connect us to a server
         if (properties.hasOwnProperty('network')) {
             this.network = new Network(this, properties.network);
         }
 
+        this.loadEntities(properties.world.entities || []);
         this.loadPlayer(properties.player);
         
+        // Load after player/entities, in case we want to track an entity
+        this.camera = new Camera(this, properties.camera || {});
+
         // Load plugins, if any are specified
         var fro = require('fro');
         if (properties.hasOwnProperty('plugins')) {
