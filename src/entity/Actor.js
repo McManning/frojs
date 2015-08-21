@@ -38,6 +38,7 @@ define([
         this.isRenderable = true; // Add this entity to the render queue
 
         this.step = 0;
+        this.name = '';
         this.action = properties.action || Enum.Action.IDLE;
         this.speed = properties.speed || Enum.Speed.WALK;
         this.direction = properties.direction || Enum.Direction.SOUTH;
