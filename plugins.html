@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel="stylesheet" type="text/css" href="css/main.css" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+
+</head>
+<body>
+
+<div id="frojs-logo">
+    <a href="index.html"><img src="img/frojs.svg" /></a>
+</div>
+
+<header>
+    <nav>
+        <div class="nav-wrapper">
+            <ul class="right">
+                <li><a href="developers.html">
+                    <i class="material-icons left">build</i>
+                    <span class="hide-on-med-and-down">Developers Guide</span>
+                </a></li>
+                <li><a href="creating-worlds.html">
+                    <i class="material-icons left">public</i>
+                    <span class="hide-on-med-and-down">Creating Worlds</span>
+                </a></li>
+                <li class="active"><a href="plugins.html">
+                    <i class="material-icons left">extension</i>
+                    <span class="hide-on-med-and-down">Plugins</span>
+                </a></li>
+            </ul>
+        </div>
+    </nav>
+</header>
+
+<main>
+    <div class="row">
+
+        <div class="col hide-on-small-only m3 l2">
+            <ul class="section table-of-contents pinned">
+                <li><a href="#introduction">Plugins</a></li>
+            </ul>
+            <div style="height:1px"></div>
+        </div>
+
+        <div class="guide col s12 m9 l8">
+
+            <div id="introduction" class="section scrollspy">
+                <h3>Plugins</h3>
+                <p>
+                    Coming Soon&trade;
+                </p>
+                <p>
+                    Want to help write this page? Send me an email at <a href="mailto:cmcmanning@gmail.com"><i class="material-icons">mail</i> cmcmanning@gmail.com</a>
+                </p>
+            </div>
+
+            <!--canvas id="fro-canvas" style="height:600px; width: 100%; max-width: " class="outline"></canvas-->
+
+        </div>
+
+    </div> <!-- .row -->
+</main>
+
+<footer class="page-footer">
+    <div class="footer-copyright">
+        <div class="container">
+            &copy; <script>document.write(new Date().getFullYear())</script> Chase McManning
+            <a class="grey-text text-lighten-4 right" href="https://github.com/mcmanning/frojs/tree/gh-pages" target="_BLANK"><i class="material-icons">merge_type</i> Found an error on this page? Make a pull request!</a>
+        </div>
+    </div>
+</footer>
+
+<script type="text/javascript" src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+<script type="text/javascript" src="js/vendor/materialize.min.js"></script>
+<script type="text/javascript" src="js/vendor/prism.js"></script>
+
+<!--script src="https://cdn.socket.io/socket.io-1.3.5.js"></script-->
+<script data-main="js/plugins.js" src="js/vendor/require.min.js"></script>
+</body>
+</html>
