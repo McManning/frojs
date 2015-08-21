@@ -92,10 +92,17 @@ require([
         ]
     };
 
+    avatar_urls = [
+        'http://i.imgur.com/p9PY92l.png', // blue shirt
+        'http://i.imgur.com/qP21knF.png', // red shirt
+        'http://i.imgur.com/bjiG1kJ.png', // purple shirt
+        'http://i.imgur.com/MAT9aD2.png', // green shirt
+    ];
+
     // Generic avatar for testing
     var DEFAULT_AVATAR = {
         type: 'Animation',
-        url: "http://i.imgur.com/MAT9aD2.png", // Original frojs default avatar
+        url: avatar_urls[Math.floor(Math.random()*avatar_urls.length)],
         autoplay: true,
         width: 32,
         height: 64,
@@ -154,7 +161,7 @@ require([
             },
             Chat: {
                 element: document.getElementById('chatbox'),
-                placeholder: 'Click to start typing ...', // Input placeholder
+                placeholder: 'Say hi ...', // Input placeholder
                 minWidth: 200, // Minimum dimensions when resizing
                 minHeight: 100, // Minimum dimensions when resizing
                 maxHistory: 10
@@ -240,6 +247,22 @@ require([
             var nickname = $(this).val() || 'Guest';
             if (instance.player.name !== nickname) {
                 instance.player.setName(nickname);
+            }
+        });
+
+        // TODO: Move these two input switchers elsewhere (frojs-chat plugin?)
+        // they're quite useful for managing focus using the old tabbing method. 
+        $('.input-container input').keydown(function(e) {
+            if (e.which == 9) {
+                $('#fro-canvas').focus();
+                return false;
+            } 
+        });
+
+        $('#fro-canvas').keydown(function(e) {
+            if (e.which == 9) {
+                $('.input-container input').focus();
+                return false;
             }
         });
     });

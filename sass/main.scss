@@ -61,6 +61,7 @@ i.material-icons {
 #fro-canvas {
     @include transition(all 0.3s);
     outline: none;
+    background: #91B865;
 
     &:focus {
         outline: none;
@@ -110,7 +111,7 @@ i.material-icons {
         position: absolute;
         top: 10px;
         right: 10px;
-        background: #000;
+        background: rgba(0, 0, 0, 0.6);
         color: #FFF;
         padding: 2px;
 
