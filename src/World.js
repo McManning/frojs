@@ -52,6 +52,9 @@ define([
         this.numFramerates = 10;
         this.renderTime = -1;
 
+        // Load plugins before any modules
+        this.loadPlugins(properties.plugins || {});
+
         // Initialise submodules
         this.resources = new Resources(this);
 
@@ -69,33 +72,33 @@ define([
         
         // Load after player/entities, in case we want to track an entity
         this.camera = new Camera(this, properties.camera || {});
+    }
 
-        // Load plugins, if any are specified
+    World.prototype.loadPlugins = function(plugins) {
+
         var fro = require('fro');
-        if (properties.hasOwnProperty('plugins')) {
-            for (var name in properties.plugins) {
-                if (properties.plugins.hasOwnProperty(name)) {
+        for (var name in plugins) {
+            if (plugins.hasOwnProperty(name)) {
 
-                    // Check if the plugin method exists
-                    if (!fro.plugins.hasOwnProperty(name)) {
-                        throw new Error('Plugin [' + name + '] is not registered.');
-                    }
+                // Check if the plugin method exists
+                if (!fro.plugins.hasOwnProperty(name)) {
+                    throw new Error('Plugin [' + name + '] is not registered.');
+                }
 
-                    // If a plugin has just a boolean for enable, default properties to {}
-                    if (properties.plugins[name] === true) {
-                        properties.plugin[name] = {};
-                    }
+                // If a plugin has just a boolean for enable, default properties to {}
+                if (plugins[name] === true) {
+                    plugin[name] = {};
+                }
 
-                    if (properties.plugins[name] !== false) {
-                        this.plugins[name] = new fro.plugins[name](
-                            this, 
-                            properties.plugins[name]
-                        ); 
-                    }
+                if (plugins[name] !== false) {
+                    this.plugins[name] = new fro.plugins[name](
+                        this, 
+                        plugins[name]
+                    ); 
                 }
             }
         }
-    }
+    };
 
     World.prototype.loadPlayer = function(properties) {
 
