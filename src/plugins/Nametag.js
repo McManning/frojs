@@ -110,7 +110,7 @@ define([
     Nametag.prototype.updateOffset = function() {
         if (this.parent && this.image) {
             var parentOffset = this.parent.getOffset();
-            this.offset[0] = this.image.width * 0.5;
+            this.offset[0] = Math.round(this.image.width * 0.5) + 1;
             this.offset[1] = parentOffset[1] + this.image.height + 10;
         }
 
