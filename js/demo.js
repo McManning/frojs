@@ -1,10 +1,9 @@
 
 requirejs.config({
     paths: {
-        'fro': '../../frojs/dist/fro', // 'vendor/fro'
-        'plugins': '../../frojs/src/plugins',
-        'Chat': '../../frojs-chat/src/frojs.chat',
-        'emojify': '../../frojs-chat/src/vendor/emojify.min'
+        'fro': 'vendor/fro.min', //'../../frojs/dist/fro',
+        'plugins': 'vendor/plugins',
+        'emojify': 'vendor/emojify.min'
     },
     //baseUrl: '../../src',
     //plugins: '../../examples/test'
@@ -13,9 +12,9 @@ requirejs.config({
 
 require([
     'fro',
-    'plugins/Nametag',
-    'plugins/ChatBubble',
-    'Chat',
+    'plugins/frojs.nametag',
+    'plugins/frojs.chatbubble',
+    'plugins/frojs.chat',
     'emojify' // note this has to be 'emojify' for frojs.chat to pick it up
 ], function(fro) {
 
