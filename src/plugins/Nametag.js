@@ -88,10 +88,7 @@ define([
      */
     Nametag.prototype.updateText = function() {
         
-        if (this.parent.name.length < 1) { // No nickname, hide this entity
-            this.visible = false;
-            
-        } else {
+        if (this.parent.name.length > 0) {
             // regenerate a name texture
             this.image = new FontImage(this.context, {
                 text: this.parent.name,
@@ -101,6 +98,8 @@ define([
             });
         
             this.updateOffset();
+        } else {
+            this.image = null;
         }
     };
 
@@ -109,7 +108,7 @@ define([
      * called when the parent's avatar changes dimensions. 
      */
     Nametag.prototype.updateOffset = function() {
-        if (this.parent) {
+        if (this.parent && this.image) {
             var parentOffset = this.parent.getOffset();
             this.offset[0] = this.image.width * 0.5;
             this.offset[1] = parentOffset[1] + this.image.height + 10;
@@ -120,7 +119,9 @@ define([
 
     Nametag.prototype.render = function() {
 
-        this.image.render(this.translation, 0.0);
+        if (this.image) {
+            this.image.render(this.translation, 0.0);
+        }
     };
 
     /**
@@ -134,8 +135,14 @@ define([
         // TODO: this is incorrect. We center the (x, y)
         r[0] = this.position[0];
         r[1] = this.position[1];
-        r[2] = this.image.width;
-        r[3] = this.image.height;
+
+        if (this.image) {
+            r[2] = this.image.width;
+            r[3] = this.image.height;
+        } else {
+            r[2] = 0;
+            r[1] = 0;
+        }
     };
 
     /**
