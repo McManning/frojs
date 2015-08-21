@@ -16,6 +16,10 @@ require([
     'fro'
 ], function(fro) {
 
+    $(document).ready(function(){
+        $('.tooltipped').tooltip({delay: 0});
+    });
+
     var instance = new fro.World({
         plugins: {
             /*Nametag: {

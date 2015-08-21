@@ -31,8 +31,10 @@ nav .brand-logo img {
     padding: 10px;
 }
 
-a i.material-icons {
+// Global fix for material icons not aligning with content
+i.material-icons {
     vertical-align: middle;
+    padding-bottom: 1px;
 }
 
 #frojs-logo {
@@ -50,17 +52,6 @@ a i.material-icons {
         margin: 10px;
     }
 }
-
-ul.table-of-contents {
-    padding-left: 1rem;
-    a {
-        vertical-align: top;
-        &.active {
-            color: #e0e0e0;
-        }
-    }
-}
-
 
 .clickthrough {
     pointer-events: none;
@@ -162,11 +153,9 @@ ul.table-of-contents {
         position: absolute;
         right: 10px;
         bottom: 10px;
-        line-height: 24px;
         vertical-align: top;
         background: rgba(0, 0, 0, 0.6);
         padding: 0.5rem;
-        padding-bottom: 0;
     }
 }
 
@@ -252,3 +241,73 @@ ul.table-of-contents {
         background: repeating-linear-gradient( 135deg, transparent, transparent 3px, #90a4ae 5px, #90a4ae 1px );
     }
 }
+
+// demo.html content
+#demo-container {
+    position: relative;
+    max-width: 992px;
+
+    #demo-header {
+        line-height: 3rem;
+        margin-top: 1rem;
+
+        input {
+            width: 50%;
+            margin-left: 0.5em;
+        }
+    }
+
+    #chatbox {
+        position: absolute;
+        bottom: 50px;
+        left: 25px;
+
+        // Override for some styles to match our own UI
+        .output-container {
+            font-family: "Roboto", sans-serif;
+        }
+    }
+
+    #network-error {
+        position: absolute;
+        right: 1em;
+        top: 3em;
+
+        i.material-icons {
+            font-size: 4em;
+        }
+    }
+}
+
+// developers.html content
+.col.guide {
+    background-color: #333333;
+    border: 1px solid #000000;
+    margin-top: 2rem;
+
+    h3 {
+        margin-top: 0;
+    }
+
+    .section {
+        border-top: 1px solid #444;
+        
+        &:first-child {
+            border-top: none;
+        }
+
+        th {
+            text-transform: uppercase;
+            font-weight: 300;
+        }
+
+        thead {
+            border-bottom: 1px solid #444;
+        }
+    }
+}
+
+ul.table-of-contents {
+    padding-left: 1rem;
+}
+

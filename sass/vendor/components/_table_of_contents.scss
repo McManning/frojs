@@ -12,21 +12,23 @@
   a {
     display: inline-block;
     font-weight: 300;
-    color: #757575;
+    color: #e0e0e0;
     padding-left: 20px;
     height: 1.5rem;
     line-height: 1.5rem;
     letter-spacing: .4;
     display: inline-block;
+    vertical-align: top;
 
     &:hover {
-      color: lighten(#757575, 20%);
+      color: lighten(#e0e0e0, 20%);
       padding-left: 19px;
       border-left: 1px solid lighten($primary-color,10%);
     }
     &.active {
       font-weight: 500;
       padding-left: 18px;
+      color: lighten($primary-color,10%);
       border-left: 2px solid lighten($primary-color,10%);
     }
   }

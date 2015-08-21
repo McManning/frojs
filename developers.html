@@ -54,7 +54,7 @@
             <div style="height:1px"></div>
         </div>
 
-        <div class="col s12 m9 l8">
+        <div class="guide col s12 m9 l8">
 
             <div id="configuration" class="section scrollspy">
                 <h3>Configuration</h3>
@@ -86,7 +86,7 @@
                             <td><code>trackPlayer</code></td>
                             <td><code>true</code></td>
                             <td>boolean</td>
-                            <td>Whether the camera should automatically follow our Actor as it moves. If this option is <code>true</code>, the <code>position</code> option is ignored</td>
+                            <td>Whether the camera should automatically follow our Actor as it moves. If this option is <code>true</code>, the <code>position</code> option is ignored. Manually calling <code>setCenter()</code> or <code>trackEntity()</code> on the camera will cancel out the effects of this setting</td>
                         </tr>
                         <tr>
                             <td><code>position</code></td>
