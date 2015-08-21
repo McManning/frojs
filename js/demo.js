@@ -139,6 +139,79 @@ require([
         }
     };
 
+    var instance = new fro.World({
+        plugins: {
+            Nametag: {
+                fontSize: 14,
+                fontColor: '#FFFFFF',
+                fontFamily: '"Roboto", sans-serif'
+            },
+            ChatBubble: {
+                fontSize: 14,
+                fontFamily: '"Roboto", sans-serif'
+                //backgroundColor1: '#CAC',
+                //backgroundColor2: '#FEF',
+            },
+            Chat: {
+                element: document.getElementById('chatbox'),
+                placeholder: 'Click to start typing ...', // Input placeholder
+                minWidth: 200, // Minimum dimensions when resizing
+                minHeight: 100, // Minimum dimensions when resizing
+                maxHistory: 10
+            }
+        },
+        network: {
+            server: 'http://localhost:3000/universe',
+            token: 'hi',
+            room: 'test'
+        },
+        renderer: {
+            canvas: document.getElementById('fro-canvas'),
+            background: [145, 184, 101]
+        },
+        camera: {
+            bounds: CLUB_DIS.CAMERA_BOUNDS,
+            trackPlayer: true
+        },
+        world: CLUB_DIS,
+        player: {
+            template: 'player_spawn',
+            id: 'player',
+            name: 'Guest',
+            avatar: DEFAULT_AVATAR,
+            direction: 2, // south
+            action: 0 // idle
+        }
+    });
+
+    // Network messages aren't tied into the main message engine yet, so
+    // we're going to hook some things to the socket directly. 
+    // I might advise against this :)
+    instance.network.socket.on('connect', function() {
+        Materialize.toast('Connected to Universe', 4000, 'green-text text-lighten-3');
+        
+        $('#network-error').hide();
+    });
+
+    instance.network.socket.on('disconnect', function() {
+        Materialize.toast(
+            '<i class="material-icons">sync_disabled</i> Disconnected! Waiting for reconnect',
+            10000, 
+            'red lighten-1'
+        ); 
+
+        $('#network-error').show();
+    });
+
+    instance.network.socket.on('auth', function() {
+        Materialize.toast('Server says hello!', 4000, 'green-text text-lighten-3'); 
+    });
+
+    instance.network.socket.on('err', function(data) {
+        // responseTo, message, developerMessage
+        Materialize.toast(message, 4000, 'red lighten-1'); 
+    });
+
     $(document).ready(function(){
         $('.scrollspy').scrollSpy();
 
@@ -161,48 +234,14 @@ require([
             }
         }
 
-    });
+        $('#demo-header input').on('blur keyup', function(e) {
+            if (e.type === 'keyup' && e.keyCode !== 10 && e.keyCode !== 13) return;
 
-    var instance = new fro.World({
-        plugins: {
-            /*Nametag: {
-                fontSize: 14
-            },*/
-            ChatBubble: {
-                fontSize: 14,
-                backgroundColor1: '#CAC',
-                backgroundColor2: '#FEF'
-            },
-            Chat: {
-                element: document.getElementById('chatbox'),
-                placeholder: 'Click to start typing ...', // Input placeholder
-                minWidth: 200, // Minimum dimensions when resizing
-                minHeight: 100, // Minimum dimensions when resizing
-                maxHistory: 10
+            var nickname = $(this).val() || 'Guest';
+            if (instance.player.name !== nickname) {
+                instance.player.setName(nickname);
             }
-        },
-        network: {
-            server: 'http://localhost:3000/universe',
-            token: 'hi',
-            room: 'test'
-        },
-        renderer: {
-            canvas: document.getElementById('fro-canvas'),
-            background: [145, 184, 101]
-        },
-        camera: {
-            bounds: CLUB_DIS.CAMERA_BOUNDS,
-            trackedEntity: 'player'
-        },
-        world: CLUB_DIS,
-        player: {
-            template: 'player_spawn',
-            id: 'player',
-            name: 'Local Player',
-            avatar: DEFAULT_AVATAR,
-            direction: 2, // south
-            action: 0 // idle
-        }
+        });
     });
 
     instance.run();

@@ -39,15 +39,17 @@
     <div class="container">
         <div class="row">
             <div class="col l12">
-                <div id="demo-container" style="max-width: 992px">
-                    <p> 
+                <div id="demo-container">
+                    <div id="demo-header">
                         Frojs demo (build 0.1.0)
+                        <span class="right">Hi my name is <input type="text" value="Guest" placeholder="Guest" maxlength="18"/></span>
 
-                        <a class="waves-effect waves-light btn right green small"><i class="material-icons left">code</i>view source</a>
-                    </p>
-
+                    </div>
+                    <div id="network-error" class="red-text">
+                        <i class="material-icons tooltipped" data-position="left" data-tooltip="Disconnected! Waiting for reconnect">sync_disabled</i>
+                    </div>
                     <canvas id="fro-canvas" style="height:600px; width: 100%" class="outline"></canvas>
-
+                    <div id="chatbox"></div>
                 </div> <!-- #demo-container -->
             </div> <!-- .col -->
         </div> <!-- .row -->
