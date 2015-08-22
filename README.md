@@ -1,13 +1,17 @@
 What is this?
 ======
-TODO!
+Frojs is a 2D visual chatroom built using modern web technologies (including WebSockets and WebGL). Users on the same site can walk around a virtual world with a personalized avatar and chat or just hang out with others that share the same interests. The client is fully extendable with a simple plugin pattern, opening it up for more ways users can interact with worlds. 
+
+For a simple demo, check out http://mcmanning.github.io/frojs/demo.html
 
 Usage
 ======
-TODO!
+If you want to get your own world up and running, check out the requirements and guides at http://mcmanning.github.io/frojs
 
 Building from Source
 ======
+*Note that this is not required for the average user. Only if you wish to contribute to the project*
+
 To build, you need to have the latest [Node.js/npm](http://nodejs.org/download/) and [git](http://git-scm.com/downloads).
 
 Clone a copy of the main frojs git repo (or your fork):
