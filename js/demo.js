@@ -163,7 +163,7 @@ require([
                 placeholder: 'Say hi ...', // Input placeholder
                 minWidth: 200, // Minimum dimensions when resizing
                 minHeight: 100, // Minimum dimensions when resizing
-                maxHistory: 10
+                maxHistory: 100
             }
         },
         network: {
@@ -217,6 +217,13 @@ require([
         // responseTo, message, developerMessage
         Materialize.toast(message, 4000, 'red lighten-1'); 
     });
+
+    // Testing new network binds
+    // TODO: Doesn't differentiate between joins of existing remote
+    // actors and newly joined remote actors after us. 
+    //instance.network.bind('remote.join', function(data) {  
+    //    Materialize.toast(data.actor.name, 4000);
+    //});
 
     $(document).ready(function(){
         $('.scrollspy').scrollSpy();
