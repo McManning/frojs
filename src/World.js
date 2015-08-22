@@ -87,7 +87,7 @@ define([
 
                 // If a plugin has just a boolean for enable, default properties to {}
                 if (plugins[name] === true) {
-                    plugin[name] = {};
+                    plugins[name] = {};
                 }
 
                 if (plugins[name] !== false) {
