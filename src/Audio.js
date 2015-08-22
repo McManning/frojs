@@ -26,6 +26,10 @@ define([
         // jshint unused:false
         Util.extend(this, EventHooks);
 
+        this.audioContext = null;
+        this.audioGainNode = null;
+        this.ambientGainNode = null;
+
         try {
             // Fix up for prefixing
             window.AudioContext = window.AudioContext||window.webkitAudioContext;
@@ -34,25 +38,26 @@ define([
                 this.audioContext = new window.AudioContext();
             }
         } catch (exception) {
-            // TODO: Graceful failure, not a damn exception
-            throw new Error('Failed to initialise AudioContext: ' + exception);
-        }
-        
-        // More vendor corrections.
-        if (!this.audioContext.createGain) {
-            this.audioContext.createGain = this.audioContext.createGainNode;
+            this.audioContext = null;
         }
 
-        // TODO: Necessary?
-        if (!this.audioContext.createGain) {
-            throw new Error('Failed to identify createGain() for audio context');
+        if (this.audioContext) {
+            // More vendor corrections.
+            if (!this.audioContext.createGain) {
+                this.audioContext.createGain = this.audioContext.createGainNode;
+            }
+
+            // TODO: Necessary?
+            if (!this.audioContext.createGain) {
+                throw new Error('Failed to identify createGain() for audio context');
+            }
+            
+            this.audioGainNode = this.audioContext.createGain();
+            this.audioGainNode.connect(this.audioContext.destination);
+            
+            this.ambientGainNode = this.audioContext.createGain();
+            this.ambientGainNode.connect(this.audioGainNode);
         }
-        
-        this.audioGainNode = this.audioContext.createGain();
-        this.audioGainNode.connect(this.audioContext.destination);
-        
-        this.ambientGainNode = this.audioContext.createGain();
-        this.ambientGainNode.connect(this.audioGainNode);
     }
 
     /** 
