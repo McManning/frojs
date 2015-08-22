@@ -15,7 +15,7 @@ Clone a copy of the main frojs git repo (or your fork):
 git clone git://github.com/McManning/frojs.git
 ```
 
-Enter the frojs project diretory and load all necessary dependencies:
+Enter the frojs project directory and load all necessary dependencies:
 ```bash
 cd frojs && npm install
 ```
