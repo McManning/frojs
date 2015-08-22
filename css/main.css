@@ -10852,7 +10852,7 @@ i.material-icons {
 #download .download-size {
   color: rgba(255, 255, 255, 0.6);
 }
-@media (max-width: 1270px) {
+@media (max-width: 1300px) {
   #download .download-size {
     display: none;
   }
