@@ -167,7 +167,7 @@ require([
             }
         },
         network: {
-            server: 'http://localhost:3000/universe',
+            server: 'http://universe.frojs.com/test',
             token: 'hi',
             room: 'test'
         },
