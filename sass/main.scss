@@ -27,7 +27,7 @@ main {
 }
 
 nav .brand-logo img {
-    max-height: 64px;
+    height: 64px;
     padding: 10px;
 }
 
@@ -44,11 +44,11 @@ i.material-icons {
     img {
         @include transition(all .3s);
         padding: 10px;
-        max-height: 64px;
+        height: 64px;
     }
 
     &.large img {
-        max-height: 80px;
+        height: 75px;
         margin: 10px;
     }
 }

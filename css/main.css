@@ -10709,7 +10709,7 @@ main {
 }
 
 nav .brand-logo img {
-  max-height: 64px;
+  height: 64px;
   padding: 10px;
 }
 
@@ -10729,10 +10729,10 @@ i.material-icons {
   -ms-transition: all 0.3s;
   transition: all 0.3s;
   padding: 10px;
-  max-height: 64px;
+  height: 64px;
 }
 #frojs-logo.large img {
-  max-height: 80px;
+  height: 75px;
   margin: 10px;
 }
 
