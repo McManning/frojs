@@ -63,8 +63,8 @@ require([
                         width: 132,
                         height: 143
                     },
-                    offset: [0, -24],
-                    collisions: [-66, -95, 132, 98]
+                    offset: [0, 143],
+                    collisions: [0, 24, 132, 143-24]
                 },
                 {
                     id: 'actorTest',
@@ -119,7 +119,7 @@ require([
             entities: [
                 {
                     template: 'crate',
-                    position: [30, -20, 0]
+                    position: [30, 20, 0]
                 },
                 {
                     template: 'crate',
@@ -129,26 +129,26 @@ require([
                     template: 'crate',
                     position: [200, 0, 0]
                 },
-                {
+                /*{
                     template: 'actorTest',
                     id: 'test2',
                     position: [50, 50, 0],
                     name: 'Test 2',
                     direction: 4, // east
                     action: 0 // idle
-                },
+                },*/
                 {
                     template: 'actorTest',
                     id: 'test3',
                     position: [-50, -50, 0],
                     name: 'Test 3',
-                    direction: 8, // west
+                    direction: 8, // north
                     action: 0 // idle
                 },
                 {
                     template: 'actorTest',
                     id: 'test4',
-                    position: [50, -50, 0],
+                    position: [50, 50, 0],
                     name: 'Test 4',
                     direction: 2, // south
                     action: 2 // sit
