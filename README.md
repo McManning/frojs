@@ -50,7 +50,7 @@ This will skip the minification process and only run the necessary jshint tasks.
 
 Contributing
 ======
-Since this is no longer one of my main projects, I'm open to pull requests but may be slow to respond. 
+I'm open to pull requests. If you have something more in mind, shoot me an email. 
 
 Documentation for current usage and formats is slowly being built up on the [wiki](https://github.com/McManning/frojs/wiki). Places I will most likely tackle next are described in the roadmap.
 
