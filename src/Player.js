@@ -260,8 +260,9 @@ define([
      * @param {object} properties of an avatar Animation
      */
     Player.prototype.setAvatar = function(properties) {
-
         if (this.context.network) {
+            this.avatarForNetwork = properties;
+            
             this.context.network.emit('avatar', {
                 metadata: properties
             });
